@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Property {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  propertyCode        String
+  title               String
+  status              String
+  featured            Boolean  @default(false)
+  published           Boolean  @default(false)
+  location            String
+  village             String
+  taluka              String
+  district            String
+  lat                 Float
+  lng                 Float
+  priceTotal          Float
+  pricePerSqft        Float
+  areaSqft            Float
+  areaGuntha          Float
+  areaAcre            Float
+  zoningType          String
+  titleClarity        String
+  roadAccess          Boolean
+  gallery             String   @default("[]")
+  brochure            String?
+  highlights          String   @default("[]")
+  nearbyLandmarks     String   @default("[]")
+  investmentReasoning String   @default("")
+  whyThisProperty     String   @default("")
+  seoTitle            String?
+  seoDescription      String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Blog {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  excerpt        String
+  content        String   @default("")
+  author         String
+  category       String
+  tags           String   @default("[]")
+  featuredImage  String?
+  published      Boolean  @default(false)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

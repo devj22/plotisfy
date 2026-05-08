@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { PROPERTIES } from "@/lib/data";
+import type { Property } from "@/types";
 import { SlidersHorizontal, Grid3X3, List, Search, X, ChevronDown } from "lucide-react";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "area-asc" | "area-desc" | "newest";
@@ -19,8 +19,16 @@ export default function PropertiesPage() {
   const [sort, setSort] = useState<SortOption>("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
 
-  const published = PROPERTIES.filter((p) => p.published);
+  useEffect(() => {
+    fetch("/api/properties?published=true")
+      .then((r) => r.json())
+      .then((data: Property[]) => setAllProperties(Array.isArray(data) ? data : []))
+      .catch(() => setAllProperties([]));
+  }, []);
+
+  const published = allProperties.filter((p) => p.published);
 
   let filtered = published.filter((p) => {
     if (location && p.location.toLowerCase() !== location.toLowerCase()) return false;

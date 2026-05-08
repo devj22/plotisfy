@@ -12,7 +12,7 @@ A conversion-focused, premium land investment platform for Panvel and Khalapur, 
 | Animation | Framer Motion |
 | Icons | Lucide React |
 | Font | Plus Jakarta Sans |
-| Database | PostgreSQL (production) |
+| Database | Prisma + SQLite (local) / PostgreSQL (production) |
 | Storage | Cloudinary / S3/R2 |
 | Hosting | Vercel |
 | Maps | Google Maps API |
@@ -35,12 +35,18 @@ Border:         #E2DDD6
 # Install dependencies
 npm install
 
+# Create DB and seed sample properties + blogs (first time / after schema changes)
+npx prisma db push
+npm run db:seed
+
 # Run development server
 npm run dev
 
 # Build for production
 npm run build
 ```
+
+Content (properties and blog posts) is stored in the database. Manage them under **Admin → Properties** and **Admin → Content → Blogs**. The public site reads from the same data via API and server components.
 
 ## Project Structure
 
@@ -60,11 +66,13 @@ src/
 │   ├── about/page.tsx
 │   ├── contact/page.tsx
 │   ├── book-site-visit/page.tsx    # Site visit booking
+│   ├── blog/                       # Public blog (from DB)
 │   └── admin/
 │       ├── page.tsx                # Admin dashboard
-│       ├── properties/page.tsx     # Property management + upload wizard
+│       ├── properties/page.tsx     # Property CRUD + wizard → DB
+│       ├── content/blogs/page.tsx  # Blog CRUD → DB
 │       ├── leads/page.tsx          # CRM – leads management
-│       └── site-visits/            # Site visit scheduling
+│       └── (see app/api/)          # REST: /api/properties, /api/blogs
 ├── components/
 │   ├── layout/
 │   │   ├── Navbar.tsx              # Sticky top navigation
@@ -77,8 +85,15 @@ src/
 │   └── admin/
 │       └── AdminLayout.tsx         # Admin sidebar + layout
 ├── lib/
-│   ├── utils.ts                    # Helper functions
-│   └── data.ts                     # Mock data (replace with DB)
+│   ├── prisma.ts                   # Prisma client singleton
+│   ├── cms.ts                      # DB queries for properties & blogs
+│   ├── db-mappers.ts               # DB row → app types
+│   ├── api-property.ts             # Validate property payloads
+│   ├── utils.ts                    # Helpers
+│   └── data.ts                     # Seed source + static content (FAQs, etc.)
+├── prisma/
+│   ├── schema.prisma               # Property & Blog models
+│   └── seed.ts                     # Initial data from data.ts
 └── types/
     └── index.ts                    # TypeScript interfaces
 ```
@@ -113,8 +128,9 @@ src/
 Create `.env.local`:
 
 ```env
-# Database
-DATABASE_URL=postgresql://user:password@host:5432/plotsify
+# Database — local: SQLite file (see .env.example). Serverless hosts (e.g. Vercel): use PostgreSQL.
+DATABASE_URL="file:./prisma/dev.db"
+# DATABASE_URL=postgresql://user:password@host:5432/plotsify
 
 # Storage
 CLOUDINARY_CLOUD_NAME=your_cloud_name

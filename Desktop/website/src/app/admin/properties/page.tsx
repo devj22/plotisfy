@@ -1,34 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { PROPERTIES } from "@/lib/data";
-import { Property } from "@/types";
+import type { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
 import {
   Plus,
   Search,
   Edit3,
-  Trash2,
   Eye,
   EyeOff,
   Star,
-  MoreVertical,
   MapPin,
   ArrowUpRight,
   CheckCircle,
   X,
-  Filter,
 } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminPropertiesPage() {
+  const [list, setList] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [showWizard, setShowWizard] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
-  const filtered = PROPERTIES.filter((p) => {
+  const refresh = useCallback(() => {
+    setLoading(true);
+    fetch("/api/properties")
+      .then((r) => r.json())
+      .then((data: Property[]) => setList(Array.isArray(data) ? data : []))
+      .catch(() => setList([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const filtered = list.filter((p) => {
     const matchSearch =
       !search ||
       p.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -38,10 +50,32 @@ export default function AdminPropertiesPage() {
     return matchSearch && matchLocation && matchStatus;
   });
 
+  const openCreate = () => {
+    setEditId(null);
+    setShowWizard(true);
+  };
+
+  const openEdit = (id: string) => {
+    setEditId(id);
+    setShowWizard(true);
+  };
+
+  const closeWizard = () => {
+    setShowWizard(false);
+    setEditId(null);
+  };
+
   if (showWizard) {
     return (
       <AdminLayout currentPath="/admin/properties">
-        <PropertyUploadWizard onCancel={() => setShowWizard(false)} />
+        <PropertyUploadWizard
+          editId={editId}
+          onCancel={closeWizard}
+          onSuccess={() => {
+            closeWizard();
+            refresh();
+          }}
+        />
       </AdminLayout>
     );
   }
@@ -49,14 +83,15 @@ export default function AdminPropertiesPage() {
   return (
     <AdminLayout currentPath="/admin/properties">
       <div className="p-6 space-y-5">
-        {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-[#0D2F5B] text-2xl font-bold">Properties</h1>
-            <p className="text-[#6B7B94] text-sm">{PROPERTIES.length} total listings</p>
+            <p className="text-[#6B7B94] text-sm">
+              {loading ? "Loading…" : `${list.length} total listings (database)`}
+            </p>
           </div>
           <button
-            onClick={() => setShowWizard(true)}
+            onClick={openCreate}
             className="flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#0a2347] transition-colors"
           >
             <Plus className="w-4 h-4" />
@@ -64,7 +99,6 @@ export default function AdminPropertiesPage() {
           </button>
         </div>
 
-        {/* Filters */}
         <div className="bg-white rounded-xl border border-[#E2DDD6] p-4 flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-48">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7B94]" />
@@ -97,9 +131,7 @@ export default function AdminPropertiesPage() {
           </select>
         </div>
 
-        {/* Properties Grid */}
         <div className="bg-white rounded-2xl border border-[#E2DDD6] overflow-hidden">
-          {/* Table Header */}
           <div className="hidden md:grid grid-cols-[60px_1fr_100px_120px_100px_80px_100px] gap-4 px-5 py-3 bg-[#F7F3ED] border-b border-[#E2DDD6] text-xs font-semibold text-[#6B7B94] uppercase tracking-wider">
             <div>Photo</div>
             <div>Property</div>
@@ -112,11 +144,11 @@ export default function AdminPropertiesPage() {
 
           <div className="divide-y divide-[#F7F3ED]">
             {filtered.map((p) => (
-              <PropertyRow key={p.id} property={p} />
+              <PropertyRow key={p.id} property={p} onMutate={refresh} onEdit={() => openEdit(p.id)} />
             ))}
           </div>
 
-          {filtered.length === 0 && (
+          {!loading && filtered.length === 0 && (
             <div className="text-center py-12 text-[#6B7B94]">No properties found.</div>
           )}
         </div>
@@ -125,89 +157,100 @@ export default function AdminPropertiesPage() {
   );
 }
 
-function PropertyRow({ property: p }: { property: Property }) {
-  const [featured, setFeatured] = useState(p.featured);
-  const [published, setPublished] = useState(p.published);
+function PropertyRow({
+  property: p,
+  onMutate,
+  onEdit,
+}: {
+  property: Property;
+  onMutate: () => void;
+  onEdit: () => void;
+}) {
+  const patch = async (body: Record<string, unknown>) => {
+    await fetch(`/api/properties/${p.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    onMutate();
+  };
 
   return (
     <div className="px-4 md:px-5 py-4 hover:bg-[#F7F3ED]/50 transition-colors">
       <div className="flex items-center gap-4 md:grid md:grid-cols-[60px_1fr_100px_120px_100px_80px_100px] md:gap-4">
-        {/* Photo */}
         <img
-          src={p.gallery[0]}
+          src={p.gallery[0] || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400"}
           alt={p.title}
           className="w-14 h-12 rounded-lg object-cover flex-shrink-0"
         />
 
-        {/* Property Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
             <span className="font-mono text-xs text-[#6B7B94] bg-[#F7F3ED] px-1.5 py-0.5 rounded">
               {p.propertyCode}
             </span>
-            {!published && (
+            {!p.published && (
               <span className="text-xs text-[#B86A3C] bg-[#B86A3C]/10 px-1.5 py-0.5 rounded">Draft</span>
             )}
           </div>
           <p className="text-[#162338] text-sm font-semibold truncate">{p.title}</p>
           <div className="flex items-center gap-1 mt-0.5">
             <MapPin className="w-3 h-3 text-[#B86A3C]" />
-            <span className="text-[#6B7B94] text-xs">{p.village}, {p.location}</span>
+            <span className="text-[#6B7B94] text-xs">
+              {p.village}, {p.location}
+            </span>
           </div>
         </div>
 
-        {/* Price */}
         <div className="hidden md:block">
           <div className="text-[#0D2F5B] text-sm font-bold">{formatPrice(p.priceTotal)}</div>
           <div className="text-[#6B7B94] text-xs">₹{p.pricePerSqft}/sqft</div>
         </div>
 
-        {/* Area */}
         <div className="hidden md:block">
           <div className="text-[#162338] text-sm font-medium">{formatArea(p.areaSqft)}</div>
           <div className="text-[#6B7B94] text-xs">{p.areaGuntha} Guntha</div>
         </div>
 
-        {/* Status */}
         <div className="hidden md:block">
           <span
             className={`text-xs px-2 py-1 rounded-full font-semibold ${
               p.status === "available"
                 ? "bg-[#2D7A4F]/10 text-[#2D7A4F]"
                 : p.status === "reserved"
-                ? "bg-[#B86A3C]/10 text-[#B86A3C]"
-                : "bg-[#6B7B94]/10 text-[#6B7B94]"
+                  ? "bg-[#B86A3C]/10 text-[#B86A3C]"
+                  : "bg-[#6B7B94]/10 text-[#6B7B94]"
             }`}
           >
             {p.status}
           </span>
         </div>
 
-        {/* Featured Toggle */}
         <div className="hidden md:flex items-center">
           <button
-            onClick={() => setFeatured(!featured)}
+            type="button"
+            onClick={() => patch({ featured: !p.featured })}
             className={`p-1.5 rounded-lg transition-colors ${
-              featured ? "text-[#B86A3C] bg-[#B86A3C]/10" : "text-[#E2DDD6] hover:text-[#6B7B94]"
+              p.featured ? "text-[#B86A3C] bg-[#B86A3C]/10" : "text-[#E2DDD6] hover:text-[#6B7B94]"
             }`}
-            title={featured ? "Remove from featured" : "Mark as featured"}
+            title={p.featured ? "Remove from featured" : "Mark as featured"}
           >
-            <Star className={`w-4 h-4 ${featured ? "fill-current" : ""}`} />
+            <Star className={`w-4 h-4 ${p.featured ? "fill-current" : ""}`} />
           </button>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-1.5">
           <button
-            onClick={() => setPublished(!published)}
+            type="button"
+            onClick={() => patch({ published: !p.published })}
             className={`p-1.5 rounded-lg border transition-colors ${
-              published
+              p.published
                 ? "border-[#2D7A4F]/30 text-[#2D7A4F] hover:bg-[#2D7A4F]/10"
                 : "border-[#E2DDD6] text-[#6B7B94] hover:border-[#0D2F5B] hover:text-[#0D2F5B]"
             }`}
-            title={published ? "Unpublish" : "Publish"}
+            title={p.published ? "Unpublish" : "Publish"}
           >
-            {published ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+            {p.published ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
           </button>
           <Link
             href={`/properties/${p.slug}`}
@@ -217,7 +260,12 @@ function PropertyRow({ property: p }: { property: Property }) {
           >
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
-          <button className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-[#B86A3C] hover:border-[#B86A3C] transition-colors" title="Edit">
+          <button
+            type="button"
+            onClick={onEdit}
+            className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-[#B86A3C] hover:border-[#B86A3C] transition-colors"
+            title="Edit"
+          >
             <Edit3 className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -234,36 +282,193 @@ const WIZARD_STEPS = [
   { id: 5, label: "SEO & Publish" },
 ];
 
-function PropertyUploadWizard({ onCancel }: { onCancel: () => void }) {
+function PropertyUploadWizard({
+  editId,
+  onCancel,
+  onSuccess,
+}: {
+  editId: string | null;
+  onCancel: () => void;
+  onSuccess: () => void;
+}) {
   const [step, setStep] = useState(1);
+  const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const [title, setTitle] = useState("");
+  const [propertyCode, setPropertyCode] = useState("");
+  const [status, setStatus] = useState("available");
+  const [zoningType, setZoningType] = useState("Residential");
+  const [highlightsText, setHighlightsText] = useState("");
+  const [featured, setFeatured] = useState(false);
+  const [published, setPublished] = useState(true);
+  const [roadAccess, setRoadAccess] = useState(true);
+
+  const [location, setLocation] = useState("Panvel");
+  const [village, setVillage] = useState("");
+  const [taluka, setTaluka] = useState("");
+  const [district, setDistrict] = useState("Raigad");
+  const [lat, setLat] = useState("18.9894");
+  const [lng, setLng] = useState("73.1175");
+  const [areaSqft, setAreaSqft] = useState("");
+  const [areaGuntha, setAreaGuntha] = useState("");
+  const [landmarksText, setLandmarksText] = useState("");
+
+  const [priceTotal, setPriceTotal] = useState("");
+  const [pricePerSqft, setPricePerSqft] = useState("");
+  const [titleClarity, setTitleClarity] = useState("clear");
+  const [investmentReasoning, setInvestmentReasoning] = useState("");
+  const [whyThisProperty, setWhyThisProperty] = useState("");
+
+  const [galleryText, setGalleryText] = useState("");
+  const [brochure, setBrochure] = useState("");
+
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [slug, setSlug] = useState("");
+
+  useEffect(() => {
+    if (!editId) return;
+    setLoadError(null);
+    fetch(`/api/properties/${editId}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Not found");
+        return r.json();
+      })
+      .then((p: Property) => {
+        setTitle(p.title);
+        setPropertyCode(p.propertyCode);
+        setStatus(p.status);
+        setZoningType(p.zoningType);
+        setHighlightsText(p.highlights.join("\n"));
+        setFeatured(p.featured);
+        setPublished(p.published);
+        setRoadAccess(p.roadAccess);
+        setLocation(p.location);
+        setVillage(p.village);
+        setTaluka(p.taluka);
+        setDistrict(p.district);
+        setLat(String(p.coordinates.lat));
+        setLng(String(p.coordinates.lng));
+        setAreaSqft(String(p.areaSqft));
+        setAreaGuntha(String(p.areaGuntha));
+        setLandmarksText(
+          p.nearbyLandmarks.map((l) => `${l.name} | ${l.distance} | ${l.type}`).join("\n")
+        );
+        setPriceTotal(String(p.priceTotal));
+        setPricePerSqft(String(p.pricePerSqft));
+        setTitleClarity(p.titleClarity);
+        setInvestmentReasoning(p.investmentReasoning);
+        setWhyThisProperty(p.whyThisProperty);
+        setGalleryText(p.gallery.join("\n"));
+        setBrochure(p.brochure ?? "");
+        setSeoTitle(p.seoTitle ?? "");
+        setSeoDescription(p.seoDescription ?? "");
+        setSlug(p.slug);
+      })
+      .catch(() => setLoadError("Could not load property for editing."));
+  }, [editId]);
+
+  const buildPayload = () => ({
+    title,
+    slug: slug || undefined,
+    propertyCode: propertyCode || undefined,
+    status,
+    zoningType,
+    highlightsText,
+    featured,
+    published,
+    roadAccess,
+    location,
+    village,
+    taluka,
+    district,
+    lat: parseFloat(lat) || 0,
+    lng: parseFloat(lng) || 0,
+    areaSqft: parseFloat(areaSqft) || 0,
+    areaGuntha: areaGuntha ? parseFloat(areaGuntha) : undefined,
+    landmarksText,
+    priceTotal: parseFloat(priceTotal) || 0,
+    pricePerSqft: pricePerSqft ? parseFloat(pricePerSqft) : undefined,
+    titleClarity,
+    investmentReasoning,
+    whyThisProperty,
+    galleryText,
+    brochure: brochure || undefined,
+    seoTitle: seoTitle || undefined,
+    seoDescription: seoDescription || undefined,
+  });
+
+  const handleFinish = async () => {
+    setSaving(true);
+    try {
+      const payload = buildPayload();
+      if (editId) {
+        const res = await fetch(`/api/properties/${editId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error || "Save failed");
+        }
+      } else {
+        const res = await fetch("/api/properties", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error || "Create failed");
+        }
+      }
+      onSuccess();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Save failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loadError) {
+    return (
+      <div className="p-6 max-w-3xl mx-auto">
+        <p className="text-red-600 text-sm mb-4">{loadError}</p>
+        <button type="button" onClick={onCancel} className="text-[#0D2F5B] font-medium text-sm">
+          ← Back
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[#0D2F5B] text-2xl font-bold">Add New Property</h1>
-          <p className="text-[#6B7B94] text-sm">Step {step} of 5</p>
+          <h1 className="text-[#0D2F5B] text-2xl font-bold">
+            {editId ? "Edit Property" : "Add New Property"}
+          </h1>
+          <p className="text-[#6B7B94] text-sm">Step {step} of 5 · Saved to database</p>
         </div>
-        <button
-          onClick={onCancel}
-          className="p-2 rounded-lg hover:bg-[#F7F3ED] transition-colors"
-        >
+        <button type="button" onClick={onCancel} className="p-2 rounded-lg hover:bg-[#F7F3ED] transition-colors">
           <X className="w-5 h-5 text-[#6B7B94]" />
         </button>
       </div>
 
-      {/* Progress Steps */}
       <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
         {WIZARD_STEPS.map((s, i) => (
           <div key={s.id} className="flex items-center gap-2 flex-shrink-0">
             <button
+              type="button"
               onClick={() => s.id <= step && setStep(s.id)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                 s.id === step
                   ? "bg-[#0D2F5B] text-white"
                   : s.id < step
-                  ? "bg-[#2D7A4F]/10 text-[#2D7A4F]"
-                  : "bg-[#F7F3ED] text-[#6B7B94]"
+                    ? "bg-[#2D7A4F]/10 text-[#2D7A4F]"
+                    : "bg-[#F7F3ED] text-[#6B7B94]"
               }`}
             >
               {s.id < step ? <CheckCircle className="w-3.5 h-3.5" /> : <span>{s.id}</span>}
@@ -276,241 +481,304 @@ function PropertyUploadWizard({ onCancel }: { onCancel: () => void }) {
         ))}
       </div>
 
-      {/* Step Content */}
-      <div className="bg-white rounded-2xl border border-[#E2DDD6] p-6">
-        {step === 1 && <WizardStep1 />}
-        {step === 2 && <WizardStep2 />}
-        {step === 3 && <WizardStep3 />}
-        {step === 4 && <WizardStep4 />}
-        {step === 5 && <WizardStep5 />}
+      <div className="bg-white rounded-2xl border border-[#E2DDD6] p-6 space-y-4">
+        {step === 1 && (
+          <>
+            <h2 className="text-[#0D2F5B] font-bold text-lg mb-4">Basic Details</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Property Title *</span>
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Property Code</span>
+                <input
+                  value={propertyCode}
+                  onChange={(e) => setPropertyCode(e.target.value)}
+                  placeholder="Auto if empty"
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Status</span>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                >
+                  <option value="available">Available</option>
+                  <option value="reserved">Reserved</option>
+                  <option value="sold">Sold</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Zoning</span>
+                <select
+                  value={zoningType}
+                  onChange={(e) => setZoningType(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                >
+                  <option>Residential</option>
+                  <option>Agricultural</option>
+                  <option>Industrial</option>
+                  <option>Commercial</option>
+                </select>
+              </label>
+            </div>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">Highlights (one per line)</span>
+              <textarea
+                value={highlightsText}
+                onChange={(e) => setHighlightsText(e.target.value)}
+                rows={3}
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm resize-none"
+              />
+            </label>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
+                Featured
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} />
+                Published
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={roadAccess} onChange={(e) => setRoadAccess(e.target.checked)} />
+                Road access
+              </label>
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <h2 className="text-[#0D2F5B] font-bold text-lg mb-4">Location & Area</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Location</span>
+                <select
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                >
+                  <option>Panvel</option>
+                  <option>Khalapur</option>
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Village</span>
+                <input
+                  value={village}
+                  onChange={(e) => setVillage(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Taluka</span>
+                <input
+                  value={taluka}
+                  onChange={(e) => setTaluka(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">District</span>
+                <input
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Latitude</span>
+                <input
+                  value={lat}
+                  onChange={(e) => setLat(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Longitude</span>
+                <input
+                  value={lng}
+                  onChange={(e) => setLng(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Area (sqft) *</span>
+                <input
+                  value={areaSqft}
+                  onChange={(e) => setAreaSqft(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Guntha (optional)</span>
+                <input
+                  value={areaGuntha}
+                  onChange={(e) => setAreaGuntha(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+            </div>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">
+                Landmarks: Name | Distance | type (one per line)
+              </span>
+              <textarea
+                value={landmarksText}
+                onChange={(e) => setLandmarksText(e.target.value)}
+                rows={3}
+                placeholder="Airport | 12 km | airport"
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm font-mono resize-none"
+              />
+            </label>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <h2 className="text-[#0D2F5B] font-bold text-lg mb-4">Pricing & Land</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Total price (₹) *</span>
+                <input
+                  value={priceTotal}
+                  onChange={(e) => setPriceTotal(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-[#162338]">Price / sqft (optional)</span>
+                <input
+                  value={pricePerSqft}
+                  onChange={(e) => setPricePerSqft(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                />
+              </label>
+              <label className="block sm:col-span-2">
+                <span className="text-sm font-medium text-[#162338]">Title clarity</span>
+                <select
+                  value={titleClarity}
+                  onChange={(e) => setTitleClarity(e.target.value)}
+                  className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+                >
+                  <option value="clear">Clear</option>
+                  <option value="pending">Pending</option>
+                  <option value="disputed">Disputed</option>
+                </select>
+              </label>
+            </div>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">Investment reasoning</span>
+              <textarea
+                value={investmentReasoning}
+                onChange={(e) => setInvestmentReasoning(e.target.value)}
+                rows={4}
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm resize-none"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">Why this property</span>
+              <textarea
+                value={whyThisProperty}
+                onChange={(e) => setWhyThisProperty(e.target.value)}
+                rows={3}
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm resize-none"
+              />
+            </label>
+          </>
+        )}
+
+        {step === 4 && (
+          <>
+            <h2 className="text-[#0D2F5B] font-bold text-lg mb-4">Photos & brochure</h2>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">Image URLs (one per line or comma-separated)</span>
+              <textarea
+                value={galleryText}
+                onChange={(e) => setGalleryText(e.target.value)}
+                rows={5}
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm resize-none"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">Brochure URL (optional)</span>
+              <input
+                value={brochure}
+                onChange={(e) => setBrochure(e.target.value)}
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+              />
+            </label>
+          </>
+        )}
+
+        {step === 5 && (
+          <>
+            <h2 className="text-[#0D2F5B] font-bold text-lg mb-4">SEO & URL</h2>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">URL slug (optional)</span>
+              <input
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="auto from title if empty"
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">SEO title</span>
+              <input
+                value={seoTitle}
+                onChange={(e) => setSeoTitle(e.target.value)}
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-[#162338]">Meta description</span>
+              <textarea
+                value={seoDescription}
+                onChange={(e) => setSeoDescription(e.target.value)}
+                rows={3}
+                className="mt-1.5 w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm resize-none"
+              />
+            </label>
+          </>
+        )}
       </div>
 
-      {/* Navigation */}
       <div className="flex items-center justify-between mt-5">
         <button
-          onClick={() => step > 1 ? setStep(step - 1) : onCancel()}
-          className="text-sm font-medium text-[#6B7B94] hover:text-[#162338] transition-colors"
+          type="button"
+          onClick={() => (step > 1 ? setStep(step - 1) : onCancel())}
+          className="text-sm font-medium text-[#6B7B94] hover:text-[#162338]"
         >
           {step === 1 ? "Cancel" : "← Previous"}
         </button>
-        <button
-          onClick={() => step < 5 ? setStep(step + 1) : onCancel()}
-          className="bg-[#0D2F5B] text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-[#0a2347] transition-colors"
-        >
-          {step === 5 ? "Publish Property" : "Continue →"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function WizardStep1() {
-  return (
-    <div className="space-y-4">
-      <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">Basic Details</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField label="Property Title *" placeholder="e.g. Premium Residential Plot in Panvel" />
-        <FormField label="Property Code" placeholder="e.g. PLT-PNV-007" />
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Status</label>
-          <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
-            <option value="available">Available</option>
-            <option value="reserved">Reserved</option>
-            <option value="sold">Sold</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Zoning Type</label>
-          <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
-            <option>Residential</option>
-            <option>Agricultural</option>
-            <option>Industrial</option>
-            <option>Commercial</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-1.5">Property Highlights</label>
-        <textarea
-          rows={3}
-          placeholder="Enter key highlights, one per line"
-          className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
-        />
-      </div>
-      <div className="flex items-center gap-6">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" className="w-4 h-4 accent-[#0D2F5B]" />
-          <span className="text-sm text-[#162338]">Featured listing</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" className="w-4 h-4 accent-[#0D2F5B]" defaultChecked />
-          <span className="text-sm text-[#162338]">Publish immediately</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" className="w-4 h-4 accent-[#2D7A4F]" defaultChecked />
-          <span className="text-sm text-[#162338]">Road Access</span>
-        </label>
-      </div>
-    </div>
-  );
-}
-
-function WizardStep2() {
-  return (
-    <div className="space-y-4">
-      <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">Location & Area</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Location</label>
-          <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
-            <option>Panvel</option>
-            <option>Khalapur</option>
-          </select>
-        </div>
-        <FormField label="Village" placeholder="e.g. Chikhale" />
-        <FormField label="Taluka" placeholder="e.g. Panvel" />
-        <FormField label="District" placeholder="e.g. Raigad" />
-        <FormField label="Latitude" placeholder="e.g. 18.9894" type="number" />
-        <FormField label="Longitude" placeholder="e.g. 73.1175" type="number" />
-        <FormField label="Area (sqft) *" placeholder="e.g. 2500" type="number" />
-        <FormField label="Area (Guntha)" placeholder="Auto-calculated" type="number" />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-1.5">Nearby Landmarks</label>
-        <textarea
-          rows={3}
-          placeholder="Format: Landmark Name | Distance&#10;e.g. Navi Mumbai Airport | 12 km"
-          className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none font-mono"
-        />
-      </div>
-    </div>
-  );
-}
-
-function WizardStep3() {
-  return (
-    <div className="space-y-4">
-      <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">Pricing & Land Information</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField label="Total Price (₹) *" placeholder="e.g. 6500000" type="number" />
-        <FormField label="Price per sqft (₹)" placeholder="Auto-calculated" type="number" />
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Title Clarity</label>
-          <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
-            <option value="clear">Clear</option>
-            <option value="pending">Pending Verification</option>
-            <option value="disputed">Disputed</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-1.5">Investment Reasoning</label>
-        <textarea
-          rows={4}
-          placeholder="Explain why this is a good investment opportunity..."
-          className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-1.5">Why This Property?</label>
-        <textarea
-          rows={3}
-          placeholder="Unique selling points for this specific property..."
-          className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
-        />
-      </div>
-    </div>
-  );
-}
-
-function WizardStep4() {
-  return (
-    <div className="space-y-5">
-      <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">Photos & Brochure</h2>
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-2">Property Gallery *</label>
-        <div className="border-2 border-dashed border-[#E2DDD6] rounded-xl p-8 text-center hover:border-[#0D2F5B]/30 transition-colors cursor-pointer">
-          <div className="text-3xl mb-2">📸</div>
-          <p className="text-[#162338] font-medium text-sm">Drop photos here or click to upload</p>
-          <p className="text-[#6B7B94] text-xs mt-1">JPG, PNG · Min 800×600 · Max 5MB each</p>
-          <button className="mt-4 bg-[#0D2F5B] text-white text-xs font-semibold px-4 py-2 rounded-lg">
-            Select Photos
+        {step < 5 ? (
+          <button
+            type="button"
+            onClick={() => setStep(step + 1)}
+            className="bg-[#0D2F5B] text-white text-sm font-semibold px-6 py-2.5 rounded-xl"
+          >
+            Continue →
           </button>
-        </div>
-        <p className="text-[#6B7B94] text-xs mt-2">
-          ⚠️ Only use real property photos. No stock imagery.
-        </p>
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-2">Brochure PDF (optional)</label>
-        <div className="border-2 border-dashed border-[#E2DDD6] rounded-xl p-6 text-center cursor-pointer hover:border-[#0D2F5B]/30 transition-colors">
-          <div className="text-2xl mb-2">📄</div>
-          <p className="text-[#6B7B94] text-sm">Upload PDF brochure</p>
-          <button className="mt-3 border border-[#E2DDD6] text-[#162338] text-xs font-medium px-4 py-1.5 rounded-lg hover:bg-[#F7F3ED]">
-            Select PDF
+        ) : (
+          <button
+            type="button"
+            disabled={saving || !title.trim()}
+            onClick={handleFinish}
+            className="bg-[#B86A3C] text-white text-sm font-semibold px-6 py-2.5 rounded-xl disabled:opacity-50"
+          >
+            {saving ? "Saving…" : editId ? "Save changes" : "Publish to site"}
           </button>
-        </div>
+        )}
       </div>
-    </div>
-  );
-}
-
-function WizardStep5() {
-  return (
-    <div className="space-y-4">
-      <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">SEO & Publish</h2>
-      <FormField label="SEO Title" placeholder="Property name | Location | Plotsify" />
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-1.5">SEO Meta Description</label>
-        <textarea
-          rows={3}
-          placeholder="160 characters max. Describe the property for search engines..."
-          className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
-        />
-      </div>
-      <FormField label="URL Slug" placeholder="e.g. premium-plot-panvel-sector-12" />
-
-      <div className="bg-[#2D7A4F]/8 border border-[#2D7A4F]/20 rounded-xl p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <CheckCircle className="w-4 h-4 text-[#2D7A4F]" />
-          <span className="text-[#2D7A4F] font-semibold text-sm">Pre-publish Checklist</span>
-        </div>
-        <div className="space-y-2">
-          {[
-            "At least 3 real property photos uploaded",
-            "Price and area filled correctly",
-            "Title clarity status set",
-            "Nearby landmarks added",
-            "Investment reasoning written",
-          ].map((item) => (
-            <label key={item} className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="w-4 h-4 accent-[#2D7A4F]" />
-              <span className="text-[#162338] text-sm">{item}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FormField({
-  label,
-  placeholder,
-  type = "text",
-}: {
-  label: string;
-  placeholder?: string;
-  type?: string;
-}) {
-  return (
-    <div>
-      <label className="block text-sm font-medium text-[#162338] mb-1.5">{label}</label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] text-[#162338]"
-      />
     </div>
   );
 }
