@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -24,7 +24,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { PROPERTIES } from "@/lib/data";
+import type { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
 
 export default function PropertyDetailPage({
@@ -33,12 +33,53 @@ export default function PropertyDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-  const property = PROPERTIES.find((p) => p.slug === slug);
-  if (!property) notFound();
+  const [property, setProperty] = useState<Property | null | undefined>(undefined);
+  const [similar, setSimilar] = useState<Property[]>([]);
 
-  const similar = PROPERTIES.filter(
-    (p) => p.id !== property.id && p.location === property.location && p.published
-  ).slice(0, 3);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/properties/by-slug/${encodeURIComponent(slug)}`);
+        if (!res.ok) {
+          if (!cancelled) setProperty(null);
+          return;
+        }
+        const p = (await res.json()) as Property;
+        if (cancelled) return;
+        setProperty(p);
+        const allRes = await fetch("/api/properties?published=true");
+        const all = (await allRes.json()) as Property[];
+        if (!cancelled && Array.isArray(all)) {
+          setSimilar(
+            all.filter((x) => x.id !== p.id && x.location === p.location && x.published).slice(0, 3)
+          );
+        }
+      } catch {
+        if (!cancelled) setProperty(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (property === undefined) {
+    return (
+      <>
+        <Navbar />
+        <main className="min-h-[50vh] flex items-center justify-center bg-[#F7F3ED]">
+          <p className="text-[#6B7B94]">Loading property…</p>
+        </main>
+        <Footer />
+        <MobileCTA />
+      </>
+    );
+  }
+
+  if (!property) {
+    notFound();
+  }
 
   return (
     <>

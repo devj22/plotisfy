@@ -1,17 +1,19 @@
 import { MetadataRoute } from "next";
-import { PROPERTIES, BLOGS } from "@/lib/data";
+import { getPublishedProperties, getPublishedBlogs } from "@/lib/cms";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://plotsify.com";
 
-  const propertyUrls = PROPERTIES.filter((p) => p.published).map((p) => ({
+  const [properties, blogs] = await Promise.all([getPublishedProperties(), getPublishedBlogs()]);
+
+  const propertyUrls = properties.map((p) => ({
     url: `${baseUrl}/properties/${p.slug}`,
     lastModified: new Date(p.updatedAt),
     changeFrequency: "weekly" as const,
     priority: 0.9,
   }));
 
-  const blogUrls = BLOGS.filter((b) => b.published).map((b) => ({
+  const blogUrls = blogs.map((b) => ({
     url: `${baseUrl}/blog/${b.slug}`,
     lastModified: new Date(b.createdAt),
     changeFrequency: "monthly" as const,

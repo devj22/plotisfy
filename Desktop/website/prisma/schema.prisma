@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Property {
-  id                  String   @id @default(cuid())
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   slug                String   @unique
   propertyCode        String
   title               String
@@ -42,7 +42,7 @@ model Property {
 }
 
 model Blog {
-  id             String   @id @default(cuid())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
   title          String
   slug           String   @unique
   excerpt        String
