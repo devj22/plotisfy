@@ -2,7 +2,9 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { PROPERTIES, INFRASTRUCTURE_HIGHLIGHTS } from "@/lib/data";
+import { INFRASTRUCTURE_HIGHLIGHTS } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
+import { mapDbProperty } from "@/lib/db-mappers";
 import { MapPin, TrendingUp, Plane, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -13,8 +15,9 @@ export const metadata: Metadata = {
     "Verified land plots in Panvel, Maharashtra. Near Navi Mumbai International Airport and Atal Setu. Clear titles, road access, strong investment case.",
 };
 
-export default function PanvelPage() {
-  const panvelProps = PROPERTIES.filter((p) => p.location === "Panvel" && p.published);
+export default async function PanvelPage() {
+  const rows = await prisma.property.findMany({ where: { location: "Panvel", published: true } }).catch(() => []);
+  const panvelProps = rows.map(mapDbProperty);
 
   return (
     <>

@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { PROPERTIES } from "@/lib/data";
+import { Property } from "@/types";
 import { SlidersHorizontal, Grid3X3, List, Search, X, ChevronDown } from "lucide-react";
 
 type SortOption = "featured" | "price-asc" | "price-desc" | "area-asc" | "area-desc" | "newest";
 
 export default function PropertiesPage() {
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
+  const [loadingProps, setLoadingProps] = useState(true);
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState("");
   const [purpose, setPurpose] = useState("");
@@ -20,7 +22,15 @@ export default function PropertiesPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
 
-  const published = PROPERTIES.filter((p) => p.published);
+  useEffect(() => {
+    fetch("/api/properties?published=true")
+      .then((r) => r.json())
+      .then((data) => setAllProperties(Array.isArray(data) ? data : []))
+      .catch(() => setAllProperties([]))
+      .finally(() => setLoadingProps(false));
+  }, []);
+
+  const published = allProperties;
 
   let filtered = published.filter((p) => {
     if (location && p.location.toLowerCase() !== location.toLowerCase()) return false;
@@ -67,7 +77,7 @@ export default function PropertiesPage() {
               Land Plots & Properties
             </h1>
             <p className="text-white/70">
-              {filtered.length} verified properties in Panvel & Khalapur
+              {loadingProps ? "Loading properties..." : `${filtered.length} verified properties in Panvel & Khalapur`}
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -69,8 +70,14 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children, currentPath = "/admin" }: AdminLayoutProps) {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/admin/login");
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F3ED] flex">
@@ -168,7 +175,10 @@ export default function AdminLayout({ children, currentPath = "/admin" }: AdminL
             <ChevronRight className="w-4 h-4" />
             View Website
           </Link>
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:bg-white/8 hover:text-white transition-colors">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:bg-white/8 hover:text-white transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             Sign Out
           </button>

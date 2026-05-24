@@ -1,7 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
-import { notFound } from "next/navigation";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import {
   MapPin,
@@ -24,7 +23,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { PROPERTIES } from "@/lib/data";
+import { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
 
 export default function PropertyDetailPage({
@@ -33,12 +32,53 @@ export default function PropertyDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-  const property = PROPERTIES.find((p) => p.slug === slug);
-  if (!property) notFound();
+  const [property, setProperty] = useState<Property | null>(null);
+  const [similar, setSimilar] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  const similar = PROPERTIES.filter(
-    (p) => p.id !== property.id && p.location === property.location && p.published
-  ).slice(0, 3);
+  useEffect(() => {
+    fetch(`/api/properties/by-slug/${slug}`)
+      .then(async (r) => {
+        if (r.status === 404) { setNotFound(true); return; }
+        const data = await r.json();
+        setProperty(data);
+        // fetch similar properties in same location
+        fetch(`/api/properties?published=true`)
+          .then((r2) => r2.json())
+          .then((all: Property[]) => {
+            setSimilar(all.filter((p) => p.id !== data.id && p.location === data.location).slice(0, 3));
+          })
+          .catch(() => {});
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-[#F7F3ED] flex items-center justify-center">
+          <p className="text-[#6B7B94]">Loading property...</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  if (notFound || !property) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-[#F7F3ED] flex flex-col items-center justify-center gap-4">
+          <p className="text-[#162338] text-xl font-bold">Property not found</p>
+          <Link href="/properties" className="text-[#0D2F5B] underline">Browse all properties</Link>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>

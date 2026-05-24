@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { PROPERTIES, LEADS } from "@/lib/data";
+import { LEADS } from "@/lib/data";
+import { Property } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import {
   Building2,
@@ -19,8 +21,17 @@ import {
 import Link from "next/link";
 
 export default function AdminDashboard() {
-  const totalProperties = PROPERTIES.filter((p) => p.published).length;
-  const availableProperties = PROPERTIES.filter((p) => p.status === "available").length;
+  const [properties, setProperties] = useState<Property[]>([]);
+
+  useEffect(() => {
+    fetch("/api/properties")
+      .then((r) => r.json())
+      .then((data) => setProperties(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
+
+  const totalProperties = properties.filter((p) => p.published).length;
+  const availableProperties = properties.filter((p) => p.status === "available").length;
   const totalLeads = LEADS.length;
   const newLeads = LEADS.filter((l) => l.leadStatus === "new").length;
   const hotLeads = LEADS.filter((l) => l.leadScore >= 80).length;
@@ -247,7 +258,7 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-2xl border border-[#E2DDD6] p-5">
               <h2 className="text-[#0D2F5B] font-bold mb-4">Hot Listings</h2>
               <div className="space-y-3">
-                {PROPERTIES.filter((p) => p.featured && p.published).slice(0, 3).map((p) => (
+                {properties.filter((p) => p.featured && p.published).slice(0, 3).map((p) => (
                   <div key={p.id} className="flex items-center gap-3">
                     <img
                       src={p.gallery[0]}

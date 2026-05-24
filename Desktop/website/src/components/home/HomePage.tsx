@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -21,7 +21,8 @@ import {
   Award,
 } from "lucide-react";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { PROPERTIES, TESTIMONIALS, INFRASTRUCTURE_HIGHLIGHTS, FAQS } from "@/lib/data";
+import { TESTIMONIALS, INFRASTRUCTURE_HIGHLIGHTS, FAQS } from "@/lib/data";
+import { Property } from "@/types";
 
 const TRUST_BADGES = [
   { icon: Shield, label: "Verified Docs", color: "text-[#2D7A4F]" },
@@ -45,7 +46,18 @@ const INFRA_ICONS: Record<string, React.ComponentType<{ className?: string }>> =
 
 export default function HomePage() {
   const [activeFaq, setActiveFaq] = useState<string | null>(null);
-  const featuredProperties = PROPERTIES.filter((p) => p.featured && p.published).slice(0, 6);
+  const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
+
+  useEffect(() => {
+    fetch("/api/properties?published=true")
+      .then((r) => r.json())
+      .then((data: Property[]) => {
+        if (Array.isArray(data)) {
+          setFeaturedProperties(data.filter((p) => p.featured).slice(0, 6));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <main>

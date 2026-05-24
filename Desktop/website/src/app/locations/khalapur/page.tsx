@@ -2,7 +2,9 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import PropertyCard from "@/components/properties/PropertyCard";
-import { PROPERTIES, INFRASTRUCTURE_HIGHLIGHTS } from "@/lib/data";
+import { INFRASTRUCTURE_HIGHLIGHTS } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
+import { mapDbProperty } from "@/lib/db-mappers";
 import { MapPin, TrendingUp, CheckCircle, ArrowRight, Trees } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -13,8 +15,9 @@ export const metadata: Metadata = {
     "Verified land plots in Khalapur, Maharashtra. Near Mumbai-Pune Expressway, ideal for weekend homes, farmhouses, and investment. Clear titles.",
 };
 
-export default function KhalapurPage() {
-  const props = PROPERTIES.filter((p) => p.location === "Khalapur" && p.published);
+export default async function KhalapurPage() {
+  const rows = await prisma.property.findMany({ where: { location: "Khalapur", published: true } }).catch(() => []);
+  const props = rows.map(mapDbProperty);
 
   return (
     <>

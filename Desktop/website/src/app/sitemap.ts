@@ -1,19 +1,24 @@
 import { MetadataRoute } from "next";
-import { PROPERTIES, BLOGS } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://plotsify.com";
 
-  const propertyUrls = PROPERTIES.filter((p) => p.published).map((p) => ({
+  const [properties, blogs] = await Promise.all([
+    prisma.property.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),
+    prisma.blog.findMany({ where: { published: true }, select: { slug: true, createdAt: true } }),
+  ]).catch(() => [[], []]);
+
+  const propertyUrls = (properties as { slug: string; updatedAt: Date }[]).map((p) => ({
     url: `${baseUrl}/properties/${p.slug}`,
-    lastModified: new Date(p.updatedAt),
+    lastModified: p.updatedAt,
     changeFrequency: "weekly" as const,
     priority: 0.9,
   }));
 
-  const blogUrls = BLOGS.filter((b) => b.published).map((b) => ({
+  const blogUrls = (blogs as { slug: string; createdAt: Date }[]).map((b) => ({
     url: `${baseUrl}/blog/${b.slug}`,
-    lastModified: new Date(b.createdAt),
+    lastModified: b.createdAt,
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));

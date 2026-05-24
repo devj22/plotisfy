@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { PROPERTIES } from "@/lib/data";
 import { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
 import {
@@ -23,12 +22,22 @@ import {
 import Link from "next/link";
 
 export default function AdminPropertiesPage() {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [showWizard, setShowWizard] = useState(false);
 
-  const filtered = PROPERTIES.filter((p) => {
+  useEffect(() => {
+    fetch("/api/properties")
+      .then((r) => r.json())
+      .then((data) => setProperties(Array.isArray(data) ? data : []))
+      .catch(() => setProperties([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = properties.filter((p) => {
     const matchSearch =
       !search ||
       p.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -53,7 +62,7 @@ export default function AdminPropertiesPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-[#0D2F5B] text-2xl font-bold">Properties</h1>
-            <p className="text-[#6B7B94] text-sm">{PROPERTIES.length} total listings</p>
+            <p className="text-[#6B7B94] text-sm">{loading ? "Loading..." : `${properties.length} total listings`}</p>
           </div>
           <button
             onClick={() => setShowWizard(true)}
@@ -116,8 +125,11 @@ export default function AdminPropertiesPage() {
             ))}
           </div>
 
-          {filtered.length === 0 && (
-            <div className="text-center py-12 text-[#6B7B94]">No properties found.</div>
+          {loading && (
+            <div className="text-center py-12 text-[#6B7B94]">Loading properties...</div>
+          )}
+          {!loading && filtered.length === 0 && (
+            <div className="text-center py-12 text-[#6B7B94]">No properties found. Add your first property using the button above.</div>
           )}
         </div>
       </div>

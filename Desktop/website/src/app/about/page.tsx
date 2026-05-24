@@ -1,7 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
-import { TESTIMONIALS, BLOGS, FAQS } from "@/lib/data";
+import { TESTIMONIALS, FAQS } from "@/lib/data";
 import { Star, Quote, BookOpen, HelpCircle, Phone, MessageCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
