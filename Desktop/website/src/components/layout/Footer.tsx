@@ -56,10 +56,10 @@ export default function Footer() {
             </div>
             <div className="mt-2">
               <a
-                href="mailto:hello@plotsify.com"
+                href="mailto:hello@plotzify.com"
                 className="text-sm text-white/70 hover:text-white transition-colors"
               >
-                ✉️ hello@plotsify.com
+                ✉️ hello@plotzify.com
               </a>
             </div>
             <p className="text-white/40 text-xs mt-4">
@@ -151,7 +151,7 @@ export default function Footer() {
 
         <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-white/40 text-xs">
-            © {new Date().getFullYear()} Plotsify. All rights reserved. Panvel & Khalapur, Maharashtra.
+            © {new Date().getFullYear()} Plotzify. All rights reserved. Panvel & Khalapur, Maharashtra.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-white/40 hover:text-white/70 text-xs transition-colors">Privacy</Link>

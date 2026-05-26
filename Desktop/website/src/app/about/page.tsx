@@ -7,9 +7,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Plotsify – Premium Land Investment Platform",
+  title: "About Plotzify – Premium Land Investment Platform",
   description:
-    "Plotsify is Maharashtra's most transparent land investment platform. We verify every listing, explain every investment, and guide every buyer.",
+    "Plotzify is Maharashtra's most transparent land investment platform. We verify every listing, explain every investment, and guide every buyer.",
 };
 
 export default function AboutPage() {
@@ -21,10 +21,10 @@ export default function AboutPage() {
         <section className="bg-[#0D2F5B] py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
-              About <span className="text-[#B86A3C]">Plotsify</span>
+              About <span className="text-[#B86A3C]">Plotzify</span>
             </h1>
             <p className="text-white/70 text-lg leading-relaxed max-w-2xl mx-auto">
-              We built Plotsify because we believed land investment in Maharashtra deserved a
+              We built Plotzify because we believed land investment in Maharashtra deserved a
               better, more transparent platform — one that helps buyers understand the why, not just
               the what.
             </p>

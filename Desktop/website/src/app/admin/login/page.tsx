@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-[#0D2F5B] text-2xl font-bold tracking-tight">Plotsify</h1>
+          <h1 className="text-[#0D2F5B] text-2xl font-bold tracking-tight">Plotzify</h1>
           <p className="text-[#6B7B94] text-sm mt-1">Admin Panel</p>
         </div>
 

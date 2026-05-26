@@ -3,8 +3,8 @@ import Footer from "@/components/layout/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Plotsify",
-  description: "Privacy policy for Plotsify – how we collect, use, and protect your personal information.",
+  title: "Privacy Policy | Plotzify",
+  description: "Privacy policy for Plotzify – how we collect, use, and protect your personal information.",
 };
 
 export default function PrivacyPage() {
@@ -39,11 +39,11 @@ export default function PrivacyPage() {
               },
               {
                 title: "Your Rights",
-                body: "You have the right to access, correct, or delete your personal data. Contact us at hello@plotsify.com to make a request.",
+                body: "You have the right to access, correct, or delete your personal data. Contact us at hello@plotzify.com to make a request.",
               },
               {
                 title: "Contact",
-                body: "For privacy-related questions, email us at hello@plotsify.com or call +91 98200 00000.",
+                body: "For privacy-related questions, email us at hello@plotzify.com or call +91 98200 00000.",
               },
             ].map((section) => (
               <div key={section.title}>

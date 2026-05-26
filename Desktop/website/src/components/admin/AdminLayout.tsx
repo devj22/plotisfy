@@ -95,7 +95,7 @@ export default function AdminLayout({ children, currentPath = "/admin" }: AdminL
               <span className="text-white text-sm font-bold">P</span>
             </div>
             <div>
-              <span className="text-white font-bold text-base">Plotsify</span>
+              <span className="text-white font-bold text-base">Plotzify</span>
               <span className="block text-white/40 text-xs">Admin Panel</span>
             </div>
           </Link>
@@ -216,7 +216,7 @@ export default function AdminLayout({ children, currentPath = "/admin" }: AdminL
                 </div>
                 <div className="hidden sm:block">
                   <p className="text-xs font-semibold text-[#162338]">Super Admin</p>
-                  <p className="text-xs text-[#6B7B94]">admin@plotsify.com</p>
+                  <p className="text-xs text-[#6B7B94]">admin@plotzify.com</p>
                 </div>
               </div>
             </div>

@@ -26,7 +26,7 @@ export function parseBlogPayload(body: Record<string, unknown>) {
     slug,
     excerpt: str(body.excerpt),
     content: str(body.content),
-    author: str(body.author, "Plotsify"),
+    author: str(body.author, "Plotzify"),
     category: str(body.category, "Blog"),
     tags: JSON.stringify(tags),
     featuredImage: str(body.featuredImage) || null,

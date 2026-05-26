@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://plotsify.com";
+  const baseUrl = "https://plotzify.com";
 
   const [properties, blogs] = await Promise.all([
     prisma.property.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } }),

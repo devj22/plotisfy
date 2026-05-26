@@ -37,7 +37,7 @@ export default function BlogPage() {
         <section className="bg-[#0D2F5B] py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">Investment Insights</h1>
-            <p className="text-white/70 text-lg">Land market research, buyer guides, and legal explainers from the Plotsify team.</p>
+            <p className="text-white/70 text-lg">Land market research, buyer guides, and legal explainers from the Plotzify team.</p>
           </div>
         </section>
 

@@ -7,7 +7,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Why Invest in Panvel & Khalapur Land | Plotsify",
+  title: "Why Invest in Panvel & Khalapur Land | Plotzify",
   description: "Infrastructure tailwinds, appreciation history, and the investment case for land in Panvel and Khalapur, Maharashtra.",
 };
 

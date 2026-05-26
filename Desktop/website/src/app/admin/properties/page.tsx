@@ -471,7 +471,7 @@ function WizardStep5() {
   return (
     <div className="space-y-4">
       <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">SEO & Publish</h2>
-      <FormField label="SEO Title" placeholder="Property name | Location | Plotsify" />
+      <FormField label="SEO Title" placeholder="Property name | Location | Plotzify" />
       <div>
         <label className="block text-sm font-medium text-[#162338] mb-1.5">SEO Meta Description</label>
         <textarea

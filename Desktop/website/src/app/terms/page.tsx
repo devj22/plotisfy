@@ -3,8 +3,8 @@ import Footer from "@/components/layout/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Plotsify",
-  description: "Terms and conditions for using Plotsify's land investment platform.",
+  title: "Terms of Service | Plotzify",
+  description: "Terms and conditions for using Plotzify's land investment platform.",
 };
 
 export default function TermsPage() {
@@ -23,11 +23,11 @@ export default function TermsPage() {
             {[
               {
                 title: "Acceptance of Terms",
-                body: "By using Plotsify's website, you agree to these terms. If you do not agree, please do not use our services.",
+                body: "By using Plotzify's website, you agree to these terms. If you do not agree, please do not use our services.",
               },
               {
                 title: "Property Information",
-                body: "All property information on Plotsify is provided in good faith. We verify listings before publishing, but buyers should conduct independent due diligence before making any investment decision.",
+                body: "All property information on Plotzify is provided in good faith. We verify listings before publishing, but buyers should conduct independent due diligence before making any investment decision.",
               },
               {
                 title: "No Investment Advice",
@@ -39,11 +39,11 @@ export default function TermsPage() {
               },
               {
                 title: "Intellectual Property",
-                body: "All content on this website, including text, images, and logos, is the property of Plotsify and may not be reproduced without prior written permission.",
+                body: "All content on this website, including text, images, and logos, is the property of Plotzify and may not be reproduced without prior written permission.",
               },
               {
                 title: "Limitation of Liability",
-                body: "Plotsify is not liable for any loss or damage arising from reliance on information provided on this website. All land transactions are the sole responsibility of the buyer and seller.",
+                body: "Plotzify is not liable for any loss or damage arising from reliance on information provided on this website. All land transactions are the sole responsibility of the buyer and seller.",
               },
               {
                 title: "Governing Law",

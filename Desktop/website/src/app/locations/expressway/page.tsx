@@ -6,7 +6,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Land Near Mumbai-Pune Expressway | Plotsify",
+  title: "Land Near Mumbai-Pune Expressway | Plotzify",
   description: "Invest in land plots near the Mumbai-Pune Expressway in Khalapur. Ideal for weekend homes, farmhouses, and long-term investment.",
 };
 

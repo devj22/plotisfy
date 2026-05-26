@@ -9,7 +9,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: "Rajesh Mehta",
     location: "Mumbai",
     content:
-      "Plotsify made the entire process seamless. From property selection to final registration, their team was transparent, professional, and extremely knowledgeable about the Panvel market. I invested in a 2500 sqft plot and the appreciation in 8 months has been remarkable.",
+      "Plotzify made the entire process seamless. From property selection to final registration, their team was transparent, professional, and extremely knowledgeable about the Panvel market. I invested in a 2500 sqft plot and the appreciation in 8 months has been remarkable.",
     rating: 5,
     propertyPurchased: "Premium Plot in Panvel Sector 12",
     avatar: "RM",
@@ -19,7 +19,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: "Priya Sharma",
     location: "Pune",
     content:
-      "We were looking for a weekend farmhouse land near Mumbai for two years. Plotsify's Khalapur listings were exactly what we needed – honest descriptions, verified titles, and the team organised a proper site visit with no pressure. Highly recommended.",
+      "We were looking for a weekend farmhouse land near Mumbai for two years. Plotzify's Khalapur listings were exactly what we needed – honest descriptions, verified titles, and the team organised a proper site visit with no pressure. Highly recommended.",
     rating: 5,
     propertyPurchased: "Weekend Farmhouse Plot in Khalapur Valley",
     avatar: "PS",
@@ -29,7 +29,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: "Vikram Nair",
     location: "Dubai (NRI)",
     content:
-      "As an NRI investor, trust is everything. Plotsify provided proper documentation, video tours, and their legal team assisted with the OCI card requirements. The whole deal was concluded remotely with complete peace of mind. Will definitely invest again.",
+      "As an NRI investor, trust is everything. Plotzify provided proper documentation, video tours, and their legal team assisted with the OCI card requirements. The whole deal was concluded remotely with complete peace of mind. Will definitely invest again.",
     rating: 5,
     propertyPurchased: "Residential Plot on Airport Access Road",
     avatar: "VN",
@@ -48,7 +48,7 @@ export const TESTIMONIALS: Testimonial[] = [
     name: "Suresh Patil",
     location: "Thane",
     content:
-      "Bought a plot near the Panvel airport corridor. The site visit was well-organised and the Plotsify team knew every nearby development, road widening plan, and township approval status. This level of ground knowledge is rare.",
+      "Bought a plot near the Panvel airport corridor. The site visit was well-organised and the Plotzify team knew every nearby development, road widening plan, and township approval status. This level of ground knowledge is rare.",
     rating: 5,
     propertyPurchased: "Premium Plot in Panvel Sector 12",
     avatar: "SP",
@@ -239,7 +239,7 @@ export const FAQS = [
   },
   {
     id: "3",
-    question: "Can NRI buyers purchase land through Plotsify?",
+    question: "Can NRI buyers purchase land through Plotzify?",
     answer:
       "Yes. NRI buyers can purchase agricultural and residential land in Maharashtra with certain conditions. Our team assists with OCI card requirements, power of attorney, and remote transaction support. We have successfully completed multiple NRI transactions.",
     category: "NRI",

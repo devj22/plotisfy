@@ -6,8 +6,8 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact Plotsify – Talk to Our Land Investment Team",
-  description: "Get in touch with Plotsify. Call, WhatsApp, or email us to discuss land investment opportunities in Panvel and Khalapur.",
+  title: "Contact Plotzify – Talk to Our Land Investment Team",
+  description: "Get in touch with Plotzify. Call, WhatsApp, or email us to discuss land investment opportunities in Panvel and Khalapur.",
 };
 
 export default function ContactPage() {
@@ -29,7 +29,7 @@ export default function ContactPage() {
               <h2 className="text-[#0D2F5B] text-2xl font-bold">Contact Information</h2>
               {[
                 { icon: Phone, label: "Phone / WhatsApp", value: "+91 98200 00000", href: "tel:+919820000000" },
-                { icon: Mail, label: "Email", value: "hello@plotsify.com", href: "mailto:hello@plotsify.com" },
+                { icon: Mail, label: "Email", value: "hello@plotzify.com", href: "mailto:hello@plotzify.com" },
                 { icon: MapPin, label: "Coverage Area", value: "Panvel & Khalapur, Maharashtra", href: null },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-4">

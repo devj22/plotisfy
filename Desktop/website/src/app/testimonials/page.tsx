@@ -6,8 +6,8 @@ import { Star, Quote } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Testimonials – What Our Buyers Say | Plotsify",
-  description: "Read verified testimonials from Plotsify buyers who invested in land in Panvel and Khalapur, Maharashtra.",
+  title: "Testimonials – What Our Buyers Say | Plotzify",
+  description: "Read verified testimonials from Plotzify buyers who invested in land in Panvel and Khalapur, Maharashtra.",
 };
 
 export default function TestimonialsPage() {

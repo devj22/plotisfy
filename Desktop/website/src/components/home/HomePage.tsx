@@ -323,13 +323,13 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-[#B86A3C] text-sm font-semibold uppercase tracking-wider mb-3">
-                Why Choose Plotsify
+                Why Choose Plotzify
               </p>
               <h2 className="text-[#0D2F5B] text-3xl md:text-4xl font-bold mb-6">
                 Premium Land, Transparent Process, Real Guidance
               </h2>
               <p className="text-[#6B7B94] text-lg leading-relaxed mb-8">
-                We are not a portal that lists anything and everything. Every property on Plotsify is
+                We are not a portal that lists anything and everything. Every property on Plotzify is
                 personally verified by our team — title, road access, zoning, and neighbouring
                 development.
               </p>
@@ -373,7 +373,7 @@ export default function HomePage() {
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=700"
-                alt="Plotsify Team"
+                alt="Plotzify Team"
                 className="rounded-2xl w-full object-cover h-96"
               />
               {/* Floating badge */}
