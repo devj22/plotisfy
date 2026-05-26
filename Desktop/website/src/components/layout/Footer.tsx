@@ -39,7 +39,7 @@ export default function Footer() {
                 <span className="text-white text-sm font-bold">P</span>
               </div>
               <span className="text-white font-bold text-xl">
-                Plots<span className="text-[#B86A3C]">ify</span>
+                Plotz<span className="text-[#B86A3C]">ify</span>
               </span>
             </Link>
             <p className="text-white/70 text-sm leading-relaxed max-w-xs">
