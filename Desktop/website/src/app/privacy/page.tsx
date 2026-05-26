@@ -43,7 +43,7 @@ export default function PrivacyPage() {
               },
               {
                 title: "Contact",
-                body: "For privacy-related questions, email us at hello@plotzify.com or call +91 98200 00000.",
+                body: "For privacy-related questions, email us at hello@plotzify.com or call +91 81696 93894.",
               },
             ].map((section) => (
               <div key={section.title}>

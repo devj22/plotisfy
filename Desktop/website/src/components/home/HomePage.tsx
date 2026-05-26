@@ -100,7 +100,7 @@ export default function HomePage() {
                 View Properties <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="https://wa.me/919820000000"
+                href="https://wa.me/918169693894"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white font-bold text-base px-7 py-3.5 rounded-xl hover:bg-white/20 transition-colors"
@@ -557,7 +557,7 @@ function EnquiryForm() {
           Our team will contact you within 2 hours with matching property options.
         </p>
         <a
-          href="https://wa.me/919820000000"
+          href="https://wa.me/918169693894"
           className="inline-flex items-center gap-2 mt-5 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-lg text-sm"
         >
           💬 Continue on WhatsApp

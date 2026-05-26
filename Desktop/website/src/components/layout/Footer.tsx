@@ -14,7 +14,7 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-3">
             <a
-              href="https://wa.me/919820000000"
+              href="https://wa.me/918169693894"
               className="bg-white text-[#B86A3C] font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-[#F7F3ED] transition-colors"
             >
               💬 WhatsApp Us
@@ -48,10 +48,10 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4 mt-6">
               <a
-                href="tel:+919820000000"
+                href="tel:+918169693894"
                 className="text-sm text-white/70 hover:text-white transition-colors"
               >
-                📞 +91 98200 00000
+                📞 +91 81696 93894
               </a>
             </div>
             <div className="mt-2">

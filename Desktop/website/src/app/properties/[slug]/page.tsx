@@ -258,14 +258,14 @@ export default function PropertyDetailPage({
 
                   <div className="space-y-2.5">
                     <a
-                      href="tel:+919820000000"
+                      href="tel:+918169693894"
                       className="w-full flex items-center justify-center gap-2 bg-[#0D2F5B] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#0a2347] transition-colors"
                     >
                       <Phone className="w-4 h-4" />
                       Call Now
                     </a>
                     <a
-                      href={`https://wa.me/919820000000?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
+                      href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors"

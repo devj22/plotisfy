@@ -89,13 +89,13 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <a
-                href="tel:+919820000000"
+                href="tel:+918169693894"
                 className="flex items-center justify-center gap-2 bg-[#0D2F5B] text-white font-semibold px-6 py-3 rounded-xl"
               >
                 <Phone className="w-4 h-4" /> Call Us
               </a>
               <a
-                href="https://wa.me/919820000000"
+                href="https://wa.me/918169693894"
                 className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-semibold px-6 py-3 rounded-xl"
               >
                 <MessageCircle className="w-4 h-4" /> WhatsApp

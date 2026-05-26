@@ -68,13 +68,13 @@ export default function BookSiteVisitPage() {
                 <h3 className="text-[#0D2F5B] font-bold mb-3">Prefer to call?</h3>
                 <div className="flex gap-3">
                   <a
-                    href="tel:+919820000000"
+                    href="tel:+918169693894"
                     className="flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2.5 rounded-xl"
                   >
                     <Phone className="w-4 h-4" /> Call Us
                   </a>
                   <a
-                    href="https://wa.me/919820000000?text=Hi%2C%20I%27d%20like%20to%20book%20a%20site%20visit"
+                    href="https://wa.me/918169693894?text=Hi%2C%20I%27d%20like%20to%20book%20a%20site%20visit"
                     className="flex items-center gap-2 bg-[#25D366] text-white text-sm font-semibold px-4 py-2.5 rounded-xl"
                   >
                     <MessageCircle className="w-4 h-4" /> WhatsApp
@@ -95,7 +95,7 @@ export default function BookSiteVisitPage() {
                     Our team will call you within 4 hours to confirm your visit date and shortlist properties.
                   </p>
                   <a
-                    href="https://wa.me/919820000000"
+                    href="https://wa.me/918169693894"
                     className="inline-flex items-center gap-2 mt-5 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-xl text-sm"
                   >
                     💬 Continue on WhatsApp

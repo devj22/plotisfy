@@ -28,7 +28,7 @@ export default function ContactPage() {
             <div className="space-y-6">
               <h2 className="text-[#0D2F5B] text-2xl font-bold">Contact Information</h2>
               {[
-                { icon: Phone, label: "Phone / WhatsApp", value: "+91 98200 00000", href: "tel:+919820000000" },
+                { icon: Phone, label: "Phone / WhatsApp", value: "+91 81696 93894", href: "tel:+918169693894" },
                 { icon: Mail, label: "Email", value: "hello@plotzify.com", href: "mailto:hello@plotzify.com" },
                 { icon: MapPin, label: "Coverage Area", value: "Panvel & Khalapur, Maharashtra", href: null },
               ].map((item) => (
@@ -48,7 +48,7 @@ export default function ContactPage() {
               ))}
               <div className="pt-4">
                 <a
-                  href="https://wa.me/919820000000"
+                  href="https://wa.me/918169693894"
                   className="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#1db955] transition-colors"
                 >
                   💬 Chat on WhatsApp

@@ -134,7 +134,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
             View Details
           </Link>
           <a
-            href={`https://wa.me/919820000000?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
+            href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 border border-[#25D366] text-[#25D366] text-sm font-semibold px-3 py-2.5 rounded-lg hover:bg-[#25D366]/5 transition-colors"
