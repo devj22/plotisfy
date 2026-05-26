@@ -55,7 +55,7 @@ export default function Navbar() {
               <span className="text-white text-sm font-bold">P</span>
             </div>
             <span className="text-[#0D2F5B] font-bold text-xl tracking-tight">
-              Plots<span className="text-[#B86A3C]">ify</span>
+              Plotz<span className="text-[#B86A3C]">ify</span>
             </span>
           </Link>
 
