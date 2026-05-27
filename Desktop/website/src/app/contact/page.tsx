@@ -29,7 +29,7 @@ export default function ContactPage() {
               <h2 className="text-[#0D2F5B] text-2xl font-bold">Contact Information</h2>
               {[
                 { icon: Phone, label: "Phone / WhatsApp", value: "+91 81696 93894", href: "tel:+918169693894" },
-                { icon: Mail, label: "Email", value: "hello@plotzify.com", href: "mailto:hello@plotzify.com" },
+                { icon: Mail, label: "Email", value: "Plotzify@gmail.com", href: "mailto:Plotzify@gmail.com" },
                 { icon: MapPin, label: "Coverage Area", value: "Panvel & Khalapur, Maharashtra", href: null },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-4">

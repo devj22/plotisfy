@@ -39,11 +39,11 @@ export default function PrivacyPage() {
               },
               {
                 title: "Your Rights",
-                body: "You have the right to access, correct, or delete your personal data. Contact us at hello@plotzify.com to make a request.",
+                body: "You have the right to access, correct, or delete your personal data. Contact us at Plotzify@gmail.com to make a request.",
               },
               {
                 title: "Contact",
-                body: "For privacy-related questions, email us at hello@plotzify.com or call +91 81696 93894.",
+                body: "For privacy-related questions, email us at Plotzify@gmail.com or call +91 81696 93894.",
               },
             ].map((section) => (
               <div key={section.title}>

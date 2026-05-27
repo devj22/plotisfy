@@ -63,7 +63,6 @@ export default function Footer() {
               </a>
             </div>
             <p className="text-white/40 text-xs mt-4">
-              RERA Registration: MahaRERA No. XXXXX (applied)
             </p>
           </div>
 

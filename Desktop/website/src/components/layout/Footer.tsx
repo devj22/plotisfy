@@ -56,15 +56,12 @@ export default function Footer() {
             </div>
             <div className="mt-2">
               <a
-                href="mailto:hello@plotzify.com"
+                href="mailto:Plotzify@gmail.com"
                 className="text-sm text-white/70 hover:text-white transition-colors"
               >
-                ✉️ hello@plotzify.com
+                ✉️ Plotzify@gmail.com
               </a>
             </div>
-            <p className="text-white/40 text-xs mt-4">
-              RERA Registration: MahaRERA No. XXXXX (applied)
-            </p>
           </div>
 
           {/* Properties */}
