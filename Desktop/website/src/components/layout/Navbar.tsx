@@ -106,12 +106,7 @@ export default function Navbar() {
             >
               Book Site Visit
             </Link>
-            <Link
-              href="/admin"
-              className="text-xs text-[#6B7B94] hover:text-[#0D2F5B] transition-colors"
-            >
-              Admin
-            </Link>
+
             <a
               href="tel:+918169693894"
               className="flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#0a2347] transition-colors"
