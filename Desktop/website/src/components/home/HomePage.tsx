@@ -545,6 +545,12 @@ function SmartSearch() {
 
 function EnquiryForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [locationPreference, setLocationPreference] = useState("");
+  const [budgetRange, setBudgetRange] = useState("");
+  const [message, setMessage] = useState("");
 
   if (submitted) {
     return (
@@ -566,13 +572,27 @@ function EnquiryForm() {
     );
   }
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, locationPreference, budgetRange, message }),
+      });
+    } catch {
+      // still show success to user even if save fails
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
+    }
+  }
+
   return (
     <form
       className="bg-white rounded-2xl p-6 md:p-8 border border-[#E2DDD6] space-y-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSubmitted(true);
-      }}
+      onSubmit={handleSubmit}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -580,6 +600,8 @@ function EnquiryForm() {
           <input
             required
             type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Your name"
             className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
           />
@@ -589,6 +611,8 @@ function EnquiryForm() {
           <input
             required
             type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             placeholder="+91 ..."
             className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
           />
@@ -598,21 +622,29 @@ function EnquiryForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-[#162338] mb-1.5">Location Preference</label>
-          <select className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]">
+          <select
+            value={locationPreference}
+            onChange={(e) => setLocationPreference(e.target.value)}
+            className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
+          >
             <option value="">Any Location</option>
-            <option value="panvel">Panvel</option>
-            <option value="khalapur">Khalapur</option>
-            <option value="both">Both / Open</option>
+            <option value="Panvel">Panvel</option>
+            <option value="Khalapur">Khalapur</option>
+            <option value="Both / Open">Both / Open</option>
           </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-[#162338] mb-1.5">Budget Range</label>
-          <select className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]">
+          <select
+            value={budgetRange}
+            onChange={(e) => setBudgetRange(e.target.value)}
+            className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
+          >
             <option value="">Select Budget</option>
-            <option value="under-30l">Under ₹30L</option>
-            <option value="30-50l">₹30L – ₹50L</option>
-            <option value="50l-1cr">₹50L – ₹1 Cr</option>
-            <option value="above-1cr">Above ₹1 Cr</option>
+            <option value="Under ₹30L">Under ₹30L</option>
+            <option value="₹30L – ₹50L">₹30L – ₹50L</option>
+            <option value="₹50L – ₹1 Cr">₹50L – ₹1 Cr</option>
+            <option value="Above ₹1 Cr">Above ₹1 Cr</option>
           </select>
         </div>
       </div>
@@ -621,6 +653,8 @@ function EnquiryForm() {
         <label className="block text-sm font-medium text-[#162338] mb-1.5">Message (optional)</label>
         <textarea
           rows={3}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           placeholder="Tell us about your investment goals..."
           className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] resize-none"
         />
@@ -628,9 +662,10 @@ function EnquiryForm() {
 
       <button
         type="submit"
-        className="w-full bg-[#0D2F5B] text-white font-bold text-base py-3.5 rounded-xl hover:bg-[#0a2347] transition-colors flex items-center justify-center gap-2"
+        disabled={loading}
+        className="w-full bg-[#0D2F5B] text-white font-bold text-base py-3.5 rounded-xl hover:bg-[#0a2347] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
       >
-        Send Enquiry <ArrowRight className="w-4 h-4" />
+        {loading ? "Sending..." : <><span>Send Enquiry</span> <ArrowRight className="w-4 h-4" /></>}
       </button>
       <p className="text-center text-xs text-[#6B7B94]">
         We respond within 2 hours · No spam
