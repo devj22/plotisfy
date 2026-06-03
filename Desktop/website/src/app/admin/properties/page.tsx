@@ -15,6 +15,7 @@ import {
   X,
   Trash2,
   ImagePlus,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
