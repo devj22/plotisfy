@@ -581,7 +581,6 @@ function Step4({ data, set }: StepProps) {
             </p>
           </div>
         )}
-        </div>
         <p className="text-[#6B7B94] text-xs mt-2">⚠️ Only use real property photos. No stock imagery.</p>
       </div>
 
