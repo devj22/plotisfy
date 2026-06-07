@@ -16,6 +16,7 @@ import {
   Trash2,
   ImagePlus,
   Loader2,
+  Edit3,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -28,6 +29,7 @@ export default function AdminPropertiesPage() {
   const [locationFilter, setLocationFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [showWizard, setShowWizard] = useState(false);
+  const [editProperty, setEditProperty] = useState<Property | null>(null);
 
   function loadProperties() {
     fetch("/api/properties")
@@ -49,12 +51,13 @@ export default function AdminPropertiesPage() {
     return matchSearch && matchLocation && matchStatus;
   });
 
-  if (showWizard) {
+  if (showWizard || editProperty) {
     return (
       <AdminLayout currentPath="/admin/properties">
         <PropertyUploadWizard
-          onCancel={() => setShowWizard(false)}
-          onSaved={() => { setShowWizard(false); loadProperties(); }}
+          editProperty={editProperty}
+          onCancel={() => { setShowWizard(false); setEditProperty(null); }}
+          onSaved={() => { setShowWizard(false); setEditProperty(null); loadProperties(); }}
         />
       </AdminLayout>
     );
@@ -135,7 +138,7 @@ export default function AdminPropertiesPage() {
               </div>
               <div className="divide-y divide-[#F7F3ED]">
                 {filtered.map((p) => (
-                  <PropertyRow key={p.id} property={p} onChange={loadProperties} />
+                  <PropertyRow key={p.id} property={p} onChange={loadProperties} onEdit={() => setEditProperty(p)} />
                 ))}
               </div>
             </>
@@ -146,7 +149,7 @@ export default function AdminPropertiesPage() {
   );
 }
 
-function PropertyRow({ property: p, onChange }: { property: Property; onChange: () => void }) {
+function PropertyRow({ property: p, onChange, onEdit }: { property: Property; onChange: () => void; onEdit: () => void }) {
   const [published, setPublished] = useState(p.published);
   const [featured, setFeatured] = useState(p.featured);
 
@@ -238,6 +241,13 @@ function PropertyRow({ property: p, onChange }: { property: Property; onChange: 
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
           <button
+            onClick={onEdit}
+            className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-[#B86A3C] hover:border-[#B86A3C] transition-colors"
+            title="Edit"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+          </button>
+          <button
             onClick={deleteProperty}
             className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-red-500 hover:border-red-300 transition-colors"
             title="Delete"
@@ -276,9 +286,42 @@ const EMPTY: WizardData = {
 
 const STEPS = ["Basic Details", "Location & Area", "Pricing & Land Info", "Photos & Brochure", "SEO & Publish"];
 
-function PropertyUploadWizard({ onCancel, onSaved }: { onCancel: () => void; onSaved: () => void }) {
+function propertyToWizardData(p: Property): WizardData {
+  return {
+    title: p.title,
+    propertyCode: p.propertyCode,
+    status: p.status,
+    zoningType: p.zoningType,
+    highlightsText: (p.highlights ?? []).join("\n"),
+    featured: p.featured,
+    published: p.published,
+    roadAccess: p.roadAccess,
+    location: p.location,
+    village: p.village,
+    taluka: p.taluka,
+    district: p.district,
+    lat: String(p.lat ?? ""),
+    lng: String(p.lng ?? ""),
+    areaSqft: String(p.areaSqft ?? ""),
+    areaGuntha: String(p.areaGuntha ?? ""),
+    landmarksText: (p.nearbyLandmarks ?? []).map((l: { name: string; distance: string }) => `${l.name} | ${l.distance}`).join("\n"),
+    priceTotal: String(p.priceTotal ?? ""),
+    pricePerSqft: String(p.pricePerSqft ?? ""),
+    titleClarity: p.titleClarity,
+    investmentReasoning: p.investmentReasoning ?? "",
+    whyThisProperty: p.whyThisProperty ?? "",
+    gallery: p.gallery ?? [],
+    brochure: p.brochure ?? "",
+    seoTitle: p.seoTitle ?? "",
+    seoDescription: p.seoDescription ?? "",
+    slug: p.slug,
+  };
+}
+
+function PropertyUploadWizard({ onCancel, onSaved, editProperty }: { onCancel: () => void; onSaved: () => void; editProperty?: Property | null }) {
+  const isEdit = !!editProperty;
   const [step, setStep] = useState(1);
-  const [data, setData] = useState<WizardData>(EMPTY);
+  const [data, setData] = useState<WizardData>(editProperty ? propertyToWizardData(editProperty) : EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -290,8 +333,10 @@ function PropertyUploadWizard({ onCancel, onSaved }: { onCancel: () => void; onS
     setSaving(true);
     setError("");
     try {
-      const res = await fetch("/api/properties", {
-        method: "POST",
+      const url = isEdit ? `/api/properties/${editProperty!.id}` : "/api/properties";
+      const method = isEdit ? "PATCH" : "POST";
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
@@ -319,7 +364,7 @@ function PropertyUploadWizard({ onCancel, onSaved }: { onCancel: () => void; onS
     <div className="p-6 max-w-3xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-[#0D2F5B] text-2xl font-bold">Add New Property</h1>
+          <h1 className="text-[#0D2F5B] text-2xl font-bold">{isEdit ? "Edit Property" : "Add New Property"}</h1>
           <p className="text-[#6B7B94] text-sm">Step {step} of {STEPS.length}</p>
         </div>
         <button onClick={onCancel} className="p-2 rounded-lg hover:bg-[#F7F3ED] transition-colors">
@@ -382,7 +427,7 @@ function PropertyUploadWizard({ onCancel, onSaved }: { onCancel: () => void; onS
             className="bg-[#2D7A4F] text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-[#256040] transition-colors disabled:opacity-70 flex items-center gap-2"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-            {saving ? "Saving..." : "Publish Property"}
+            {saving ? "Saving..." : isEdit ? "Save Changes" : "Publish Property"}
           </button>
         )}
       </div>

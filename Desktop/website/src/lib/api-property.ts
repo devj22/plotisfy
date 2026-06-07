@@ -65,7 +65,7 @@ export function parsePropertyPayload(body: Record<string, unknown>): {
   const title = str(body.title);
   if (!title) throw new Error("Title is required");
 
-  const slug = str(body.slug) || slugify(title);
+  const slug = slugify(str(body.slug) || title);
   const areaSqft = num(body.areaSqft);
   const priceTotal = num(body.priceTotal);
   let pricePerSqft = num(body.pricePerSqft);
