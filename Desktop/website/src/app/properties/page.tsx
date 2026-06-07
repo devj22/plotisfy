@@ -89,7 +89,7 @@ export default function PropertiesPage() {
               <FilterSelect
                 value={location}
                 onChange={setLocation}
-                label="Location"
+                label="All Listings"
                 options={[
                   { value: "Panvel", label: "Panvel" },
                   { value: "Khalapur", label: "Khalapur" },
