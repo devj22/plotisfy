@@ -147,10 +147,9 @@ export default function BookSiteVisitPage() {
                   <div>
                     <label className="block text-sm font-medium text-[#162338] mb-1.5">Budget Range</label>
                     <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
-                      <option>Under ₹30L</option>
-                      <option>₹30L – ₹50L</option>
-                      <option>₹50L – ₹1 Cr</option>
-                      <option>Above ₹1 Cr</option>
+                      <option>₹3Cr – ₹5Cr</option>
+                      <option>₹5Cr – ₹10Cr</option>
+                      <option>Above ₹10Cr</option>
                     </select>
                   </div>
                   <div>

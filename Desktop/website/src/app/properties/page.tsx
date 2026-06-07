@@ -38,10 +38,9 @@ export default function PropertiesPage() {
     if (zoning && !p.zoningType.toLowerCase().includes(zoning.toLowerCase())) return false;
     if (budget) {
       const price = p.priceTotal;
-      if (budget === "under-30l" && price >= 3000000) return false;
-      if (budget === "30-50l" && (price < 3000000 || price >= 5000000)) return false;
-      if (budget === "50l-1cr" && (price < 5000000 || price >= 10000000)) return false;
-      if (budget === "above-1cr" && price < 10000000) return false;
+      if (budget === "3-5cr" && (price < 30000000 || price >= 50000000)) return false;
+      if (budget === "5-10cr" && (price < 50000000 || price >= 100000000)) return false;
+      if (budget === "above-10cr" && price < 100000000) return false;
     }
     return true;
   });
@@ -102,10 +101,9 @@ export default function PropertiesPage() {
                 onChange={setBudget}
                 label="Budget"
                 options={[
-                  { value: "under-30l", label: "Under ₹30L" },
-                  { value: "30-50l", label: "₹30L – ₹50L" },
-                  { value: "50l-1cr", label: "₹50L – ₹1Cr" },
-                  { value: "above-1cr", label: "Above ₹1Cr" },
+                  { value: "3-5cr", label: "₹3Cr – ₹5Cr" },
+                  { value: "5-10cr", label: "₹5Cr – ₹10Cr" },
+                  { value: "above-10cr", label: "Above ₹10Cr" },
                 ]}
               />
               {/* Status */}

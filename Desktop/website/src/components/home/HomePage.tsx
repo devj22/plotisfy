@@ -519,10 +519,9 @@ function SmartSearch() {
         </select>
         <select className="w-full bg-white border border-[#E2DDD6] text-[#162338] text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#B86A3C]/40">
           <option value="">Any Budget</option>
-          <option value="under-30l">Under ₹30L</option>
-          <option value="30-50l">₹30L – ₹50L</option>
-          <option value="50l-1cr">₹50L – ₹1 Cr</option>
-          <option value="above-1cr">Above ₹1 Cr</option>
+          <option value="3-5cr">₹3Cr – ₹5Cr</option>
+          <option value="5-10cr">₹5Cr – ₹10Cr</option>
+          <option value="above-10cr">Above ₹10Cr</option>
         </select>
         <select className="w-full bg-white border border-[#E2DDD6] text-[#162338] text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#B86A3C]/40">
           <option value="">Any Purpose</option>
@@ -641,10 +640,9 @@ function EnquiryForm() {
             className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
           >
             <option value="">Select Budget</option>
-            <option value="Under ₹30L">Under ₹30L</option>
-            <option value="₹30L – ₹50L">₹30L – ₹50L</option>
-            <option value="₹50L – ₹1 Cr">₹50L – ₹1 Cr</option>
-            <option value="Above ₹1 Cr">Above ₹1 Cr</option>
+            <option value="₹3Cr – ₹5Cr">₹3Cr – ₹5Cr</option>
+            <option value="₹5Cr – ₹10Cr">₹5Cr – ₹10Cr</option>
+            <option value="Above ₹10Cr">Above ₹10Cr</option>
           </select>
         </div>
       </div>
