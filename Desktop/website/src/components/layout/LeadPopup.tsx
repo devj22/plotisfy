@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { X, ArrowRight, CheckCircle, MessageCircle } from "lucide-react";
 
 const STORAGE_KEY = "plotzify_lead_popup_dismissed";
-const DELAY_MS = 4000; // show after 4 seconds
 
 export default function LeadPopup() {
   const [visible, setVisible] = useState(false);
@@ -16,10 +15,9 @@ export default function LeadPopup() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    // Don't show if dismissed in this session
     if (sessionStorage.getItem(STORAGE_KEY)) return;
-    const t = setTimeout(() => setVisible(true), DELAY_MS);
-    return () => clearTimeout(t);
+    // Show immediately on load
+    setVisible(true);
   }, []);
 
   function dismiss() {
@@ -50,44 +48,41 @@ export default function LeadPopup() {
   return (
     <>
       {/* Overlay */}
-      <div
-        className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-sm"
-        onClick={dismiss}
-      />
+      <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm" onClick={dismiss} />
 
-      {/* Popup — slides up from bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-[80] md:bottom-6 md:left-auto md:right-6 md:max-w-sm animate-slide-up">
-        <div className="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden">
+      {/* Centered popup */}
+      <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-fade-scale">
           {/* Header */}
-          <div className="bg-[#0D2F5B] px-5 py-4 flex items-start justify-between">
+          <div className="bg-[#0D2F5B] px-5 py-5 flex items-start justify-between">
             <div>
-              <p className="text-[#B86A3C] text-xs font-semibold uppercase tracking-wide mb-0.5">
+              <p className="text-[#B86A3C] text-xs font-semibold uppercase tracking-wide mb-1">
                 Limited Plots Available
               </p>
-              <h2 className="text-white font-bold text-base leading-snug">
+              <h2 className="text-white font-bold text-lg leading-snug">
                 Get Exclusive Details & Pricing
               </h2>
-              <p className="text-white/60 text-xs mt-0.5">
+              <p className="text-white/60 text-sm mt-1">
                 Panvel &amp; Khalapur — verified land plots
               </p>
             </div>
             <button
               onClick={dismiss}
-              className="ml-3 mt-0.5 p-1 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
+              className="ml-3 mt-0.5 p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
             >
-              <X className="w-4 h-4 text-white/70" />
+              <X className="w-5 h-5 text-white/70" />
             </button>
           </div>
 
           {/* Body */}
-          <div className="px-5 py-4 pb-6">
+          <div className="px-5 py-5">
             {submitted ? (
-              <div className="text-center py-4">
-                <div className="w-12 h-12 bg-[#2D7A4F]/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle className="w-6 h-6 text-[#2D7A4F]" />
+              <div className="text-center py-6">
+                <div className="w-14 h-14 bg-[#2D7A4F]/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle className="w-7 h-7 text-[#2D7A4F]" />
                 </div>
-                <h3 className="text-[#0D2F5B] font-bold mb-1">Thank you!</h3>
-                <p className="text-[#6B7B94] text-sm mb-4">
+                <h3 className="text-[#0D2F5B] font-bold text-lg mb-1">Thank you!</h3>
+                <p className="text-[#6B7B94] text-sm mb-5">
                   Our team will call you within 2 hours.
                 </p>
                 <a
@@ -101,9 +96,7 @@ export default function LeadPopup() {
               <form onSubmit={handleSubmit} className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-[#162338] mb-1">
-                      Full Name *
-                    </label>
+                    <label className="block text-xs font-medium text-[#162338] mb-1">Full Name *</label>
                     <input
                       required
                       value={name}
@@ -113,9 +106,7 @@ export default function LeadPopup() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[#162338] mb-1">
-                      Phone *
-                    </label>
+                    <label className="block text-xs font-medium text-[#162338] mb-1">Phone *</label>
                     <input
                       required
                       type="tel"
@@ -128,9 +119,7 @@ export default function LeadPopup() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-[#162338] mb-1">
-                      Location
-                    </label>
+                    <label className="block text-xs font-medium text-[#162338] mb-1">Location</label>
                     <select
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
@@ -142,9 +131,7 @@ export default function LeadPopup() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[#162338] mb-1">
-                      Budget
-                    </label>
+                    <label className="block text-xs font-medium text-[#162338] mb-1">Budget</label>
                     <select
                       value={budget}
                       onChange={(e) => setBudget(e.target.value)}
@@ -162,18 +149,9 @@ export default function LeadPopup() {
                   disabled={loading}
                   className="w-full bg-[#0D2F5B] text-white font-bold py-3 rounded-xl hover:bg-[#0a2347] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
                 >
-                  {loading ? (
-                    "Sending..."
-                  ) : (
-                    <>
-                      <span>Get Free Callback</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
+                  {loading ? "Sending..." : <><span>Get Free Callback</span><ArrowRight className="w-4 h-4" /></>}
                 </button>
-                <p className="text-center text-xs text-[#6B7B94]">
-                  No spam · We respond within 2 hours
-                </p>
+                <p className="text-center text-xs text-[#6B7B94]">No spam · We respond within 2 hours</p>
               </form>
             )}
           </div>
