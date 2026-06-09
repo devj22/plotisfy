@@ -55,6 +55,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${plusJakarta.variable} h-full antialiased`}>
+      <head>
+        {/* Google tag (gtag.js) - Google Ads AW-18224971112 */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18224971112"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'AW-18224971112');
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-off-white">{children}</body>
     </html>
   );
