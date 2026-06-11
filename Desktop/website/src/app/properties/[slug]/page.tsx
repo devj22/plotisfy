@@ -329,56 +329,132 @@ export default function PropertyDetailPage({
 
 function PropertyGallery({ gallery, title }: { gallery: string[]; title: string }) {
   const [current, setCurrent] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  function goTo(idx: number) {
+    if (idx === current || animating) return;
+    setAnimating(true);
+    setCurrent(idx);
+    setTimeout(() => setAnimating(false), 300);
+  }
+
+  function prev() { goTo((current - 1 + gallery.length) % gallery.length); }
+  function next() { goTo((current + 1) % gallery.length); }
+
+  // Keyboard navigation
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [current, animating]);
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-[#E2DDD6]">
       {/* Main image */}
-      <div className="relative h-72 md:h-96">
+      <div className="relative h-72 md:h-[420px] bg-[#0D2F5B]/5 overflow-hidden">
         <img
+          key={current}
           src={gallery[current]}
-          alt={`${title} - Photo ${current + 1}`}
+          alt={`${title} — Photo ${current + 1}`}
           className="w-full h-full object-cover"
+          style={{
+            animation: animating ? "galleryFade 0.3s ease-in-out" : "none",
+          }}
         />
+
+        {/* Gradient overlay bottom */}
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+
+        {/* Photo count pill — top left */}
+        {gallery.length > 1 && (
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+            📷 {gallery.length} Photos
+          </div>
+        )}
+
+        {/* Current / total counter — bottom right */}
+        {gallery.length > 1 && (
+          <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+            {current + 1} / {gallery.length}
+          </div>
+        )}
+
+        {/* Keyboard hint */}
+        {gallery.length > 1 && (
+          <div className="absolute bottom-3 left-3 text-white/60 text-[10px] hidden md:block">
+            ← → keys to navigate
+          </div>
+        )}
+
+        {/* Prev / Next arrows */}
         {gallery.length > 1 && (
           <>
             <button
-              onClick={() => setCurrent((c) => (c - 1 + gallery.length) % gallery.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+              onClick={prev}
+              aria-label="Previous photo"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all"
             >
-              <ChevronLeft className="w-4 h-4 text-[#162338]" />
+              <ChevronLeft className="w-5 h-5 text-[#162338]" />
             </button>
             <button
-              onClick={() => setCurrent((c) => (c + 1) % gallery.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white transition-colors"
+              onClick={next}
+              aria-label="Next photo"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white hover:scale-110 transition-all"
             >
-              <ChevronRight className="w-4 h-4 text-[#162338]" />
+              <ChevronRight className="w-5 h-5 text-[#162338]" />
             </button>
-            <div className="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
-              {current + 1} / {gallery.length}
-            </div>
           </>
         )}
       </div>
 
-      {/* Thumbnails */}
+      {/* Thumbnail strip */}
       {gallery.length > 1 && (
-        <div className="flex gap-2 p-3">
+        <div className="flex gap-2 p-3 overflow-x-auto scrollbar-hide">
           {gallery.map((img, i) => (
             <button
               key={i}
-              onClick={() => setCurrent(i)}
-              className={`relative h-16 flex-1 rounded-lg overflow-hidden transition-all ${
-                i === current ? "ring-2 ring-[#B86A3C]" : "opacity-60 hover:opacity-100"
+              onClick={() => goTo(i)}
+              aria-label={`View photo ${i + 1}`}
+              className={`relative flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden transition-all duration-200 ${
+                i === current
+                  ? "ring-2 ring-[#B86A3C] ring-offset-1 scale-105"
+                  : "opacity-55 hover:opacity-90 hover:scale-105"
               }`}
             >
               <img src={img} alt="" className="w-full h-full object-cover" />
+              {i === 0 && (
+                <div className="absolute bottom-0 inset-x-0 bg-[#B86A3C]/80 text-white text-[8px] font-bold text-center py-0.5">
+                  MAIN
+                </div>
+              )}
             </button>
+          ))}
+        </div>
+      )}
+
+      {/* Dot indicators — mobile */}
+      {gallery.length > 1 && gallery.length <= 8 && (
+        <div className="flex justify-center gap-1.5 pb-3 md:hidden">
+          {gallery.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`rounded-full transition-all ${
+                i === current
+                  ? "w-5 h-2 bg-[#B86A3C]"
+                  : "w-2 h-2 bg-[#E2DDD6] hover:bg-[#6B7B94]"
+              }`}
+            />
           ))}
         </div>
       )}
     </div>
   );
 }
+
 
 function QuickFact({
   label,

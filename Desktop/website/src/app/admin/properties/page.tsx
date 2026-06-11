@@ -576,14 +576,26 @@ function Step4({ data, set }: StepProps) {
     set("gallery", data.gallery.filter((u) => u !== url));
   }
 
+  function setAsThumbnail(url: string, idx: number) {
+    const newGallery = [...data.gallery];
+    newGallery.splice(idx, 1);
+    newGallery.unshift(url);
+    set("gallery", newGallery);
+  }
+
   return (
     <div className="space-y-5">
-      <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">Photos & Brochure</h2>
+      <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">Photos &amp; Brochure</h2>
 
       <div>
-        <label className="block text-sm font-medium text-[#162338] mb-2">
-          Property Gallery * ({data.gallery.length} photo{data.gallery.length !== 1 ? "s" : ""})
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-sm font-medium text-[#162338]">
+            Property Gallery * ({data.gallery.length} photo{data.gallery.length !== 1 ? "s" : ""})
+          </label>
+          {data.gallery.length > 1 && (
+            <span className="text-xs text-[#6B7B94]">Hover image → click ⭐ to set thumbnail</span>
+          )}
+        </div>
 
         {/* URL input */}
         <div className="flex gap-2 mb-3">
@@ -592,29 +604,63 @@ function Step4({ data, set }: StepProps) {
             value={urlInput}
             onChange={(e) => setUrlInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addUrl())}
-            placeholder="Paste image URL (Google Drive, WhatsApp Web, any hosted image)..."
+            placeholder="Paste image URL and press Enter or click Add Photo..."
           />
           <button
             type="button"
             onClick={addUrl}
             className="bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#0a2347] transition-colors whitespace-nowrap"
           >
-            Add Photo
+            + Add Photo
           </button>
         </div>
 
         {/* Preview grid */}
         {data.gallery.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2">
-            {data.gallery.map((url) => (
-              <div key={url} className="relative group rounded-lg overflow-hidden aspect-video bg-[#F7F3ED]">
-                <img src={url} alt="" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                <button
-                  onClick={() => removePhoto(url)}
-                  className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3 h-3" />
-                </button>
+          <div className="grid grid-cols-3 gap-3">
+            {data.gallery.map((url, idx) => (
+              <div
+                key={url}
+                className="relative group rounded-xl overflow-hidden aspect-video bg-[#F7F3ED]"
+                style={{ outline: idx === 0 ? "2px solid #B86A3C" : "2px solid transparent", outlineOffset: "2px" }}
+              >
+                <img
+                  src={url}
+                  alt={`Photo ${idx + 1}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).style.opacity = "0.3"; }}
+                />
+
+                {/* Thumbnail badge — first image */}
+                {idx === 0 ? (
+                  <div className="absolute top-1.5 left-1.5 bg-[#B86A3C] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    ⭐ Thumbnail
+                  </div>
+                ) : (
+                  <div className="absolute top-1.5 left-1.5 bg-black/50 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                    {idx + 1}
+                  </div>
+                )}
+
+                {/* Hover overlay with actions */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 p-2">
+                  {idx > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setAsThumbnail(url, idx)}
+                      className="w-full bg-[#B86A3C] text-white text-[10px] font-bold px-2 py-1.5 rounded-lg hover:bg-[#9a5630] transition-colors"
+                    >
+                      ⭐ Set as Thumbnail
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(url)}
+                    className="w-full bg-red-500/90 text-white text-[10px] font-bold px-2 py-1.5 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-1"
+                  >
+                    <X className="w-3 h-3" /> Remove
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -627,7 +673,11 @@ function Step4({ data, set }: StepProps) {
             </p>
           </div>
         )}
-        <p className="text-[#6B7B94] text-xs mt-2">⚠️ Only use real property photos. No stock imagery.</p>
+
+        <div className="mt-2 space-y-0.5">
+          <p className="text-[#B86A3C] text-xs font-semibold">⭐ First image = thumbnail shown on property cards &amp; homepage.</p>
+          <p className="text-[#6B7B94] text-xs">Add as many photos as you like. Hover any image and click "Set as Thumbnail" to reorder.</p>
+        </div>
       </div>
 
       <div>

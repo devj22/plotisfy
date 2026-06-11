@@ -62,6 +62,14 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
             {property.propertyCode}
           </span>
         </div>
+        {/* Photo count badge */}
+        {property.gallery.length > 1 && (
+          <div className="absolute bottom-3 left-3">
+            <span className="flex items-center gap-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+              📷 {property.gallery.length}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
