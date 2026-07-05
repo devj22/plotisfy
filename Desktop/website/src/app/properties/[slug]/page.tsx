@@ -20,6 +20,7 @@ import {
   TrendingUp,
   Navigation,
   Lock,
+  X,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -43,7 +44,7 @@ export default function PropertyDetailPage({
   const [priceUnlocked, setPriceUnlocked] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem(PRICE_KEY)) {
+    if (typeof window !== "undefined" && localStorage.getItem(PRICE_KEY)) {
       setPriceUnlocked(true);
     }
   }, []);
@@ -66,7 +67,7 @@ export default function PropertyDetailPage({
   }, [slug]);
 
   function handlePriceUnlock() {
-    sessionStorage.setItem(PRICE_KEY, "1");
+    localStorage.setItem(PRICE_KEY, "1");
     setPriceUnlocked(true);
   }
 
@@ -116,6 +117,13 @@ export default function PropertyDetailPage({
             <div className="lg:col-span-2 space-y-6">
               {/* Gallery */}
               <PropertyGallery gallery={property.gallery} title={property.title} />
+
+              {/* Price unlock banner — below image */}
+              <PriceUnlockBanner
+                property={property}
+                priceUnlocked={priceUnlocked}
+                onUnlocked={handlePriceUnlock}
+              />
 
               {/* Title & Meta */}
               <div className="bg-white rounded-2xl p-6 border border-[#E2DDD6]">
@@ -350,6 +358,201 @@ export default function PropertyDetailPage({
       </main>
       <Footer />
       <MobileCTA />
+    </>
+  );
+}
+
+function PriceUnlockBanner({
+  property,
+  priceUnlocked,
+  onUnlocked,
+}: {
+  property: Property;
+  priceUnlocked: boolean;
+  onUnlocked: () => void;
+}) {
+  const [showModal, setShowModal] = useState(false);
+
+  if (priceUnlocked) {
+    return (
+      <div className="bg-[#2D7A4F]/8 border border-[#2D7A4F]/25 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <CheckCircle className="w-5 h-5 text-[#2D7A4F] flex-shrink-0" />
+          <div>
+            <p className="text-[#2D7A4F] text-xs font-semibold mb-0.5">Price Unlocked</p>
+            <p className="text-[#0D2F5B] font-bold text-xl leading-none">
+              {formatPrice(property.priceTotal)}
+              <span className="text-sm font-normal text-[#6B7B94] ml-2">
+                ₹{property.pricePerSqft.toLocaleString()} / sqft
+              </span>
+            </p>
+          </div>
+        </div>
+        <a
+          href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 bg-[#25D366] text-white font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-[#1eb558] transition-colors flex-shrink-0"
+        >
+          <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="w-full bg-[#0D2F5B] rounded-2xl px-5 py-4 flex items-center justify-between hover:bg-[#0a2347] transition-colors group"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#B86A3C]/20 flex items-center justify-center flex-shrink-0">
+            <Lock className="w-5 h-5 text-[#B86A3C]" />
+          </div>
+          <div className="text-left">
+            <p className="text-[#B86A3C] text-xs font-bold uppercase tracking-widest mb-0.5">Price Hidden</p>
+            <p className="text-white font-bold text-base leading-tight">
+              Click to unlock price &amp; get details
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 bg-[#B86A3C] text-white text-sm font-bold px-4 py-2 rounded-xl group-hover:bg-[#9a5630] transition-colors flex-shrink-0">
+          Unlock <ArrowRight className="w-4 h-4" />
+        </div>
+      </button>
+
+      {showModal && (
+        <DetailPriceModal
+          property={property}
+          onClose={() => setShowModal(false)}
+          onUnlocked={() => { setShowModal(false); onUnlocked(); }}
+        />
+      )}
+    </>
+  );
+}
+
+function DetailPriceModal({
+  property,
+  onClose,
+  onUnlocked,
+}: {
+  property: Property;
+  onClose: () => void;
+  onUnlocked: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          message: `Price unlock — property detail page: ${property.title}`,
+        }),
+      });
+    } catch {}
+    localStorage.setItem(PRICE_KEY, "1");
+    setLoading(false);
+    setDone(true);
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm" onClick={!done ? onClose : undefined} />
+      <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-[#0D2F5B] px-5 py-4 flex items-start justify-between">
+            <div>
+              <p className="text-[#B86A3C] text-xs font-bold uppercase tracking-widest mb-1">
+                🔒 Price Locked
+              </p>
+              <h3 className="text-white font-bold text-base">Enter details to unlock price</h3>
+              <p className="text-white/60 text-xs mt-0.5">Free · No spam · 2-hour response</p>
+            </div>
+            {!done && (
+              <button onClick={onClose} className="ml-3 p-1.5 rounded-lg hover:bg-white/15 transition-colors">
+                <X className="w-5 h-5 text-white/70" />
+              </button>
+            )}
+          </div>
+
+          <div className="px-5 py-5">
+            {done ? (
+              <div className="text-center py-2">
+                <div className="text-4xl mb-2">🎉</div>
+                <p className="text-[#0D2F5B] font-bold text-lg mb-1">Price Unlocked!</p>
+                <p className="text-[#B86A3C] font-bold text-2xl mb-0.5">{formatPrice(property.priceTotal)}</p>
+                <p className="text-[#6B7B94] text-sm mb-5">₹{property.pricePerSqft.toLocaleString()} per sqft</p>
+                <div className="space-y-3">
+                  <a
+                    href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold px-5 py-3 rounded-xl text-sm hover:bg-[#1eb558] transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
+                  </a>
+                  <button
+                    onClick={onUnlocked}
+                    className="w-full text-[#0D2F5B] text-sm font-semibold py-2 hover:underline"
+                  >
+                    View full details →
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <input
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your Name *"
+                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
+                />
+                <input
+                  required
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Phone Number *"
+                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+                >
+                  {loading ? "Unlocking..." : <><span>Unlock Price</span><ArrowRight className="w-4 h-4" /></>}
+                </button>
+                <div className="relative flex items-center gap-2 py-1">
+                  <div className="flex-1 border-t border-[#E2DDD6]" />
+                  <span className="text-xs text-[#6B7B94]">or</span>
+                  <div className="flex-1 border-t border-[#E2DDD6]" />
+                </div>
+                <a
+                  href={`https://wa.me/918169693894?text=Hi%2C%20I%20want%20to%20know%20the%20price%20of%20${encodeURIComponent(property.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
+                </a>
+                <p className="text-center text-xs text-[#6B7B94]">No spam · Free · Response within 2 hours</p>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
     </>
   );
 }

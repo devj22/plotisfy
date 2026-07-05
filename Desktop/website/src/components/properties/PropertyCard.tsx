@@ -19,13 +19,13 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem(PRICE_KEY)) {
+    if (typeof window !== "undefined" && localStorage.getItem(PRICE_KEY)) {
       setPriceUnlocked(true);
     }
   }, []);
 
   function onUnlocked() {
-    sessionStorage.setItem(PRICE_KEY, "1");
+    localStorage.setItem(PRICE_KEY, "1");
     setPriceUnlocked(true);
     setShowModal(false);
   }
@@ -225,6 +225,7 @@ function PriceUnlockModal({
         }),
       });
     } catch {}
+    localStorage.setItem(PRICE_KEY, "1");
     setLoading(false);
     setDone(true);
     onUnlocked();
