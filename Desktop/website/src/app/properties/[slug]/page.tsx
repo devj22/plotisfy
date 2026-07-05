@@ -12,12 +12,14 @@ import {
   Download,
   ChevronLeft,
   ChevronRight,
+  ArrowRight,
   ArrowLeft,
   Share2,
   Bookmark,
   Shield,
   TrendingUp,
   Navigation,
+  Lock,
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -25,6 +27,8 @@ import MobileCTA from "@/components/layout/MobileCTA";
 import PropertyCard from "@/components/properties/PropertyCard";
 import { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
+
+const PRICE_KEY = "plotzify_price_unlocked";
 
 export default function PropertyDetailPage({
   params,
@@ -36,6 +40,13 @@ export default function PropertyDetailPage({
   const [similar, setSimilar] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [priceUnlocked, setPriceUnlocked] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem(PRICE_KEY)) {
+      setPriceUnlocked(true);
+    }
+  }, []);
 
   useEffect(() => {
     fetch(`/api/properties/by-slug/${slug}`)
@@ -43,7 +54,6 @@ export default function PropertyDetailPage({
         if (r.status === 404) { setNotFound(true); return; }
         const data = await r.json();
         setProperty(data);
-        // fetch similar properties in same location
         fetch(`/api/properties?published=true`)
           .then((r2) => r2.json())
           .then((all: Property[]) => {
@@ -54,6 +64,11 @@ export default function PropertyDetailPage({
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  function handlePriceUnlock() {
+    sessionStorage.setItem(PRICE_KEY, "1");
+    setPriceUnlocked(true);
+  }
 
   if (loading) {
     return (
@@ -142,8 +157,17 @@ export default function PropertyDetailPage({
 
                 {/* Quick Facts Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[#E2DDD6]">
-                  <QuickFact label="Total Price" value={formatPrice(property.priceTotal)} highlight />
-                  <QuickFact label="Price / sqft" value={`₹${property.pricePerSqft.toLocaleString()}`} />
+                  {/* Price facts — locked until form submitted */}
+                  {priceUnlocked ? (
+                    <QuickFact label="Total Price" value={formatPrice(property.priceTotal)} highlight />
+                  ) : (
+                    <LockedFact label="Total Price" />
+                  )}
+                  {priceUnlocked ? (
+                    <QuickFact label="Price / sqft" value={`₹${property.pricePerSqft.toLocaleString()}`} />
+                  ) : (
+                    <LockedFact label="Price / sqft" />
+                  )}
                   <QuickFact label="Area" value={formatArea(property.areaSqft)} />
                   <QuickFact label="Guntha" value={`${property.areaGuntha} Guntha`} />
                   <QuickFact label="Zoning" value={property.zoningType} />
@@ -157,7 +181,7 @@ export default function PropertyDetailPage({
                 </div>
               </div>
 
-              {/* Trust Badges */}
+              {/* Property Highlights */}
               <div className="bg-white rounded-2xl p-6 border border-[#E2DDD6]">
                 <h2 className="text-[#0D2F5B] font-bold text-lg mb-4">Property Highlights</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -169,7 +193,6 @@ export default function PropertyDetailPage({
                   ))}
                 </div>
 
-                {/* Trust strip */}
                 <div className="flex flex-wrap gap-2 mt-5 pt-5 border-t border-[#E2DDD6]">
                   {property.titleClarity === "clear" && (
                     <TrustBadge icon={Shield} label="Clear Title" color="text-[#2D7A4F]" bg="bg-[#2D7A4F]/8" />
@@ -215,7 +238,7 @@ export default function PropertyDetailPage({
                 </div>
               </div>
 
-              {/* Map Placeholder */}
+              {/* Map */}
               <div className="bg-white rounded-2xl p-6 border border-[#E2DDD6]">
                 <h2 className="text-[#0D2F5B] font-bold text-lg mb-4">Location on Map</h2>
                 <div className="bg-[#F7F3ED] rounded-xl h-64 flex items-center justify-center border border-[#E2DDD6]">
@@ -244,61 +267,65 @@ export default function PropertyDetailPage({
             {/* Sticky Right Sidebar */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 space-y-4">
-                {/* Price Card */}
-                <div className="bg-white rounded-2xl p-6 border border-[#E2DDD6] shadow-sm">
-                  <div className="mb-4">
-                    <span className="text-[#6B7B94] text-xs">Total Price</span>
-                    <div className="text-[#0D2F5B] font-bold text-3xl mt-0.5">
-                      {formatPrice(property.priceTotal)}
+                {/* Price / Unlock Card */}
+                {priceUnlocked ? (
+                  <div className="bg-white rounded-2xl p-6 border border-[#E2DDD6] shadow-sm">
+                    <div className="mb-4">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <CheckCircle className="w-4 h-4 text-[#2D7A4F]" />
+                        <span className="text-[#2D7A4F] text-xs font-semibold">Price Unlocked</span>
+                      </div>
+                      <div className="text-[#0D2F5B] font-bold text-3xl mt-1">
+                        {formatPrice(property.priceTotal)}
+                      </div>
+                      <span className="text-[#6B7B94] text-sm">
+                        ₹{property.pricePerSqft.toLocaleString()} per sqft
+                      </span>
                     </div>
-                    <span className="text-[#6B7B94] text-sm">
-                      ₹{property.pricePerSqft.toLocaleString()} per sqft
-                    </span>
-                  </div>
 
-                  <div className="space-y-2.5">
-                    <a
-                      href="tel:+918169693894"
-                      className="w-full flex items-center justify-center gap-2 bg-[#0D2F5B] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#0a2347] transition-colors"
-                    >
-                      <Phone className="w-4 h-4" />
-                      Call Now
-                    </a>
-                    <a
-                      href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      WhatsApp Us
-                    </a>
-                    <Link
-                      href="/book-site-visit"
-                      className="w-full flex items-center justify-center gap-2 border-2 border-[#B86A3C] text-[#B86A3C] font-bold text-sm py-3 rounded-xl hover:bg-[#B86A3C] hover:text-white transition-colors"
-                    >
-                      <Calendar className="w-4 h-4" />
-                      Book Site Visit
-                    </Link>
-                    {property.brochure && (
+                    <div className="space-y-2.5">
                       <a
-                        href={property.brochure}
-                        download
-                        className="w-full flex items-center justify-center gap-2 border border-[#E2DDD6] text-[#162338] font-medium text-sm py-3 rounded-xl hover:bg-[#F7F3ED] transition-colors"
+                        href="tel:+918169693894"
+                        className="w-full flex items-center justify-center gap-2 bg-[#0D2F5B] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#0a2347] transition-colors"
                       >
-                        <Download className="w-4 h-4" />
-                        Download Brochure
+                        <Phone className="w-4 h-4" />
+                        Call Now
                       </a>
-                    )}
+                      <a
+                        href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        WhatsApp Us
+                      </a>
+                      <Link
+                        href="/book-site-visit"
+                        className="w-full flex items-center justify-center gap-2 border-2 border-[#B86A3C] text-[#B86A3C] font-bold text-sm py-3 rounded-xl hover:bg-[#B86A3C] hover:text-white transition-colors"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        Book Site Visit
+                      </Link>
+                      {property.brochure && (
+                        <a
+                          href={property.brochure}
+                          download
+                          className="w-full flex items-center justify-center gap-2 border border-[#E2DDD6] text-[#162338] font-medium text-sm py-3 rounded-xl hover:bg-[#F7F3ED] transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download Brochure
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-center text-xs text-[#6B7B94] mt-4">No obligation · Free consultation</p>
                   </div>
-
-                  <p className="text-center text-xs text-[#6B7B94] mt-4">
-                    No obligation · Free consultation
-                  </p>
-                </div>
-
-                {/* Quick Enquiry */}
-                <QuickEnquiryForm propertyTitle={property.title} />
+                ) : (
+                  <PriceSidebarUnlock
+                    propertyTitle={property.title}
+                    onUnlocked={handlePriceUnlock}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -327,6 +354,94 @@ export default function PropertyDetailPage({
   );
 }
 
+function PriceSidebarUnlock({
+  propertyTitle,
+  onUnlocked,
+}: {
+  propertyTitle: string;
+  onUnlocked: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          message: `Price unlock — property detail: ${propertyTitle}`,
+        }),
+      });
+    } catch {}
+    setLoading(false);
+    onUnlocked();
+  }
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#E2DDD6] shadow-sm overflow-hidden">
+      {/* Locked header */}
+      <div className="bg-[#0D2F5B] px-5 py-4">
+        <div className="flex items-center gap-2 mb-1">
+          <Lock className="w-4 h-4 text-[#B86A3C]" />
+          <p className="text-[#B86A3C] text-xs font-bold uppercase tracking-widest">Price Hidden</p>
+        </div>
+        <h3 className="text-white font-bold text-base leading-snug">
+          Submit details to unlock the price
+        </h3>
+        <p className="text-white/60 text-xs mt-1">Free · No spam · Response within 2 hours</p>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="p-5 space-y-3">
+        <input
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Your Name *"
+          className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
+        />
+        <input
+          required
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Phone Number *"
+          className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+        >
+          {loading ? "Unlocking..." : <><span>Unlock Price & Details</span><ArrowRight className="w-4 h-4" /></>}
+        </button>
+
+        <div className="relative flex items-center gap-2 py-1">
+          <div className="flex-1 border-t border-[#E2DDD6]" />
+          <span className="text-xs text-[#6B7B94]">or</span>
+          <div className="flex-1 border-t border-[#E2DDD6]" />
+        </div>
+
+        <a
+          href={`https://wa.me/918169693894?text=Hi%2C%20I%20want%20to%20know%20the%20price%20of%20${encodeURIComponent(propertyTitle)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors"
+        >
+          <MessageCircle className="w-4 h-4" />
+          Ask on WhatsApp
+        </a>
+      </form>
+    </div>
+  );
+}
+
 function PropertyGallery({ gallery, title }: { gallery: string[]; title: string }) {
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
@@ -341,7 +456,6 @@ function PropertyGallery({ gallery, title }: { gallery: string[]; title: string 
   function prev() { goTo((current - 1 + gallery.length) % gallery.length); }
   function next() { goTo((current + 1) % gallery.length); }
 
-  // Keyboard navigation
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === "ArrowLeft") prev();
@@ -353,43 +467,35 @@ function PropertyGallery({ gallery, title }: { gallery: string[]; title: string 
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-[#E2DDD6]">
-      {/* Main image */}
       <div className="relative h-72 md:h-[420px] bg-[#0D2F5B]/5 overflow-hidden">
         <img
           key={current}
           src={gallery[current]}
           alt={`${title} — Photo ${current + 1}`}
           className="w-full h-full object-cover"
-          style={{
-            animation: animating ? "galleryFade 0.3s ease-in-out" : "none",
-          }}
+          style={{ animation: animating ? "galleryFade 0.3s ease-in-out" : "none" }}
         />
 
-        {/* Gradient overlay bottom */}
         <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
 
-        {/* Photo count pill — top left */}
         {gallery.length > 1 && (
           <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
             📷 {gallery.length} Photos
           </div>
         )}
 
-        {/* Current / total counter — bottom right */}
         {gallery.length > 1 && (
           <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
             {current + 1} / {gallery.length}
           </div>
         )}
 
-        {/* Keyboard hint */}
         {gallery.length > 1 && (
           <div className="absolute bottom-3 left-3 text-white/60 text-[10px] hidden md:block">
             ← → keys to navigate
           </div>
         )}
 
-        {/* Prev / Next arrows */}
         {gallery.length > 1 && (
           <>
             <button
@@ -410,7 +516,6 @@ function PropertyGallery({ gallery, title }: { gallery: string[]; title: string 
         )}
       </div>
 
-      {/* Thumbnail strip */}
       {gallery.length > 1 && (
         <div className="flex gap-2 p-3 overflow-x-auto scrollbar-hide">
           {gallery.map((img, i) => (
@@ -435,7 +540,6 @@ function PropertyGallery({ gallery, title }: { gallery: string[]; title: string 
         </div>
       )}
 
-      {/* Dot indicators — mobile */}
       {gallery.length > 1 && gallery.length <= 8 && (
         <div className="flex justify-center gap-1.5 pb-3 md:hidden">
           {gallery.map((_, i) => (
@@ -454,7 +558,6 @@ function PropertyGallery({ gallery, title }: { gallery: string[]; title: string 
     </div>
   );
 }
-
 
 function QuickFact({
   label,
@@ -477,6 +580,17 @@ function QuickFact({
   );
 }
 
+function LockedFact({ label }: { label: string }) {
+  return (
+    <div className="p-3 rounded-xl bg-[#F7F3ED] border border-dashed border-[#B86A3C]/30">
+      <div className="text-[#6B7B94] text-xs mb-0.5">{label}</div>
+      <div className="font-bold text-sm text-[#B86A3C] flex items-center gap-1">
+        <Lock className="w-3 h-3" /> Locked
+      </div>
+    </div>
+  );
+}
+
 function TrustBadge({
   icon: Icon,
   label,
@@ -493,54 +607,5 @@ function TrustBadge({
       <Icon className={`w-3.5 h-3.5 ${color}`} />
       <span className={`text-xs font-semibold ${color}`}>{label}</span>
     </div>
-  );
-}
-
-function QuickEnquiryForm({ propertyTitle }: { propertyTitle: string }) {
-  const [submitted, setSubmitted] = useState(false);
-
-  if (submitted) {
-    return (
-      <div className="bg-[#2D7A4F]/8 border border-[#2D7A4F]/20 rounded-2xl p-5 text-center">
-        <CheckCircle className="w-8 h-8 text-[#2D7A4F] mx-auto mb-2" />
-        <p className="text-[#2D7A4F] font-semibold text-sm">Enquiry sent! We'll call you shortly.</p>
-      </div>
-    );
-  }
-
-  return (
-    <form
-      className="bg-white rounded-2xl p-5 border border-[#E2DDD6]"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSubmitted(true);
-      }}
-    >
-      <h3 className="text-[#0D2F5B] font-bold text-sm mb-4">Quick Enquiry</h3>
-      <div className="space-y-3">
-        <input
-          required
-          type="text"
-          placeholder="Your Name *"
-          className="w-full text-sm border border-[#E2DDD6] rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]"
-        />
-        <input
-          required
-          type="tel"
-          placeholder="Phone Number *"
-          className="w-full text-sm border border-[#E2DDD6] rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]"
-        />
-        <input
-          type="hidden"
-          value={propertyTitle}
-        />
-        <button
-          type="submit"
-          className="w-full bg-[#B86A3C] text-white font-bold text-sm py-2.5 rounded-xl hover:bg-[#9a5630] transition-colors"
-        >
-          Send Enquiry
-        </button>
-      </div>
-    </form>
   );
 }
