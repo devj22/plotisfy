@@ -12,7 +12,7 @@ const NAV_LINKS = [
     children: [
       { label: "All Listings", href: "/properties" },
       { label: "Plots in Panvel", href: "/locations/panvel" },
-      { label: "Plots in Khalapur", href: "/locations/khalapur" },
+      { label: "Plots in Khalapur - Khopoli", href: "/locations/khalapur" },
       { label: "Map View", href: "/properties?view=map" },
     ],
   },
@@ -21,7 +21,7 @@ const NAV_LINKS = [
     href: "/locations",
     children: [
       { label: "Panvel", href: "/locations/panvel" },
-      { label: "Khalapur", href: "/locations/khalapur" },
+      { label: "Khalapur - Khopoli", href: "/locations/khalapur" },
       { label: "Near Airport", href: "/locations/navi-mumbai-airport" },
       { label: "Near Expressway", href: "/locations/expressway" },
     ],
@@ -31,7 +31,7 @@ const NAV_LINKS = [
     href: "/why-invest",
     children: [
       { label: "Why Panvel", href: "/why-invest/panvel" },
-      { label: "Why Khalapur", href: "/why-invest/khalapur" },
+      { label: "Why Khalapur - Khopoli", href: "/why-invest/khalapur" },
       { label: "Infrastructure Growth", href: "/why-invest/infrastructure" },
       { label: "Buyer Guides", href: "/why-invest/guides" },
     ],

@@ -10,13 +10,13 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Plots in Khalapur – Land Near Mumbai-Pune Expressway",
+  title: "Plots in Khalapur - Khopoli – Land Near Mumbai-Pune Expressway",
   description:
-    "Verified land plots in Khalapur, Maharashtra. Near Mumbai-Pune Expressway, ideal for weekend homes, farmhouses, and investment. Clear titles.",
+    "Verified land plots in Khalapur - Khopoli, Maharashtra. Near Mumbai-Pune Expressway, ideal for weekend homes, farmhouses, and investment. Clear titles.",
 };
 
-export default async function KhalapurPage() {
-  const rows = await prisma.property.findMany({ where: { location: "Khalapur", published: true } }).catch(() => []);
+export default async function Khalapur - KhopoliPage() {
+  const rows = await prisma.property.findMany({ where: { location: "Khalapur - Khopoli", published: true } }).catch(() => []);
   const props = rows.map(mapDbProperty);
 
   return (
@@ -29,10 +29,10 @@ export default async function KhalapurPage() {
               <MapPin className="w-3.5 h-3.5 text-[#B86A3C]" /> Raigad District · Maharashtra
             </div>
             <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">
-              Land Plots in <span className="text-[#B86A3C]">Khalapur</span>
+              Land Plots in <span className="text-[#B86A3C]">Khalapur - Khopoli</span>
             </h1>
             <p className="text-white/70 text-lg leading-relaxed max-w-2xl mx-auto mb-8">
-              Khalapur offers scenic valley land at a fraction of Panvel prices. With the Mumbai-Pune
+              Khalapur - Khopoli offers scenic valley land at a fraction of Panvel prices. With the Mumbai-Pune
               Expressway Missing Link slashing travel time, this quiet location is becoming
               Mumbai's favourite weekend home destination.
             </p>
@@ -56,7 +56,7 @@ export default async function KhalapurPage() {
               The Expressway Advantage
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-w-2xl mx-auto">
-              {INFRASTRUCTURE_HIGHLIGHTS.filter((h) => h.location === "Khalapur").map((item) => (
+              {INFRASTRUCTURE_HIGHLIGHTS.filter((h) => h.location === "Khalapur - Khopoli").map((item) => (
                 <div key={item.id} className="bg-[#F7F3ED] rounded-2xl p-6 border border-[#E2DDD6]">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-[#162338] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
@@ -89,7 +89,7 @@ export default async function KhalapurPage() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-[#0D2F5B] text-2xl font-bold">
-                  Available Plots in Khalapur ({props.length})
+                  Available Plots in Khalapur - Khopoli ({props.length})
                 </h2>
                 <p className="text-[#6B7B94] text-sm mt-1">All listings are verified by our team</p>
               </div>

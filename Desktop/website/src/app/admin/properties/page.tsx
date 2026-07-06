@@ -99,7 +99,7 @@ export default function AdminPropertiesPage() {
           >
             <option value="">All Locations</option>
             <option value="Panvel">Panvel</option>
-            <option value="Khalapur">Khalapur</option>
+            <option value="Khalapur">Khalapur - Khopoli</option>
           </select>
           <select
             value={statusFilter}
@@ -500,7 +500,7 @@ function Step2({ data, set }: StepProps) {
         <Field label="Location">
           <select className={inputCls} value={data.location} onChange={(e) => set("location", e.target.value)}>
             <option>Panvel</option>
-            <option>Khalapur</option>
+            <option>Khalapur - Khopoli</option>
           </select>
         </Field>
         <Field label="Village">

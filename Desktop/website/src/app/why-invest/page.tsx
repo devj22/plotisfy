@@ -7,8 +7,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Why Invest in Panvel & Khalapur Land | Plotzify",
-  description: "Infrastructure tailwinds, appreciation history, and the investment case for land in Panvel and Khalapur, Maharashtra.",
+  title: "Why Invest in Panvel & Khalapur - Khopoli Land | Plotzify",
+  description: "Infrastructure tailwinds, appreciation history, and the investment case for land in Panvel and Khalapur - Khopoli, Maharashtra.",
 };
 
 export default function WhyInvestPage() {
@@ -20,7 +20,7 @@ export default function WhyInvestPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-white text-3xl md:text-5xl font-bold mb-4">Why Invest Here?</h1>
             <p className="text-white/70 text-lg max-w-2xl mx-auto">
-              Panvel and Khalapur sit at the intersection of three of India's largest infrastructure projects. Here's the investment case.
+              Panvel and Khalapur - Khopoli sit at the intersection of three of India's largest infrastructure projects. Here's the investment case.
             </p>
           </div>
         </section>
@@ -49,7 +49,7 @@ export default function WhyInvestPage() {
           <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { label: "Why Panvel", href: "/locations/panvel", desc: "Near Navi Mumbai Airport — the biggest land play in Maharashtra." },
-              { label: "Why Khalapur", href: "/locations/khalapur", desc: "Weekend home market booming on the Mumbai-Pune Expressway corridor." },
+              { label: "Why Khalapur - Khopoli", href: "/locations/khalapur", desc: "Weekend home market booming on the Mumbai-Pune Expressway corridor." },
             ].map((item) => (
               <Link
                 key={item.label}

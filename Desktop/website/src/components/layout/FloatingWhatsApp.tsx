@@ -8,7 +8,7 @@ export default function FloatingWhatsApp() {
 
   return (
     <a
-      href="https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20plots%20in%20Panvel%2FKhalapur"
+      href="https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20plots%20in%20Panvel%2FKhalapur - Khopoli"
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

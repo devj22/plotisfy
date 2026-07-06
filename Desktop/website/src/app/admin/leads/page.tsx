@@ -142,7 +142,7 @@ export default function LeadsPage() {
                 >
                   <option value="">All Locations</option>
                   <option value="Panvel">Panvel</option>
-                  <option value="Khalapur">Khalapur</option>
+                  <option value="Khalapur">Khalapur - Khopoli</option>
                 </select>
                 {(search || statusFilter !== "all" || locationFilter) && (
                   <button

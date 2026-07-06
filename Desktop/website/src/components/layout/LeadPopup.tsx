@@ -121,7 +121,7 @@ export default function LeadPopup() {
                   </p>
                 ) : (
                   <p className="text-[#B86A3C] text-xs font-bold uppercase tracking-widest mb-1.5">
-                    🏡 Limited Plots · Panvel &amp; Khalapur
+                    🏡 Limited Plots · Panvel &amp; Khalapur - Khopoli
                   </p>
                 )}
                 <h2 className="text-white font-bold text-[1.1rem] leading-snug">
@@ -226,7 +226,7 @@ export default function LeadPopup() {
                     >
                       <option value="">Any</option>
                       <option value="Panvel">Panvel</option>
-                      <option value="Khalapur">Khalapur</option>
+                      <option value="Khalapur - Khopoli">Khalapur - Khopoli</option>
                       <option value="Both / Open">Both / Open</option>
                     </select>
                   </div>

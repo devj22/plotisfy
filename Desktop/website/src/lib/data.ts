@@ -19,9 +19,9 @@ export const TESTIMONIALS: Testimonial[] = [
     name: "Priya Sharma",
     location: "Pune",
     content:
-      "We were looking for a weekend farmhouse land near Mumbai for two years. Plotzify's Khalapur listings were exactly what we needed – honest descriptions, verified titles, and the team organised a proper site visit with no pressure. Highly recommended.",
+      "We were looking for a weekend farmhouse land near Mumbai for two years. Plotzify's Khalapur - Khopoli listings were exactly what we needed – honest descriptions, verified titles, and the team organised a proper site visit with no pressure. Highly recommended.",
     rating: 5,
-    propertyPurchased: "Weekend Farmhouse Plot in Khalapur Valley",
+    propertyPurchased: "Weekend Farmhouse Plot in Khalapur - Khopoli Valley",
     avatar: "PS",
   },
   {
@@ -84,19 +84,19 @@ export const INFRASTRUCTURE_HIGHLIGHTS = [
     id: "missinglink",
     title: "Mumbai–Pune Expressway Missing Link",
     description:
-      "Reduces a critical stretch from 19 km to 13.3 km, cutting travel time by 20–25 minutes. Khalapur becomes dramatically more accessible from Mumbai.",
+      "Reduces a critical stretch from 19 km to 13.3 km, cutting travel time by 20–25 minutes. Khalapur - Khopoli becomes dramatically more accessible from Mumbai.",
     source: "MSRDC",
     sourceUrl: "https://msrdc.in/Site/Common/ProjectListDetails.aspx?ID=75&MainId=18",
     icon: "road",
     impact: "High Impact",
-    location: "Khalapur",
+    location: "Khalapur - Khopoli",
   },
 ];
 
 export const FAQS = [
   {
     id: "1",
-    question: "What documents should I check before buying a plot in Panvel or Khalapur?",
+    question: "What documents should I check before buying a plot in Panvel or Khalapur - Khopoli?",
     answer:
       "Key documents include the 7/12 extract (Satbara Utara), property card, mutation entries, encumbrance certificate, and NA (Non-Agricultural) order if applicable. Our team verifies all documents before listing any property.",
     category: "Legal",
@@ -119,7 +119,7 @@ export const FAQS = [
     id: "4",
     question: "What is the typical appreciation expectation in these areas?",
     answer:
-      "Infrastructure corridors in Panvel have seen 15–25% annual appreciation in recent years. Khalapur has shown 10–18% appreciation, with acceleration expected post-expressway missing link completion. Past returns do not guarantee future performance.",
+      "Infrastructure corridors in Panvel have seen 15–25% annual appreciation in recent years. Khalapur - Khopoli has shown 10–18% appreciation, with acceleration expected post-expressway missing link completion. Past returns do not guarantee future performance.",
     category: "Investment",
   },
   {

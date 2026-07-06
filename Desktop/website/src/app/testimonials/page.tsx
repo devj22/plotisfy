@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Testimonials – What Our Buyers Say | Plotzify",
-  description: "Read verified testimonials from Plotzify buyers who invested in land in Panvel and Khalapur, Maharashtra.",
+  description: "Read verified testimonials from Plotzify buyers who invested in land in Panvel and Khalapur - Khopoli, Maharashtra.",
 };
 
 export default function TestimonialsPage() {

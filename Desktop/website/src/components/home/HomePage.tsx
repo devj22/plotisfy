@@ -81,7 +81,7 @@ export default function HomePage() {
             <div>
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
                 <span className="w-2 h-2 bg-[#B86A3C] rounded-full animate-pulse" />
-                Land Investment · Panvel & Khalapur · Maharashtra
+                Land Investment · Panvel & Khalapur - Khopoli · Maharashtra
               </div>
 
               <h1 className="text-white text-4xl md:text-5xl lg:text-5xl font-bold leading-tight mb-6">
@@ -91,7 +91,7 @@ export default function HomePage() {
               </h1>
 
               <p className="text-white/80 text-lg leading-relaxed mb-8">
-                Premium verified plots in Panvel and Khalapur — next to India's newest international
+                Premium verified plots in Panvel and Khalapur - Khopoli — next to India's newest international
                 airport, Atal Setu, and the Mumbai-Pune Expressway missing link.
               </p>
 
@@ -227,11 +227,11 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Khalapur */}
+            {/* Khalapur - Khopoli */}
             <div className="relative rounded-2xl overflow-hidden group h-80">
               <img
                 src="https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800"
-                alt="Khalapur"
+                alt="Khalapur - Khopoli"
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#162338]/90 via-[#162338]/30 to-transparent" />
@@ -240,7 +240,7 @@ export default function HomePage() {
                   <MapPin className="w-4 h-4 text-[#B86A3C]" />
                   <span className="text-white/70 text-sm">Raigad District</span>
                 </div>
-                <h3 className="text-white font-bold text-2xl mb-1">Plots in Khalapur</h3>
+                <h3 className="text-white font-bold text-2xl mb-1">Plots in Khalapur - Khopoli</h3>
                 <p className="text-white/70 text-sm mb-4">
                   On the Mumbai-Pune Expressway corridor. Weekend homes, farmhouses, and long-term investment land.
                 </p>
@@ -248,7 +248,7 @@ export default function HomePage() {
                   href="/locations/khalapur"
                   className="inline-flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2 rounded-lg"
                 >
-                  Explore Khalapur <ArrowRight className="w-4 h-4" />
+                  Explore Khalapur - Khopoli <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -267,7 +267,7 @@ export default function HomePage() {
               Infrastructure Driving Land Values
             </h2>
             <p className="text-white/60 mt-3 max-w-xl mx-auto">
-              Three major government-backed projects are transforming the Panvel–Khalapur corridor
+              Three major government-backed projects are transforming the Panvel–Khalapur - Khopoli corridor
               into one of Maharashtra's fastest-appreciating land zones.
             </p>
           </div>
@@ -610,7 +610,7 @@ function SmartSearch() {
         <select className="w-full bg-white border border-[#E2DDD6] text-[#162338] text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#B86A3C]/40">
           <option value="">All Locations</option>
           <option value="panvel">Panvel</option>
-          <option value="khalapur">Khalapur</option>
+          <option value="khalapur">Khalapur - Khopoli</option>
         </select>
         <select className="w-full bg-white border border-[#E2DDD6] text-[#162338] text-sm rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#B86A3C]/40">
           <option value="">Any Budget</option>
@@ -723,7 +723,7 @@ function EnquiryForm() {
           >
             <option value="">Any Location</option>
             <option value="Panvel">Panvel</option>
-            <option value="Khalapur">Khalapur</option>
+            <option value="Khalapur - Khopoli">Khalapur - Khopoli</option>
             <option value="Both / Open">Both / Open</option>
           </select>
         </div>

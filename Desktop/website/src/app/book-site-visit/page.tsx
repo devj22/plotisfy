@@ -133,7 +133,7 @@ export default function BookSiteVisitPage() {
                     <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
                       <option value="">Select Location</option>
                       <option>Panvel</option>
-                      <option>Khalapur</option>
+                      <option>Khalapur - Khopoli</option>
                       <option>Both / Open to either</option>
                     </select>
                   </div>

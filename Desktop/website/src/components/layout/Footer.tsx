@@ -43,7 +43,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-white/70 text-sm leading-relaxed max-w-xs">
-              Premium land investment platform for Panvel and Khalapur, Maharashtra. Verified listings,
+              Premium land investment platform for Panvel and Khalapur - Khopoli, Maharashtra. Verified listings,
               clear titles, expert guidance.
             </p>
             <div className="flex items-center gap-4 mt-6">
@@ -71,7 +71,7 @@ export default function Footer() {
               {[
                 { label: "All Listings", href: "/properties" },
                 { label: "Plots in Panvel", href: "/locations/panvel" },
-                { label: "Plots in Khalapur", href: "/locations/khalapur" },
+                { label: "Plots in Khalapur - Khopoli", href: "/locations/khalapur" },
                 { label: "Near Airport", href: "/locations/navi-mumbai-airport" },
                 { label: "Near Expressway", href: "/locations/expressway" },
               ].map((item) => (
@@ -93,7 +93,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {[
                 { label: "Why Panvel", href: "/why-invest/panvel" },
-                { label: "Why Khalapur", href: "/why-invest/khalapur" },
+                { label: "Why Khalapur - Khopoli", href: "/why-invest/khalapur" },
                 { label: "Infrastructure", href: "/why-invest/infrastructure" },
                 { label: "Buyer Guides", href: "/why-invest/guides" },
                 { label: "Testimonials", href: "/testimonials" },
@@ -148,7 +148,7 @@ export default function Footer() {
 
         <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-white/40 text-xs">
-            © {new Date().getFullYear()} Plotzify. All rights reserved. Panvel & Khalapur, Maharashtra.
+            © {new Date().getFullYear()} Plotzify. All rights reserved. Panvel & Khalapur - Khopoli, Maharashtra.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-white/40 hover:text-white/70 text-xs transition-colors">Privacy</Link>

@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact Plotzify – Talk to Our Land Investment Team",
-  description: "Get in touch with Plotzify. Call, WhatsApp, or email us to discuss land investment opportunities in Panvel and Khalapur.",
+  description: "Get in touch with Plotzify. Call, WhatsApp, or email us to discuss land investment opportunities in Panvel and Khalapur - Khopoli.",
 };
 
 export default function ContactPage() {
@@ -30,7 +30,7 @@ export default function ContactPage() {
               {[
                 { icon: Phone, label: "Phone / WhatsApp", value: "+91 81696 93894", href: "tel:+918169693894" },
                 { icon: Mail, label: "Email", value: "Plotzify@gmail.com", href: "mailto:Plotzify@gmail.com" },
-                { icon: MapPin, label: "Coverage Area", value: "Panvel & Khalapur, Maharashtra", href: null },
+                { icon: MapPin, label: "Coverage Area", value: "Panvel & Khalapur - Khopoli, Maharashtra", href: null },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-[#0D2F5B]/10 rounded-xl flex items-center justify-center flex-shrink-0">

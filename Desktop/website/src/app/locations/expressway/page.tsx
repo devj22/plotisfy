@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Land Near Mumbai-Pune Expressway | Plotzify",
-  description: "Invest in land plots near the Mumbai-Pune Expressway in Khalapur. Ideal for weekend homes, farmhouses, and long-term investment.",
+  description: "Invest in land plots near the Mumbai-Pune Expressway in Khalapur - Khopoli. Ideal for weekend homes, farmhouses, and long-term investment.",
 };
 
 export default function ExpresswayPage() {
@@ -24,10 +24,10 @@ export default function ExpresswayPage() {
               Land Near Mumbai-Pune Expressway
             </h1>
             <p className="text-white/70 text-lg max-w-2xl mx-auto">
-              The Mumbai-Pune Expressway Missing Link project cuts travel time by 20-25 minutes, making Khalapur a top pick for weekend home buyers and long-term investors.
+              The Mumbai-Pune Expressway Missing Link project cuts travel time by 20-25 minutes, making Khalapur - Khopoli a top pick for weekend home buyers and long-term investors.
             </p>
             <Link
-              href="/properties?location=Khalapur"
+              href="/properties?location=Khalapur - Khopoli"
               className="inline-flex items-center gap-2 mt-8 bg-[#B86A3C] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#9a5630] transition-colors"
             >
               View Expressway-Area Plots <ArrowRight className="w-4 h-4" />
@@ -38,7 +38,7 @@ export default function ExpresswayPage() {
         <section className="py-16 px-4 sm:px-6 lg:px-8 bg-[#F7F3ED]">
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { title: "60 Min from Mumbai", desc: "The Missing Link reduces Khalapur's drive time from Mumbai significantly." },
+              { title: "60 Min from Mumbai", desc: "The Missing Link reduces Khalapur - Khopoli's drive time from Mumbai significantly." },
               { title: "Weekend Home Hub", desc: "Growing demand for farmhouses and eco-stays in scenic valley settings." },
               { title: "10-18% Appreciation", desc: "Historical land appreciation in expressway corridors of Raigad district." },
             ].map((item) => (
@@ -50,7 +50,7 @@ export default function ExpresswayPage() {
           </div>
           <div className="max-w-4xl mx-auto mt-8 text-center">
             <Link href="/locations/khalapur" className="text-[#0D2F5B] font-semibold hover:text-[#B86A3C] transition-colors flex items-center gap-1 justify-center">
-              Explore all Khalapur listings <ArrowRight className="w-4 h-4" />
+              Explore all Khalapur - Khopoli listings <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </section>

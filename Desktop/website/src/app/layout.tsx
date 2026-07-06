@@ -12,14 +12,14 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Plotzify – Premium Land Investment in Panvel & Khalapur",
+    default: "Plotzify – Premium Land Investment in Panvel & Khalapur - Khopoli",
     template: "%s | Plotzify",
   },
   description:
-    "Discover verified land plots near Navi Mumbai Airport in Panvel and Khalapur. Premium land investment opportunities with clear title, road access, and expert guidance.",
+    "Discover verified land plots near Navi Mumbai Airport in Panvel and Khalapur - Khopoli. Premium land investment opportunities with clear title, road access, and expert guidance.",
   keywords: [
     "land plots Panvel",
-    "land plots Khalapur",
+    "land plots Khalapur - Khopoli",
     "Navi Mumbai Airport land",
     "land investment Maharashtra",
     "plots near expressway",
@@ -33,14 +33,14 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: "https://plotzify.com",
     siteName: "Plotzify",
-    title: "Plotzify – Premium Land Investment in Panvel & Khalapur",
+    title: "Plotzify – Premium Land Investment in Panvel & Khalapur - Khopoli",
     description:
       "Verified land plots near Navi Mumbai Airport. Premium investment opportunities with clear title and road access.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Plotzify – Premium Land Investment",
-    description: "Verified land plots near Navi Mumbai Airport in Panvel & Khalapur.",
+    description: "Verified land plots near Navi Mumbai Airport in Panvel & Khalapur - Khopoli.",
   },
   robots: {
     index: true,

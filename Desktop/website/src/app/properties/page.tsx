@@ -76,7 +76,7 @@ export default function PropertiesPage() {
               Land Plots & Properties
             </h1>
             <p className="text-white/70">
-              {loadingProps ? "Loading properties..." : `${filtered.length} verified properties in Panvel & Khalapur`}
+              {loadingProps ? "Loading properties..." : `${filtered.length} verified properties in Panvel & Khalapur - Khopoli`}
             </p>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default function PropertiesPage() {
                 label="All Listings"
                 options={[
                   { value: "Panvel", label: "Panvel" },
-                  { value: "Khalapur", label: "Khalapur" },
+                  { value: "Khalapur - Khopoli", label: "Khalapur - Khopoli" },
                 ]}
               />
               {/* Budget */}

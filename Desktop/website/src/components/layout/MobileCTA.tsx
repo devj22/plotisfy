@@ -19,7 +19,7 @@ export default function MobileCTA() {
             <span className="text-[10px] font-semibold">Call</span>
           </a>
           <a
-            href="https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20plots%20in%20Panvel%2FKhalapur"
+            href="https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20plots%20in%20Panvel%2FKhalapur - Khopoli"
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-col items-center gap-1 py-3 text-[#25D366] hover:bg-[#F7F3ED] transition-colors active:bg-[#E2DDD6]"
@@ -135,7 +135,7 @@ function EnquiryPopup({ onClose }: { onClose: () => void }) {
                 >
                   <option value="">Any</option>
                   <option value="Panvel">Panvel</option>
-                  <option value="Khalapur">Khalapur</option>
+                  <option value="Khalapur - Khopoli">Khalapur - Khopoli</option>
                 </select>
               </div>
               <div>
