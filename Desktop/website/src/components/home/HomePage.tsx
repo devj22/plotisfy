@@ -586,20 +586,14 @@ function HeroEnquiryForm() {
             </div>
 
             {/* Buttons */}
-            <div className="grid grid-cols-2 gap-3 pt-1">
+            <div className="pt-1">
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center justify-center gap-2 bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors text-sm disabled:opacity-70"
+                className="w-full flex items-center justify-center gap-2 bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors text-sm disabled:opacity-70"
               >
                 {loading ? "Sending..." : <><Phone className="w-4 h-4" /> Contact Now</>}
               </button>
-              <Link
-                href="/properties"
-                className="flex items-center justify-center gap-2 bg-white/15 border border-white/25 text-white font-bold py-3 rounded-xl hover:bg-white/25 transition-colors text-sm"
-              >
-                <ArrowRight className="w-4 h-4" /> Explore
-              </Link>
             </div>
             <p className="text-center text-white/50 text-xs">Free · No spam · Response within 2 hours</p>
           </form>
