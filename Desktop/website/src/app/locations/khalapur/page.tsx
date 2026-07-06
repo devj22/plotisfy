@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     "Verified land plots in Khalapur - Khopoli, Maharashtra. Near Mumbai-Pune Expressway, ideal for weekend homes, farmhouses, and investment. Clear titles.",
 };
 
-export default async function Khalapur - KhopoliPage() {
-  const rows = await prisma.property.findMany({ where: { location: "Khalapur - Khopoli", published: true } }).catch(() => []);
+export default async function KhalaburPage() {
+  const rows = await prisma.property.findMany({ where: { location: "Khalapur", published: true } }).catch(() => []);
   const props = rows.map(mapDbProperty);
 
   return (

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function WhyInvestKhalapur - KhopoliPage() {
+export default function WhyInvestKhalapur() {
   redirect("/locations/khalapur");
 }
