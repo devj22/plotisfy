@@ -16,7 +16,7 @@ export default function FloatingWhatsApp() {
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png"
+        src="/whatsapp-icon.png"
         alt="WhatsApp"
         width={36}
         height={36}
