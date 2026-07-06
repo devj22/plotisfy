@@ -13,6 +13,7 @@ import {
   MapPin,
   Wallet,
   MessageSquare,
+  Trash2,
 } from "lucide-react";
 
 interface DbLead {
@@ -59,6 +60,16 @@ export default function LeadsPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  function deleteLead(id: string) {
+    if (!confirm("Delete this lead? This cannot be undone.")) return;
+    fetch(`/api/leads/${id}`, { method: "DELETE" })
+      .then(() => {
+        setLeads((prev) => prev.filter((l) => l.id !== id));
+        if (selectedLead?.id === id) setSelectedLead(null);
+      })
+      .catch(() => {});
+  }
 
   function updateLeadStatus(id: string, newStatus: string) {
     fetch(`/api/leads/${id}`, {
@@ -225,6 +236,9 @@ export default function LeadsPage() {
                               <button onClick={() => setSelectedLead(lead)} className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-[#B86A3C] hover:border-[#B86A3C] transition-colors" title="View details">
                                 <ArrowRight className="w-3.5 h-3.5" />
                               </button>
+                              <button onClick={() => deleteLead(lead.id)} className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-red-500 hover:border-red-300 transition-colors" title="Delete lead">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -314,6 +328,13 @@ export default function LeadsPage() {
               <div className="text-[#6B7B94] text-xs text-center">
                 Received on {new Date(selectedLead.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
               </div>
+
+              <button
+                onClick={() => deleteLead(selectedLead.id)}
+                className="w-full flex items-center justify-center gap-2 border border-red-200 text-red-500 text-sm font-semibold py-2.5 rounded-xl hover:bg-red-50 transition-colors"
+              >
+                <Trash2 className="w-4 h-4" /> Delete Lead
+              </button>
             </div>
           </div>
         )}
