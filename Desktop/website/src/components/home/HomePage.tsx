@@ -19,6 +19,8 @@ import {
   Building2,
   Users,
   Award,
+  MessageCircle,
+  Phone,
 } from "lucide-react";
 import PropertyCard from "@/components/properties/PropertyCard";
 import { TESTIMONIALS, INFRASTRUCTURE_HIGHLIGHTS, FAQS } from "@/lib/data";
@@ -72,54 +74,44 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 gradient-hero" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="max-w-3xl">
-            {/* Tag */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-              <span className="w-2 h-2 bg-[#B86A3C] rounded-full animate-pulse" />
-              Land Investment · Panvel & Khalapur · Maharashtra
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+            {/* Left — text */}
+            <div>
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+                <span className="w-2 h-2 bg-[#B86A3C] rounded-full animate-pulse" />
+                Land Investment · Panvel & Khalapur · Maharashtra
+              </div>
+
+              <h1 className="text-white text-4xl md:text-5xl lg:text-5xl font-bold leading-tight mb-6">
+                Invest in Land That's{" "}
+                <span className="text-[#B86A3C]">Ready to Grow</span>{" "}
+                With India
+              </h1>
+
+              <p className="text-white/80 text-lg leading-relaxed mb-8">
+                Premium verified plots in Panvel and Khalapur — next to India's newest international
+                airport, Atal Setu, and the Mumbai-Pune Expressway missing link.
+              </p>
+
+              {/* Trust Badges */}
+              <div className="flex flex-wrap gap-3">
+                {TRUST_BADGES.map((badge) => (
+                  <div
+                    key={badge.label}
+                    className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-lg"
+                  >
+                    <badge.icon className={`w-3.5 h-3.5 ${badge.color}`} />
+                    {badge.label}
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <h1 className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-              Invest in Land That's{" "}
-              <span className="text-[#B86A3C]">Ready to Grow</span>{" "}
-              With India
-            </h1>
-
-            <p className="text-white/80 text-lg md:text-xl leading-relaxed mb-8 max-w-2xl">
-              Premium verified plots in Panvel and Khalapur — next to India's newest international
-              airport, Atal Setu, and the Mumbai-Pune Expressway missing link.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <Link
-                href="/properties"
-                className="inline-flex items-center justify-center gap-2 bg-[#B86A3C] text-white font-bold text-base px-7 py-3.5 rounded-xl hover:bg-[#9a5630] transition-colors"
-              >
-                View Properties <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a
-                href="https://wa.me/918169693894"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border border-white/30 text-white font-bold text-base px-7 py-3.5 rounded-xl hover:bg-white/20 transition-colors"
-              >
-                💬 WhatsApp Now
-              </a>
-            </div>
-
-            {/* Trust Badges */}
-            <div className="flex flex-wrap gap-3">
-              {TRUST_BADGES.map((badge) => (
-                <div
-                  key={badge.label}
-                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-xs font-medium px-3 py-1.5 rounded-lg"
-                >
-                  <badge.icon className={`w-3.5 h-3.5 ${badge.color}`} />
-                  {badge.label}
-                </div>
-              ))}
+            {/* Right — enquiry form */}
+            <div className="w-full max-w-md mx-auto lg:mx-0 lg:ml-auto">
+              <HeroEnquiryForm />
             </div>
           </div>
         </div>
@@ -505,6 +497,115 @@ export default function HomePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function HeroEnquiryForm() {
+  const [name, setName] = useState("");
+  const [contact, setContact] = useState("");
+  const [requirement, setRequirement] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone: contact,
+          message: `Custom Requirement (Hero Form): ${requirement}`,
+        }),
+      });
+    } catch {}
+    setLoading(false);
+    setSubmitted(true);
+  }
+
+  return (
+    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl overflow-hidden shadow-2xl">
+      {/* Header */}
+      <div className="bg-white/10 px-6 py-4 border-b border-white/15">
+        <p className="text-[#B86A3C] text-xs font-bold uppercase tracking-widest mb-0.5">Custom Enquiry</p>
+        <h3 className="text-white font-bold text-lg leading-snug">
+          Have a custom requirement?{" "}
+          <span className="text-white/70 font-normal">Let us know!</span>
+        </h3>
+      </div>
+
+      <div className="px-6 py-5">
+        {submitted ? (
+          <div className="text-center py-6">
+            <div className="text-4xl mb-3">🎉</div>
+            <p className="text-white font-bold text-lg mb-1">We got your enquiry!</p>
+            <p className="text-white/70 text-sm mb-5">Our team will reach out within 2 hours.</p>
+            <a
+              href="https://wa.me/918169693894"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#25D366] text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-[#1eb558] transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" /> Continue on WhatsApp
+            </a>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <label className="block text-white/80 text-xs font-semibold mb-1">Name</label>
+              <input
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your full name"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/15"
+              />
+            </div>
+            <div>
+              <label className="block text-white/80 text-xs font-semibold mb-1">Contact</label>
+              <input
+                required
+                type="tel"
+                value={contact}
+                onChange={(e) => setContact(e.target.value)}
+                placeholder="Phone or WhatsApp number"
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/15"
+              />
+            </div>
+            <div>
+              <label className="block text-white/80 text-xs font-semibold mb-1">Requirement</label>
+              <textarea
+                rows={3}
+                value={requirement}
+                onChange={(e) => setRequirement(e.target.value)}
+                placeholder="e.g. 2 acres near highway, budget ₹5Cr, Panvel..."
+                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/15 resize-none"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-1">
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex items-center justify-center gap-2 bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors text-sm disabled:opacity-70"
+              >
+                {loading ? "Sending..." : <><Phone className="w-4 h-4" /> Contact Now</>}
+              </button>
+              <Link
+                href="/properties"
+                className="flex items-center justify-center gap-2 bg-white/15 border border-white/25 text-white font-bold py-3 rounded-xl hover:bg-white/25 transition-colors text-sm"
+              >
+                <ArrowRight className="w-4 h-4" /> Explore
+              </Link>
+            </div>
+            <p className="text-center text-white/50 text-xs">Free · No spam · Response within 2 hours</p>
+          </form>
+        )}
+      </div>
+    </div>
   );
 }
 
