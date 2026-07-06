@@ -72,12 +72,6 @@ export default function AdminDashboard() {
             <h1 className="text-[#0D2F5B] text-2xl font-bold">Dashboard</h1>
             <p className="text-[#6B7B94] text-sm">Good morning! Here's what's happening today.</p>
           </div>
-          <Link
-            href="/admin/leads/new"
-            className="flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#0a2347] transition-colors"
-          >
-            + Add Lead
-          </Link>
         </div>
 
         {/* Alerts */}
@@ -295,7 +289,6 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { label: "Add Property", href: "/admin/properties/new", icon: "🏗️" },
-                  { label: "Add Lead", href: "/admin/leads/new", icon: "👤" },
                   { label: "Schedule Visit", href: "/admin/site-visits/new", icon: "📅" },
                   { label: "Write Blog", href: "/admin/content/blogs/new", icon: "✍️" },
                 ].map((action) => (

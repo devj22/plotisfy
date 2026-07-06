@@ -191,7 +191,7 @@ export default function LeadsPage() {
                 </div>
               ) : (
                 <>
-                  <div className="hidden md:grid grid-cols-[1fr_140px_120px_120px_100px] gap-4 px-5 py-3 bg-[#F7F3ED] border-b border-[#E2DDD6] text-xs font-semibold text-[#6B7B94] uppercase tracking-wider">
+                  <div className="hidden md:grid grid-cols-[1fr_140px_120px_120px_130px] gap-4 px-5 py-3 bg-[#F7F3ED] border-b border-[#E2DDD6] text-xs font-semibold text-[#6B7B94] uppercase tracking-wider">
                     <div>Lead</div>
                     <div>Location / Budget</div>
                     <div>Status</div>
@@ -203,7 +203,7 @@ export default function LeadsPage() {
                       const cfg = STATUS_CONFIG[lead.leadStatus] ?? STATUS_CONFIG.new;
                       return (
                         <div key={lead.id} className="px-4 md:px-5 py-4 hover:bg-[#F7F3ED]/50 transition-colors">
-                          <div className="md:grid md:grid-cols-[1fr_140px_120px_120px_100px] md:gap-4 md:items-center">
+                          <div className="md:grid md:grid-cols-[1fr_140px_120px_120px_130px] md:gap-4 md:items-center">
                             <div className="flex items-center gap-3 mb-3 md:mb-0">
                               <div className="w-9 h-9 bg-[#0D2F5B] rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                                 {lead.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
