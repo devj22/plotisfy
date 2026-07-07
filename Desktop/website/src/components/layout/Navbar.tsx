@@ -13,6 +13,8 @@ const NAV_LINKS = [
       { label: "All Listings", href: "/properties" },
       { label: "Plots in Panvel", href: "/locations/panvel" },
       { label: "Plots in Khalapur - Khopoli", href: "/locations/khalapur" },
+      { label: "Gated Community Projects", href: "/gated-community" },
+      { label: "Land Deals", href: "/land-deals" },
       { label: "Map View", href: "/properties?view=map" },
     ],
   },

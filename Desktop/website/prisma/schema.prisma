@@ -58,6 +58,42 @@ model Blog {
   updatedAt      DateTime @updatedAt
 }
 
+model GatedProject {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  title       String
+  description String   @default("")
+  location    String
+  developer   String   @default("")
+  totalUnits  Int      @default(0)
+  priceMin    Float    @default(0)
+  priceMax    Float    @default(0)
+  amenities   String   @default("[]")
+  gallery     String   @default("[]")
+  status      String   @default("coming_soon")
+  featured    Boolean  @default(false)
+  published   Boolean  @default(false)
+  brochure    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Deal {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String    @default("")
+  propertySlug  String    @default("")
+  originalPrice Float     @default(0)
+  dealPrice     Float     @default(0)
+  validUntil    DateTime?
+  image         String?
+  badge         String    @default("")
+  published     Boolean   @default(false)
+  featured      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
 model Lead {
   id                 String   @id @default(auto()) @map("_id") @db.ObjectId
   name               String
