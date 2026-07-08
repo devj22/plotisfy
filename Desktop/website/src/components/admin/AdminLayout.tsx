@@ -18,7 +18,6 @@ import {
   ChevronRight,
   ChevronDown,
   Home,
-  Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -42,11 +41,6 @@ const NAV_ITEMS = [
     label: "Gated Projects",
     href: "/admin/gated-projects",
     icon: Home,
-  },
-  {
-    label: "Land Deals",
-    href: "/admin/land-deals",
-    icon: Tag,
   },
   {
     label: "Site Visits",
