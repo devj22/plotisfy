@@ -1,4 +1,5 @@
 import Link from "next/link";
+import TrackedContactLink from "@/components/ui/TrackedContactLink";
 
 export default function Footer() {
   return (
@@ -13,12 +14,14 @@ export default function Footer() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <a
+            <TrackedContactLink
               href="https://wa.me/918169693894"
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-white text-[#B86A3C] font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-[#F7F3ED] transition-colors"
             >
               💬 WhatsApp Us
-            </a>
+            </TrackedContactLink>
             <Link
               href="/book-site-visit"
               className="bg-[#0D2F5B] text-white font-semibold text-sm px-5 py-2.5 rounded-lg hover:bg-[#0a2347] transition-colors"
@@ -47,12 +50,12 @@ export default function Footer() {
               clear titles, expert guidance.
             </p>
             <div className="flex items-center gap-4 mt-6">
-              <a
+              <TrackedContactLink
                 href="tel:+918169693894"
                 className="text-sm text-white/70 hover:text-white transition-colors"
               >
                 📞 +91 81696 93894
-              </a>
+              </TrackedContactLink>
             </div>
             <div className="mt-2">
               <a

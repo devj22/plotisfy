@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
+import TrackedContactLink from "@/components/ui/TrackedContactLink";
 import { TESTIMONIALS, FAQS } from "@/lib/data";
 import { Star, Quote, BookOpen, HelpCircle, Phone, MessageCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -88,18 +89,20 @@ export default function AboutPage() {
               here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a
+              <TrackedContactLink
                 href="tel:+918169693894"
                 className="flex items-center justify-center gap-2 bg-[#0D2F5B] text-white font-semibold px-6 py-3 rounded-xl"
               >
                 <Phone className="w-4 h-4" /> Call Us
-              </a>
-              <a
+              </TrackedContactLink>
+              <TrackedContactLink
                 href="https://wa.me/918169693894"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-semibold px-6 py-3 rounded-xl"
               >
                 <MessageCircle className="w-4 h-4" /> WhatsApp
-              </a>
+              </TrackedContactLink>
               <Link
                 href="/contact"
                 className="flex items-center justify-center gap-2 border border-[#0D2F5B] text-[#0D2F5B] font-semibold px-6 py-3 rounded-xl hover:bg-[#0D2F5B] hover:text-white transition-colors"

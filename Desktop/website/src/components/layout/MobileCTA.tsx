@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Phone, MessageCircle, Calendar, FileText, X, ArrowRight, CheckCircle } from "lucide-react";
+import { reportConversion } from "@/lib/gtag";
 
 export default function MobileCTA() {
   const [showEnquiry, setShowEnquiry] = useState(false);
@@ -13,6 +14,7 @@ export default function MobileCTA() {
         <div className="grid grid-cols-4 divide-x divide-[#E2DDD6]">
           <a
             href="tel:+918169693894"
+            onClick={() => reportConversion()}
             className="flex flex-col items-center gap-1 py-3 text-[#0D2F5B] hover:bg-[#F7F3ED] transition-colors active:bg-[#E2DDD6]"
           >
             <Phone className="w-5 h-5" />
@@ -22,6 +24,7 @@ export default function MobileCTA() {
             href="https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20plots%20in%20Panvel%2FKhalapur - Khopoli"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => reportConversion()}
             className="flex flex-col items-center gap-1 py-3 text-[#25D366] hover:bg-[#F7F3ED] transition-colors active:bg-[#E2DDD6]"
           >
             <MessageCircle className="w-5 h-5" />
@@ -72,6 +75,7 @@ function EnquiryPopup({ onClose }: { onClose: () => void }) {
     } finally {
       setLoading(false);
       setSubmitted(true);
+      window.open("/thank-you", "_blank", "noopener,noreferrer");
     }
   }
 
@@ -95,6 +99,9 @@ function EnquiryPopup({ onClose }: { onClose: () => void }) {
             <p className="text-[#6B7B94] text-sm mb-4">Our team will contact you within 2 hours.</p>
             <a
               href="https://wa.me/918169693894"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => reportConversion()}
               className="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-xl text-sm"
             >
               <MessageCircle className="w-4 h-4" /> Continue on WhatsApp

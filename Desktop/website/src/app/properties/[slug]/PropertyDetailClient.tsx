@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Property } from "@/types";
 import { formatPrice } from "@/lib/utils";
+import { reportConversion } from "@/lib/gtag";
 
 const PRICE_KEY = "plotzify_price_unlocked";
 
@@ -48,6 +49,7 @@ export function PriceUnlockBanner({ property }: { property: Property }) {
         <a
           href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
           target="_blank" rel="noopener noreferrer"
+          onClick={() => reportConversion()}
           className="flex items-center gap-2 bg-[#25D366] text-white font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-[#1eb558] transition-colors flex-shrink-0"
         >
           <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
@@ -106,6 +108,7 @@ export function PriceSidebar({ property }: { property: Property }) {
     } catch {}
     setLoading(false);
     unlock();
+    window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   if (priceUnlocked) {
@@ -120,10 +123,10 @@ export function PriceSidebar({ property }: { property: Property }) {
           <span className="text-[#6B7B94] text-sm">₹{property.pricePerSqft.toLocaleString()} per sqft</span>
         </div>
         <div className="space-y-2.5">
-          <a href="tel:+918169693894" className="w-full flex items-center justify-center gap-2 bg-[#0D2F5B] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#0a2347] transition-colors">
+          <a href="tel:+918169693894" onClick={() => reportConversion()} className="w-full flex items-center justify-center gap-2 bg-[#0D2F5B] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#0a2347] transition-colors">
             <Phone className="w-4 h-4" /> Call Now
           </a>
-          <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors">
+          <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" onClick={() => reportConversion()} className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors">
             <MessageCircle className="w-4 h-4" /> WhatsApp Us
           </a>
           <Link href="/book-site-visit" className="w-full flex items-center justify-center gap-2 border-2 border-[#B86A3C] text-[#B86A3C] font-bold text-sm py-3 rounded-xl hover:bg-[#B86A3C] hover:text-white transition-colors">
@@ -159,7 +162,7 @@ export function PriceSidebar({ property }: { property: Property }) {
         <div className="relative flex items-center gap-2 py-1">
           <div className="flex-1 border-t border-[#E2DDD6]" /><span className="text-xs text-[#6B7B94]">or</span><div className="flex-1 border-t border-[#E2DDD6]" />
         </div>
-        <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20want%20to%20know%20the%20price%20of%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors">
+        <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20want%20to%20know%20the%20price%20of%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" onClick={() => reportConversion()} className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors">
           <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
         </a>
       </form>
@@ -262,6 +265,7 @@ function PriceModal({ property, onClose, onUnlocked }: { property: Property; onC
     localStorage.setItem(PRICE_KEY, "1");
     setLoading(false);
     setDone(true);
+    window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -285,7 +289,7 @@ function PriceModal({ property, onClose, onUnlocked }: { property: Property; onC
                 <p className="text-[#B86A3C] font-bold text-2xl mb-0.5">{formatPrice(property.priceTotal)}</p>
                 <p className="text-[#6B7B94] text-sm mb-5">₹{property.pricePerSqft.toLocaleString()} per sqft</p>
                 <div className="space-y-3">
-                  <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold px-5 py-3 rounded-xl text-sm hover:bg-[#1eb558] transition-colors">
+                  <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" onClick={() => reportConversion()} className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold px-5 py-3 rounded-xl text-sm hover:bg-[#1eb558] transition-colors">
                     <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
                   </a>
                   <button onClick={onUnlocked} className="w-full text-[#0D2F5B] text-sm font-semibold py-2 hover:underline">View full details →</button>
@@ -301,7 +305,7 @@ function PriceModal({ property, onClose, onUnlocked }: { property: Property; onC
                 <div className="relative flex items-center gap-2 py-1">
                   <div className="flex-1 border-t border-[#E2DDD6]" /><span className="text-xs text-[#6B7B94]">or</span><div className="flex-1 border-t border-[#E2DDD6]" />
                 </div>
-                <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20want%20to%20know%20the%20price%20of%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors">
+                <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20want%20to%20know%20the%20price%20of%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" onClick={() => reportConversion()} className="flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors">
                   <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
                 </a>
                 <p className="text-center text-xs text-[#6B7B94]">No spam · Free · Response within 2 hours</p>

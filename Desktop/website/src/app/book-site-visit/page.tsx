@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import { CheckCircle, Phone, MessageCircle, Calendar, MapPin, ArrowRight } from "lucide-react";
+import { reportConversion } from "@/lib/gtag";
 
 export default function BookSiteVisitPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -69,12 +70,16 @@ export default function BookSiteVisitPage() {
                 <div className="flex gap-3">
                   <a
                     href="tel:+918169693894"
+                    onClick={() => reportConversion()}
                     className="flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2.5 rounded-xl"
                   >
                     <Phone className="w-4 h-4" /> Call Us
                   </a>
                   <a
                     href="https://wa.me/918169693894?text=Hi%2C%20I%27d%20like%20to%20book%20a%20site%20visit"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => reportConversion()}
                     className="flex items-center gap-2 bg-[#25D366] text-white text-sm font-semibold px-4 py-2.5 rounded-xl"
                   >
                     <MessageCircle className="w-4 h-4" /> WhatsApp
@@ -96,6 +101,9 @@ export default function BookSiteVisitPage() {
                   </p>
                   <a
                     href="https://wa.me/918169693894"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => reportConversion()}
                     className="inline-flex items-center gap-2 mt-5 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-xl text-sm"
                   >
                     💬 Continue on WhatsApp
@@ -107,6 +115,7 @@ export default function BookSiteVisitPage() {
                   onSubmit={(e) => {
                     e.preventDefault();
                     setSubmitted(true);
+                    window.open("/thank-you", "_blank", "noopener,noreferrer");
                   }}
                 >
                   <h2 className="text-[#0D2F5B] font-bold text-lg">Request a Site Visit</h2>

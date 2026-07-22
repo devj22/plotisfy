@@ -19,7 +19,11 @@ export default function ContactForm() {
     <div className="bg-white rounded-2xl border border-[#E2DDD6] p-6">
       <h2 className="text-[#0D2F5B] font-bold text-lg mb-5">Send us a message</h2>
       <form
-        onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}
+        onSubmit={(e) => {
+          e.preventDefault();
+          setSubmitted(true);
+          window.open("/thank-you", "_blank", "noopener,noreferrer");
+        }}
         className="space-y-4"
       >
         <div className="grid grid-cols-2 gap-4">

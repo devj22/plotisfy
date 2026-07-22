@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { reportConversion } from "@/lib/gtag";
 
 const NAV_LINKS = [
   {
@@ -110,6 +111,7 @@ export default function Navbar() {
 
             <a
               href="tel:+918169693894"
+              onClick={() => reportConversion()}
               className="flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#0a2347] transition-colors"
             >
               📞 Call Now
@@ -163,12 +165,16 @@ export default function Navbar() {
             <div className="pt-4 border-t border-[#E2DDD6] grid grid-cols-2 gap-2">
               <a
                 href="tel:+918169693894"
+                onClick={() => reportConversion()}
                 className="flex items-center justify-center gap-1.5 bg-[#0D2F5B] text-white text-sm font-semibold px-3 py-2.5 rounded-lg"
               >
                 📞 Call
               </a>
               <a
                 href="https://wa.me/918169693894"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => reportConversion()}
                 className="flex items-center justify-center gap-1.5 bg-[#25D366] text-white text-sm font-semibold px-3 py-2.5 rounded-lg"
               >
                 💬 WhatsApp

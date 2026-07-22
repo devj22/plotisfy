@@ -6,6 +6,7 @@ import { MapPin, Maximize2, CheckCircle, MessageCircle, X, ArrowRight, Lock } fr
 import { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { reportConversion } from "@/lib/gtag";
 
 const PRICE_KEY = "plotzify_price_unlocked";
 
@@ -167,6 +168,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
               href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20${encodeURIComponent(property.title)}`}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => reportConversion()}
               className="flex items-center gap-1.5 border border-[#25D366] text-[#25D366] text-sm font-semibold px-3 py-2.5 rounded-lg hover:bg-[#25D366]/5 transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
@@ -229,6 +231,7 @@ function PriceUnlockModal({
     setLoading(false);
     setDone(true);
     onUnlocked();
+    window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -267,6 +270,7 @@ function PriceUnlockModal({
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => reportConversion()}
                   className="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-xl text-sm"
                 >
                   <MessageCircle className="w-4 h-4" /> Chat on WhatsApp

@@ -7,6 +7,7 @@ import MobileCTA from "@/components/layout/MobileCTA";
 import Link from "next/link";
 import { Tag, Clock, ArrowRight, MessageCircle, Phone, Flame } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { reportConversion } from "@/lib/gtag";
 
 interface Deal {
   id: string;
@@ -149,12 +150,14 @@ function DealCard({ deal }: { deal: Deal }) {
             href={`https://wa.me/918169693894?text=Hi%2C%20I%20am%20interested%20in%20the%20deal%3A%20${encodeURIComponent(deal.title)}`}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => reportConversion()}
             className="flex-1 flex items-center justify-center gap-1.5 bg-[#B86A3C] text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-[#9a5630] transition-colors"
           >
             <MessageCircle className="w-4 h-4" /> Grab Deal
           </a>
           <a
             href="tel:+918169693894"
+            onClick={() => reportConversion()}
             className="flex items-center justify-center gap-1.5 border border-[#E2DDD6] text-[#0D2F5B] text-sm font-semibold px-3 py-2.5 rounded-xl hover:bg-[#F7F3ED] transition-colors"
           >
             <Phone className="w-4 h-4" />
@@ -188,6 +191,7 @@ function ComingSoonState() {
           href="https://wa.me/918169693894?text=Hi%2C%20please%20notify%20me%20about%20upcoming%20land%20deals"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => reportConversion()}
           className="flex items-center gap-2 bg-[#25D366] text-white font-bold px-6 py-3 rounded-xl hover:bg-[#1eb558] transition-colors"
         >
           <MessageCircle className="w-4 h-4" /> Get Notified on WhatsApp

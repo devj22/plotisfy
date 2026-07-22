@@ -25,6 +25,7 @@ import {
 import PropertyCard from "@/components/properties/PropertyCard";
 import { TESTIMONIALS, INFRASTRUCTURE_HIGHLIGHTS, FAQS } from "@/lib/data";
 import { Property } from "@/types";
+import { reportConversion } from "@/lib/gtag";
 
 const TRUST_BADGES = [
   { icon: Shield, label: "Verified Docs", color: "text-[#2D7A4F]" },
@@ -523,6 +524,7 @@ function HeroEnquiryForm() {
     } catch {}
     setLoading(false);
     setSubmitted(true);
+    window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -546,6 +548,7 @@ function HeroEnquiryForm() {
               href="https://wa.me/918169693894"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => reportConversion()}
               className="inline-flex items-center gap-2 bg-[#25D366] text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-[#1eb558] transition-colors"
             >
               <MessageCircle className="w-4 h-4" /> Continue on WhatsApp
@@ -658,6 +661,9 @@ function EnquiryForm() {
         </p>
         <a
           href="https://wa.me/918169693894"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => reportConversion()}
           className="inline-flex items-center gap-2 mt-5 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-lg text-sm"
         >
           💬 Continue on WhatsApp
@@ -680,6 +686,7 @@ function EnquiryForm() {
     } finally {
       setLoading(false);
       setSubmitted(true);
+      window.open("/thank-you", "_blank", "noopener,noreferrer");
     }
   }
 

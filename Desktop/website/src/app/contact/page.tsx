@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
 import ContactForm from "./ContactForm";
+import TrackedContactLink from "@/components/ui/TrackedContactLink";
 import { Phone, Mail, MapPin } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -39,7 +40,11 @@ export default function ContactPage() {
                   <div>
                     <p className="text-[#6B7B94] text-xs font-medium uppercase tracking-wider">{item.label}</p>
                     {item.href ? (
-                      <a href={item.href} className="text-[#162338] font-semibold hover:text-[#0D2F5B]">{item.value}</a>
+                      item.href.startsWith("tel:") ? (
+                        <TrackedContactLink href={item.href} className="text-[#162338] font-semibold hover:text-[#0D2F5B]">{item.value}</TrackedContactLink>
+                      ) : (
+                        <a href={item.href} className="text-[#162338] font-semibold hover:text-[#0D2F5B]">{item.value}</a>
+                      )
                     ) : (
                       <p className="text-[#162338] font-semibold">{item.value}</p>
                     )}
@@ -47,12 +52,14 @@ export default function ContactPage() {
                 </div>
               ))}
               <div className="pt-4">
-                <a
+                <TrackedContactLink
                   href="https://wa.me/918169693894"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#1db955] transition-colors"
                 >
                   💬 Chat on WhatsApp
-                </a>
+                </TrackedContactLink>
               </div>
             </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { X, ArrowRight, CheckCircle, MessageCircle, MapPin, FileText, Calendar } from "lucide-react";
+import { reportConversion } from "@/lib/gtag";
 
 const STORAGE_KEY = "plotzify_lead_popup_dismissed";
 
@@ -88,6 +89,7 @@ export default function LeadPopup() {
       setLoading(false);
       setSubmitted(true);
       sessionStorage.setItem(STORAGE_KEY, "1");
+      window.open("/thank-you", "_blank", "noopener,noreferrer");
     }
   }
 
@@ -176,6 +178,7 @@ export default function LeadPopup() {
                   href="https://wa.me/918169693894"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => reportConversion()}
                   className="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-xl text-sm"
                 >
                   <MessageCircle className="w-4 h-4" /> Chat on WhatsApp
