@@ -25,6 +25,7 @@ interface DbLead {
   budgetRange: string;
   message: string;
   leadStatus: string;
+  feedback: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -52,6 +53,8 @@ export default function LeadsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("");
   const [selectedLead, setSelectedLead] = useState<DbLead | null>(null);
+  const [feedbackDraft, setFeedbackDraft] = useState("");
+  const [savingFeedback, setSavingFeedback] = useState(false);
 
   useEffect(() => {
     fetch("/api/leads")
@@ -60,6 +63,10 @@ export default function LeadsPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    setFeedbackDraft(selectedLead?.feedback ?? "");
+  }, [selectedLead?.id]);
 
   function deleteLead(id: string) {
     if (!confirm("Delete this lead? This cannot be undone.")) return;
@@ -83,6 +90,22 @@ export default function LeadsPage() {
         if (selectedLead?.id === id) setSelectedLead((prev) => prev ? { ...prev, leadStatus: updated.leadStatus } : prev);
       })
       .catch(() => {});
+  }
+
+  function saveFeedback(id: string) {
+    setSavingFeedback(true);
+    fetch(`/api/leads/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ feedback: feedbackDraft }),
+    })
+      .then((r) => r.json())
+      .then((updated) => {
+        setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, feedback: updated.feedback } : l)));
+        setSelectedLead((prev) => (prev && prev.id === id ? { ...prev, feedback: updated.feedback } : prev));
+      })
+      .catch(() => {})
+      .finally(() => setSavingFeedback(false));
   }
 
   const filtered = leads.filter((l) => {
@@ -313,6 +336,25 @@ export default function LeadsPage() {
                     <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>
                   ))}
                 </select>
+              </div>
+
+              {/* Call Feedback / Notes */}
+              <div>
+                <label className="block text-[#6B7B94] text-xs font-medium mb-2">Feedback / Call Notes</label>
+                <textarea
+                  value={feedbackDraft}
+                  onChange={(e) => setFeedbackDraft(e.target.value)}
+                  rows={4}
+                  placeholder="What did you discuss with this lead?"
+                  className="w-full text-sm border border-[#E2DDD6] rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
+                />
+                <button
+                  onClick={() => saveFeedback(selectedLead.id)}
+                  disabled={savingFeedback || feedbackDraft === selectedLead.feedback}
+                  className="mt-2 w-full bg-[#B86A3C] text-white text-sm font-semibold py-2 rounded-lg disabled:opacity-50 transition-colors"
+                >
+                  {savingFeedback ? "Saving..." : "Save Feedback"}
+                </button>
               </div>
 
               {/* Actions */}
