@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Locations – Panvel & Khalapur - Khopoli | Plotzify",
   description:
     "Explore premium land investment locations — Panvel near Navi Mumbai Airport and Khalapur - Khopoli on the Mumbai-Pune Expressway corridor.",
+  alternates: { canonical: "/locations" },
 };
 
 const LOCATIONS = [

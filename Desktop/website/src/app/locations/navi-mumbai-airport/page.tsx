@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Land Near Navi Mumbai Airport | Plotzify",
   description: "Invest in land plots near the upcoming Navi Mumbai International Airport. Verified listings with clear titles and road access.",
+  alternates: { canonical: "/locations/navi-mumbai-airport" },
 };
 
 export default function NaviMumbaiAirportPage() {

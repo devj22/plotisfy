@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Plots in Khalapur - Khopoli – Land Near Mumbai-Pune Expressway",
   description:
     "Verified land plots in Khalapur - Khopoli, Maharashtra. Near Mumbai-Pune Expressway, ideal for weekend homes, farmhouses, and investment. Clear titles.",
+  alternates: { canonical: "/locations/khalapur" },
 };
 
 export default async function KhalaburPage() {

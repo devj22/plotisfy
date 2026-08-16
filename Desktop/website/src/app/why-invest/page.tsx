@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Why Invest in Panvel & Khalapur - Khopoli Land | Plotzify",
   description: "Infrastructure tailwinds, appreciation history, and the investment case for land in Panvel and Khalapur - Khopoli, Maharashtra.",
+  alternates: { canonical: "/why-invest" },
 };
 
 export default function WhyInvestPage() {

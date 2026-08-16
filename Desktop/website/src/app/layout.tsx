@@ -27,11 +27,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Plotzify" }],
   creator: "Plotzify",
-  metadataBase: new URL("https://plotzify.com"),
+  metadataBase: new URL("https://www.plotzify.com"),
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://plotzify.com",
+    url: "https://www.plotzify.com",
     siteName: "Plotzify",
     title: "Plotzify – Premium Land Investment in Panvel & Khalapur - Khopoli",
     description:

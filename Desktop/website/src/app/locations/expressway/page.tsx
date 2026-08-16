@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Land Near Mumbai-Pune Expressway | Plotzify",
   description: "Invest in land plots near the Mumbai-Pune Expressway in Khalapur - Khopoli. Ideal for weekend homes, farmhouses, and long-term investment.",
+  alternates: { canonical: "/locations/expressway" },
 };
 
 export default function ExpresswayPage() {

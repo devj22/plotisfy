@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact Plotzify – Talk to Our Land Investment Team",
   description: "Get in touch with Plotzify. Call, WhatsApp, or email us to discuss land investment opportunities in Panvel and Khalapur - Khopoli.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

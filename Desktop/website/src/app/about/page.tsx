@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "About Plotzify – Premium Land Investment Platform",
   description:
     "Plotzify is Maharashtra's most transparent land investment platform. We verify every listing, explain every investment, and guide every buyer.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {

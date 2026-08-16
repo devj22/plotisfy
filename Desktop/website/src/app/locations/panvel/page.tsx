@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Plots in Panvel – Land Near Navi Mumbai Airport",
   description:
     "Verified land plots in Panvel, Maharashtra. Near Navi Mumbai International Airport and Atal Setu. Clear titles, road access, strong investment case.",
+  alternates: { canonical: "/locations/panvel" },
 };
 
 export default async function PanvelPage() {

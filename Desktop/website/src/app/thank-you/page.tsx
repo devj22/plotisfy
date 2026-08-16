@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Thank You | Plotzify",
   description: "Thanks for reaching out to Plotzify. Our team will contact you shortly.",
   robots: { index: false, follow: false },
+  alternates: { canonical: "/thank-you" },
 };
 
 export default function ThankYouPage() {

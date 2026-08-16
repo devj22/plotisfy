@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Service | Plotzify",
   description: "Terms and conditions for using Plotzify's land investment platform.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {
