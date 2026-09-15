@@ -5,6 +5,7 @@ import MobileCTA from "@/components/layout/MobileCTA";
 import TrackedContactLink from "@/components/ui/TrackedContactLink";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import BlogShareBar from "@/components/blog/BlogShareBar";
+import RichText from "@/components/blog/RichText";
 import { getBlogBySlug, getPublishedBlogs } from "@/lib/cms";
 import { estimateReadingMinutes, splitParagraphs, parseNumberedParagraph, initials } from "@/lib/blog";
 import Link from "next/link";
@@ -117,7 +118,7 @@ export default async function BlogPostPage({ params }: Props) {
                         <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#0D2F5B]/8 text-[#0D2F5B] text-xs font-bold flex items-center justify-center mt-0.5">
                           {numbered.number}
                         </span>
-                        <p className="text-[#2c3a4d] text-[16px] leading-[1.8]">{numbered.text}</p>
+                        <p className="text-[#2c3a4d] text-[16px] leading-[1.8]"><RichText text={numbered.text} /></p>
                       </div>
                     );
                   }
@@ -130,7 +131,7 @@ export default async function BlogPostPage({ params }: Props) {
                           : "text-[#2c3a4d] text-[16px] leading-[1.8] mb-5"
                       }
                     >
-                      {para}
+                      <RichText text={para} />
                     </p>
                   );
                 })}

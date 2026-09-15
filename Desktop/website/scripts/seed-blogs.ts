@@ -1,7 +1,9 @@
 /**
- * One-off bulk import for 35 SEO blog posts. Inserts everything as
- * published:false drafts (upsert by slug, so it's safe to re-run) — review
- * and publish each one from /admin/content/blogs.
+ * Bulk import for 50 SEO blog posts, auto-published (upsert by slug, so
+ * it's safe to re-run — edits here just update the matching post). Each
+ * post gets an auto-generated closing paragraph with inline links to
+ * related posts (`[label](/blog/slug)`), rendered as real links by
+ * src/components/blog/RichText.tsx.
  *
  * Usage: npx tsx scripts/seed-blogs.ts
  */
@@ -21,6 +23,34 @@ interface BlogSeed {
 }
 
 const AUTHOR = "Plotzify Research Team";
+
+/**
+ * Picks 3 related posts for internal linking: 2 from the same category
+ * (deterministic offset by array position, so re-runs are stable) plus 1
+ * from a different category for cross-pillar discovery. Excludes self.
+ */
+function pickRelated(current: BlogSeed, all: BlogSeed[]): BlogSeed[] {
+  const idx = all.findIndex((p) => p.slug === current.slug);
+  const sameCategory = all.filter((p) => p.slug !== current.slug && p.category === current.category);
+  const otherCategory = all.filter((p) => p.slug !== current.slug && p.category !== current.category);
+
+  const pick = (arr: BlogSeed[], n: number) => {
+    const result: BlogSeed[] = [];
+    for (let i = 0; i < n && i < arr.length; i++) result.push(arr[(idx + i) % arr.length]);
+    return result;
+  };
+
+  return [...pick(sameCategory, 2), ...pick(otherCategory, 1)];
+}
+
+/** Appends a natural closing paragraph with inline markdown links to related posts. */
+function withRelatedReading(post: BlogSeed, all: BlogSeed[]): string {
+  const related = pickRelated(post, all);
+  if (related.length < 3) return post.content;
+  const [a, b, c] = related;
+  const closing = `If you found this useful, you may also want to read [${a.title}](/blog/${a.slug}) and [${b.title}](/blog/${b.slug}). For a broader perspective, see [${c.title}](/blog/${c.slug}).`;
+  return `${post.content}\n\n${closing}`;
+}
 
 const posts: BlogSeed[] = [
   // ── A. Location / Infrastructure guides ──────────────────────────────
@@ -814,6 +844,368 @@ Interestingly, these two buyer types often end up choosing different specific pl
 
 If you're evaluating Khopoli and unsure which profile fits you, ask honestly whether you'd be satisfied owning this land even if the anticipated appreciation took longer than expected or moved on a different timeline than projected. If the answer is yes — because you'd genuinely use and enjoy a weekend home there regardless — a gated, amenity-rich plot likely suits you. If the honest answer is that the land only makes sense as a financial position, prioritize verified fundamentals and appreciation potential over lifestyle features, and be disciplined about the multi-year holding horizon that a pure investment thesis in an earlier-stage market like Khopoli genuinely requires.`,
   },
+
+  // ── F. Buyer education (round 2) ────────────────────────────────────
+  {
+    title: "Vastu Tips for Choosing a Plot: What Buyers in Maharashtra Look For",
+    slug: "vastu-tips-choosing-a-plot",
+    excerpt:
+      "Vastu considerations still shape plot-buying decisions across Maharashtra. Here's what buyers commonly look for, and how much weight to give it.",
+    category: "Buyer Guide",
+    tags: ["vastu", "plot selection", "buyer guide"],
+    seoTitle: "Vastu Tips for Choosing a Plot in Maharashtra | Plotzify",
+    seoDescription:
+      "What Vastu factors do land buyers in Maharashtra actually check before purchasing a plot? A practical, non-dogmatic guide.",
+    content: `Whatever your personal view on Vastu Shastra, it's a factor that shapes real buying and resale decisions across Maharashtra's land market, and ignoring it entirely can narrow your eventual resale pool even if you don't personally follow it. Here's what buyers commonly check, described practically rather than prescriptively.
+
+Plot shape is usually the first filter. A regular, rectangular or square plot is generally preferred over irregular shapes — not purely for Vastu reasons, but because irregular shapes are also genuinely harder to construct on efficiently, so the preference has a practical basis independent of belief. Extremely narrow or oddly angled plots tend to sell at a discount and take longer to move, for both Vastu-sensitive and purely practical buyers.
+
+Road-facing direction is the most commonly discussed Vastu factor. North and East-facing plots are frequently preferred in popular belief, and this preference does show up in observed pricing and demand patterns in many Maharashtra markets — see our dedicated comparison of [east-facing versus north-facing plots and their effect on resale value](/blog/east-north-facing-plot-resale-value) for a closer look at whether this translates into a measurable price difference.
+
+Slope and levelness matter both practically and in Vastu terms — a plot that's noticeably higher at the south/west and lower at the north/east is often considered favorable, and also happens to support easier natural drainage in monsoon-heavy regions like Khalapur and Khopoli, which is worth checking directly rather than relying on Vastu framing alone (our [monsoon diligence guide](/blog/monsoon-diligence-flood-waterlogging-risk) covers this from a purely practical angle).
+
+Corner plots draw mixed opinions — some Vastu practitioners flag specific corner orientations as less favorable, while from a pure real-estate standpoint corner plots often carry a premium for visibility and dual road access; our [corner plot vs mid-plot comparison](/blog/corner-plot-vs-mid-plot-investment) breaks down that trade-off separately from Vastu considerations.
+
+A practical recommendation: if Vastu matters to you personally, consult a practitioner before finalizing a specific plot rather than relying on generic rules, since Vastu assessment is genuinely plot-specific (surrounding structures, exact orientation, and land history all factor in). If it doesn't matter to you personally but you're thinking about resale, be aware that a meaningful share of buyers in this market do apply Vastu filters, so a plot that scores poorly on common Vastu preferences may take longer to sell or fetch a modest discount regardless of its other merits — worth factoring into your own price expectations either way.`,
+  },
+  {
+    title: "East Facing vs North Facing Plot: Does Vastu Affect Resale Value?",
+    slug: "east-north-facing-plot-resale-value",
+    excerpt:
+      "East and north-facing plots are widely believed to be premium. Does that belief actually show up in resale prices?",
+    category: "Buyer Guide",
+    tags: ["east facing plot", "north facing plot", "resale value", "vastu"],
+    seoTitle: "East vs North Facing Plot: Resale Value Impact | Plotzify",
+    seoDescription:
+      "Do east-facing and north-facing plots really command a resale premium in Maharashtra? A practical look at the evidence and the caveats.",
+    content: `Ask any broker in Maharashtra which plots sell fastest, and "east-facing" or "north-facing" comes up almost immediately. It's one of the most persistent beliefs in Indian real estate, rooted in Vastu Shastra, and it does have a measurable effect on buyer behavior — though the size of that effect is often overstated in casual conversation.
+
+The underlying belief is that east-facing plots (main entrance or road frontage facing east) receive favorable morning sunlight and are associated with prosperity and positive energy in Vastu tradition, while north-facing plots are similarly regarded favorably, particularly for commercial use. South and west-facing plots, by contrast, are more commonly discounted in popular belief, though far from universally avoided.
+
+In practice, this translates into real demand-side effects: a meaningfully large share of buyers — not all, but enough to matter — actively filter listings by facing direction, or ask about it as one of their first questions. That demand concentration means east and north-facing plots, all else equal, tend to sell faster and sometimes at a modest premium (commonly cited anecdotally in the range of a few percentage points, though this varies significantly by micro-market and buyer demographic, and isn't something that shows up as a clean, documented statistic).
+
+It's worth being clear-eyed about the caveats. First, facing direction is one factor among many — location, price, title clarity, and [road access](/blog/road-access-boundary-verification-matters) typically matter far more to a plot's overall value than facing direction alone. Second, the premium (where it exists) tends to be more pronounced for end-use residential buyers than for pure investors, who often prioritize appreciation fundamentals over Vastu preferences. Third, in fast-appreciating growth corridors like Panvel and Khopoli, where demand is driven primarily by infrastructure catalysts rather than end-user home-building, facing direction tends to matter less than it would in a mature, established residential market.
+
+The practical takeaway: don't pay a large premium purely for facing direction, but don't dismiss it either — if you're choosing between two otherwise comparable plots and one happens to be east or north-facing, it's a reasonable tie-breaker that may modestly help both livability appeal and eventual resale speed. For deeper guidance on plot selection beyond facing direction, see our broader [Vastu considerations for plot buyers](/blog/vastu-tips-choosing-a-plot).`,
+  },
+  {
+    title: "Monsoon Diligence: How to Check a Plot's Flood and Waterlogging Risk",
+    slug: "monsoon-diligence-flood-waterlogging-risk",
+    excerpt:
+      "A plot that looks perfect in dry season can become inaccessible or flood-prone in monsoon. Here's how to check before you buy.",
+    category: "Buyer Guide",
+    tags: ["monsoon", "flood risk", "waterlogging", "due diligence"],
+    seoTitle: "Monsoon Diligence: Flood & Waterlogging Risk Checklist",
+    seoDescription:
+      "How to check a plot's flood and waterlogging risk before buying land in Maharashtra, especially in the Panvel-Khalapur-Khopoli monsoon belt.",
+    content: `Maharashtra's western coastal belt, including the Panvel-Khalapur-Khopoli corridor, sees genuinely heavy monsoon rainfall — and a plot that looks perfectly fine on a dry-season site visit can behave very differently for three to four months of the year. This is one of the most commonly skipped diligence steps, largely because most site visits happen outside monsoon season.
+
+Start with topography. Low-lying plots, or plots situated at the base of a slope where water naturally collects, carry meaningfully higher waterlogging risk than plots on moderately elevated or well-drained ground. During your [site visit](/blog/site-visit-checklist-15-things), look for physical evidence even in dry season: watermarks on nearby walls or structures, silt deposits, unusually lush or water-loving vegetation concentrated in specific low patches, and the condition of any nearby drainage channels or nullahs.
+
+Proximity to water bodies matters, but so does the specific relationship — a plot near a river or stream isn't automatically high-risk if it sits well above the seasonal high-water mark, while a plot that seems far from any visible water source can still be at risk if it sits in a natural low-lying catchment area that fills during heavy rain. Ask locals specifically about monsoon behavior in that exact spot — long-term residents usually have direct memory of which areas flood and which don't, information that's rarely captured in any official document.
+
+Road access deserves separate monsoon-specific scrutiny. A road that's perfectly passable in dry season can become muddy, rutted, or partially washed out during heavy monsoon rain, particularly for unpaved or poorly maintained approach roads common in less-developed pockets of Khalapur and Khopoli. If possible, ask the seller or a local contact for photos or video of the access road during the previous monsoon season — a legitimate seller with nothing to hide should be able to provide this.
+
+Government flood-zone mapping, where available through local planning authorities, is worth checking, though coverage and detail vary significantly by area and isn't always comprehensive for smaller villages and less-developed zones. Where formal mapping isn't available, local knowledge and physical inspection remain your most reliable tools.
+
+Practically, if you're seriously considering a plot and can time it, a monsoon-season visit — even just once — provides information no amount of dry-season inspection or documentation can replace. If that's not feasible, prioritize plots with visible elevation advantage, confirmed all-weather road access, and direct testimony from long-term local residents about the specific plot's monsoon behavior.`,
+  },
+  {
+    title: "How to Resell Your Land: A Step-by-Step Guide for Plot Owners",
+    slug: "how-to-resell-your-land-guide",
+    excerpt:
+      "Selling land involves a different process than buying it. Here's a practical, step-by-step guide for plot owners planning an exit.",
+    category: "Investment Strategy",
+    tags: ["resell land", "exit strategy", "land sale process"],
+    seoTitle: "How to Resell Your Land: Step-by-Step Guide | Plotzify",
+    seoDescription:
+      "Planning to sell your land in Maharashtra? A complete, step-by-step guide to pricing, documentation, and the resale process.",
+    content: `Buying land gets most of the attention in investment guides, but eventually every land investor faces the other side of the transaction: selling. The resale process has its own logic, and being unprepared for it can cost you time and money even on a fundamentally good investment.
+
+Start with valuation. Before listing, get a realistic sense of current market pricing by checking recent comparable transactions in your specific micro-market — not just asking prices, which are often inflated, but actual closed transaction values where you can obtain them through local brokers, registration data, or platforms tracking real sales. Overpricing based on hope rather than data is the single most common reason land sits unsold for extended periods.
+
+Prepare your documentation before you list, not after a buyer shows interest. Have your registered sale deed, current [7/12 extract](/blog/7-12-extract-explained-verify-land-ownership), updated property tax receipts, and — if applicable — your original [encumbrance certificate](/blog/encumbrance-certificate-non-negotiable) from your own purchase readily available. A seller who can immediately produce clean documentation moves faster and commands more buyer confidence than one who scrambles to gather paperwork mid-negotiation.
+
+Decide your marketing channel. Options range from local brokers (who bring local buyer networks but charge commission, typically 1-2% split between parties, though this varies), to listing platforms, to word-of-mouth within your own network. For land in active growth corridors like Panvel or Khopoli, multiple channels simultaneously often works best, since buyer profiles differ (local buyers via brokers, outstation or NRI buyers via online platforms).
+
+When you receive an offer, the transaction structure mirrors a purchase in reverse: a token/booking agreement, then a formal sale agreement specifying price and terms, followed by registration. As the seller, you're now the one responsible for providing clean title — expect the buyer's side to run the same [title clearance](/blog/title-clearance-checklist-disputed-land) diligence you'd have run yourself when you bought, so having your documentation organized in advance meaningfully speeds up the process.
+
+Tax implications matter too: capital gains tax applies on land sales in India, with the rate and calculation depending on your holding period (long-term vs short-term capital gains) and applicable indexation benefits — consult a tax professional before finalizing a sale price, since post-tax proceeds can differ meaningfully from the headline sale price depending on your specific holding history.
+
+One practical tip specific to land (versus apartments): be patient with timeline expectations. Land transactions, even well-priced ones, often take longer to close than apartment sales, given the more involved title verification process buyers (rightly) insist on — budget for a longer sales cycle than you might expect from other asset classes.`,
+  },
+  {
+    title: "Post-Purchase Checklist: What to Do After You Buy Land in Maharashtra",
+    slug: "post-purchase-checklist-after-buying-land",
+    excerpt:
+      "Registration isn't the finish line. Here's everything a new landowner should do in the weeks and months after closing.",
+    category: "Buyer Guide",
+    tags: ["post-purchase", "new landowner", "checklist"],
+    seoTitle: "Post-Purchase Checklist for New Landowners | Plotzify",
+    seoDescription:
+      "What should you do immediately after buying land in Maharashtra? A complete post-purchase checklist for new landowners.",
+    content: `Closing a land purchase feels like the finish line, but a handful of post-purchase steps genuinely matter for protecting your investment and avoiding avoidable headaches later. Here's what to do in the weeks and months after registration.
+
+First, confirm the mutation (name transfer) on the 7/12 extract. Registration transfers legal ownership, but the revenue record itself needs to be formally updated to reflect you as the new owner — this update ("mutation") should generally happen automatically after registration in most parts of Maharashtra, but don't assume; pull a fresh 7/12 extract a few weeks after registration and confirm your name appears correctly. If it doesn't, follow up with the local revenue office (Talathi/Tehsildar) promptly, since delays here can complicate future transactions.
+
+Second, update property tax records. Ensure the local municipal or gram panchayat authority has your details on file as the current owner, and set up a system to track and pay property tax on schedule — unpaid property tax can accumulate and, in some cases, become a complication for future resale, and it's an easy thing to lose track of on land you're not actively using.
+
+Third, secure your documents. Keep your registered sale deed, encumbrance certificate, and updated 7/12 extract both physically (in a secure location, ideally with a copy stored separately) and digitally (scanned, backed up). You'll need these again for any future resale, financing, or dispute resolution, and reconstructing lost documentation is far more painful than storing it properly from the start.
+
+Fourth, if the land is currently vacant, consider basic boundary protection — fencing, boundary markers, or periodic physical checks — to guard against encroachment, which can happen even on legitimately-owned, clearly-titled land if it sits unused and unmonitored for extended periods, particularly in less-developed areas.
+
+Fifth, if you plan to build eventually, start the relevant approval process (building plan sanction, utility connections) well ahead of your intended construction timeline rather than waiting until you're ready to break ground — approval processes in most Maharashtra municipalities and planning authorities take meaningful time, and starting early avoids unnecessary delays.
+
+Finally, if your purchase was part of a broader [land banking](/blog/land-banking-101-long-term-wealth-strategy) strategy rather than immediate construction, set a periodic review reminder — annually is reasonable — to check on local infrastructure developments, zoning changes, and market pricing, so you stay informed on your investment's progress rather than treating it as entirely passive.`,
+  },
+  {
+    title: "Property Tax on Land in Maharashtra: What Owners Need to Know",
+    slug: "property-tax-on-land-maharashtra",
+    excerpt:
+      "Property tax obligations differ for agricultural versus NA land, and for vacant versus built plots. Here's what owners should know.",
+    category: "Legal & Documentation",
+    tags: ["property tax", "land tax", "Maharashtra"],
+    seoTitle: "Property Tax on Land in Maharashtra: Owner's Guide",
+    seoDescription:
+      "How does property tax work for land owners in Maharashtra? A guide covering agricultural land, NA land, and vacant plot taxation.",
+    content: `Property tax on land is one of those ongoing obligations that's easy to overlook after purchase, but unpaid or mismanaged property tax can create real complications for owners, particularly at resale time. Here's how it generally works for land in Maharashtra.
+
+For agricultural land, property tax as most buyers understand it (the kind levied by municipal corporations on urban property) typically doesn't apply in the same way — agricultural land is instead subject to land revenue, a different and generally much smaller levy administered through the revenue department, tied to the land's classification and area rather than a market-value assessment.
+
+Once land is converted to NA (non-agricultural) status, particularly within municipal corporation or council limits, it typically becomes subject to property tax administered by the relevant local body (municipal corporation, municipal council, or in some areas, gram panchayat), calculated based on factors that can include the land's area, location, and current use — vacant NA land is usually taxed differently (often at a lower rate) than land with completed construction, though specific rates and calculation methods vary by local authority and are periodically revised.
+
+For vacant plots specifically — NA land purchased but not yet built upon — many local authorities levy a vacant land tax, distinct from the tax applied once construction exists. This is worth budgeting for explicitly if you're holding land as part of a [land banking](/blog/land-banking-101-long-term-wealth-strategy) strategy over several years, since it's a genuine ongoing cost, even if modest, that accrues throughout your holding period.
+
+Practical steps for new owners: confirm which specific local authority has jurisdiction over your plot (this affects rates and payment processes), ensure your ownership details are correctly updated in that authority's records following your purchase (see our [post-purchase checklist](/blog/post-purchase-checklist-after-buying-land) for the full sequence), and set a reminder for whatever payment schedule applies — many authorities offer online payment portals, making this more convenient than it used to be, though older or smaller gram panchayat-administered areas may still require in-person payment.
+
+One common oversight: buyers sometimes assume property tax was fully settled by the previous owner at the time of sale, without confirming this directly. Always request proof of property tax payment up to the date of sale as part of your purchase documentation (this should be on your [documents checklist](/blog/documents-required-buy-land-maharashtra) regardless), and follow up to ensure there's no lingering dues gap between the previous owner's last payment and your registration date — an unresolved gap can technically become your responsibility as the new owner.`,
+  },
+  {
+    title: "Leasing Out Agricultural Land: Rules and Realities for Landowners",
+    slug: "leasing-agricultural-land-rules",
+    excerpt:
+      "Can you lease out agricultural land in Maharashtra, and does it make financial sense while you wait for appreciation? Here's what to know.",
+    category: "Legal & Documentation",
+    tags: ["leasing land", "agricultural land", "tenancy"],
+    seoTitle: "Leasing Out Agricultural Land in Maharashtra: Rules",
+    seoDescription:
+      "Rules and practical realities of leasing agricultural land in Maharashtra — tenancy law risks, income potential, and alternatives.",
+    content: `If you own agricultural land you're holding for future appreciation or eventual conversion, leasing it out for cultivation in the meantime can seem like an obvious way to generate some income rather than leaving it idle. In Maharashtra specifically, this comes with a legal wrinkle worth understanding before you do it.
+
+Maharashtra's tenancy laws, developed historically to protect cultivating tenants, create meaningful risk for landowners who lease out agricultural land informally or for extended periods. Under certain historical tenancy protections, a tenant who cultivates land for a qualifying period can, in some circumstances, acquire rights that complicate the owner's ability to reclaim the land — this is a legacy of land reform-era legislation, and while its practical application has narrowed over time and varies by specific circumstances, it remains a genuine consideration that makes many landowners and legal advisors cautious about long-term or informal agricultural leasing arrangements in this state.
+
+This doesn't mean leasing is impossible or always risky — short-term, clearly documented leasing arrangements (often structured as seasonal or crop-specific agreements rather than open-ended tenancy) are common and generally lower-risk, particularly when done through a properly drafted agreement rather than an informal handshake arrangement. The key risk factors are informality and duration: undocumented arrangements and long, continuous occupation by the same cultivator are what create the conditions under which tenancy-rights complications have historically arisen.
+
+If you're considering leasing agricultural land you own, a few practical safeguards are worth discussing with a local property lawyer: use short-term, clearly time-bound written agreements rather than open-ended informal arrangements; consider rotating or varying arrangements rather than the same tenant cultivating continuously for many years; and keep clear documentation establishing that the relationship is a lease, not an implicit long-term tenancy.
+
+From a pure income standpoint, agricultural leasing income tends to be modest — agricultural land lease rates are generally low relative to the land's potential appreciation value in a growth corridor like Panvel or Khopoli, so leasing is better thought of as a way to offset minor holding costs (land revenue, occasional maintenance) rather than a significant income stream. If your land is NA rather than agricultural, leasing dynamics and risk profile differ substantially, since NA land isn't subject to the same agricultural tenancy framework — worth confirming your land's exact classification (see our [NA vs agricultural land guide](/blog/na-land-vs-agricultural-land-maharashtra)) before assuming either the risks or the income potential of leasing apply to your specific parcel.`,
+  },
+  {
+    title: "How to Spot an Overpriced Plot: A Practical Pricing Framework",
+    slug: "how-to-spot-overpriced-plot",
+    excerpt:
+      "Not every 'good deal' is one, and not every high asking price is unjustified. A practical framework for judging plot pricing.",
+    category: "Investment Strategy",
+    tags: ["plot pricing", "overpriced land", "valuation"],
+    seoTitle: "How to Spot an Overpriced Plot: Pricing Framework",
+    seoDescription:
+      "A practical framework for judging whether a plot's asking price is fair, overpriced, or an underpriced red flag.",
+    content: `Land pricing is less standardized than apartment pricing — there's no fixed per-square-foot rate card, no easily comparable identical units, and asking prices in fast-moving markets like Panvel and Khopoli can vary widely even for genuinely similar plots. Here's a practical framework for judging whether a specific asking price makes sense.
+
+Start with genuine comparables, not just nearby listings. Recent closed transaction prices for similar plots (comparable size, location, road access, and title status) in the immediate vicinity are far more reliable than other sellers' current asking prices, which are frequently aspirational rather than realistic. Local brokers, registration data where accessible, and platforms tracking actual sales are better sources than a simple survey of what else is currently listed nearby.
+
+Adjust for the specific plot's fundamentals relative to those comparables. A plot with confirmed NA status, clean title, and strong road access legitimately deserves a premium over an otherwise similar plot that's still agricultural, has title complications, or has questionable access — see our guides on [NA vs agricultural land](/blog/na-land-vs-agricultural-land-maharashtra) and [road access verification](/blog/road-access-boundary-verification-matters) for what specifically to check. A price gap between two nearby plots isn't automatically suspicious; it may simply reflect a real difference in these fundamentals.
+
+Watch for both directions of pricing red flag. An asking price significantly above recent comparables, without a clear justification (superior specific location, confirmed upcoming infrastructure, exceptional title clarity), suggests either an uninformed or opportunistic seller — worth pushing back on with your own comparable data during negotiation. But an asking price significantly below comparables is its own red flag, often signaling title issues, access problems, or [gunthewari](/blog/gunthewari-land-maharashtra-explained) status the seller hasn't disclosed upfront — investigate before assuming you've found a genuine bargain.
+
+Factor in your own total cost, not just the headline price. A cheaper plot with unclear NA status that will require conversion costs and delays, or a plot with unconfirmed road access that may require negotiating an easement, can end up costing more in total than a pricier plot with everything already resolved — compare total landed cost, not just the asking price per square foot.
+
+Finally, be skeptical of urgency-based pricing arguments ("price going up next week," "another buyer interested") used to pressure a quick decision without allowing time for your own comparable research and [title verification](/blog/title-clearance-checklist-disputed-land) — legitimate sellers and reputable platforms should give you reasonable time to do proper diligence, and aggressive urgency tactics are more often a sign of a problem than a genuine opportunity.`,
+  },
+  {
+    title: "Corner Plot vs Mid-Plot: Which Is the Better Investment?",
+    slug: "corner-plot-vs-mid-plot-investment",
+    excerpt:
+      "Corner plots often command a premium — but is that premium always worth paying? A practical comparison for investors.",
+    category: "Buyer Guide",
+    tags: ["corner plot", "mid-plot", "plot comparison"],
+    seoTitle: "Corner Plot vs Mid-Plot: Which Is the Better Investment?",
+    seoDescription:
+      "Corner plots command a price premium in most Indian real estate markets. Is it always worth paying? A practical comparison.",
+    content: `Corner plots have a well-established reputation for commanding a price premium in Indian real estate, and that reputation generally holds up — but whether paying that premium makes sense depends on what you're actually optimizing for as a buyer or investor.
+
+The case for corner plots is fairly intuitive. Dual road frontage typically means better visibility (valuable if there's any future commercial use potential), often more design and construction flexibility (multiple access points, more favorable Vastu orientation options given two facing directions to choose from), and generally stronger resale demand, since corner plots appeal to a broader buyer pool than an equivalent mid-block plot.
+
+That premium is real but variable — commonly cited in the range of 10-20% over comparable mid-plots in many markets, though this varies significantly based on the specific location, the roads involved (a corner on two minor internal roads commands less premium than a corner on a main road and a side street), and local market conventions. Before assuming a corner plot is automatically worth its asking premium, compare it against genuine mid-plot comparables in the same immediate area, similar to the approach in our [overpriced plot framework](/blog/how-to-spot-overpriced-plot).
+
+Corner plots aren't without downsides worth weighing. They often have somewhat less usable interior area relative to their total size once required setbacks on two road-facing sides are accounted for, compared to a similarly-sized mid-plot with setback requirements on fewer sides. Noise and traffic exposure can also be higher on busier corners, a consideration if personal use (rather than pure investment) is part of your plan.
+
+For a pure investment thesis focused on appreciation and resale liquidity, corner plots' broader buyer appeal is a genuine advantage worth the typical premium, provided the premium itself is reasonable relative to comparables. For buyers prioritizing maximum usable built area or personal use in a quieter setting, a well-located mid-plot can be the better fit, particularly if it allows you to secure comparable land area at a lower total cost.
+
+As always, plot-specific fundamentals — title clarity, [road access legality](/blog/road-access-boundary-verification-matters), zoning status — matter more than the corner-versus-mid-plot distinction alone. A corner plot with title issues is still a worse investment than a clean mid-plot, regardless of the positional premium either would otherwise command.`,
+  },
+  {
+    title: "What Is a Layout Plan and Why You Should Always Ask for One",
+    slug: "what-is-a-layout-plan-plotted-development",
+    excerpt:
+      "A sanctioned layout plan is one of the most important documents in a plotted development purchase. Here's what it shows and why it matters.",
+    category: "Legal & Documentation",
+    tags: ["layout plan", "plotted development", "approvals"],
+    seoTitle: "What Is a Layout Plan? Why Buyers Should Always Ask",
+    seoDescription:
+      "A sanctioned layout plan confirms a plotted development's roads, plot boundaries, and approvals. Here's why every buyer should request one.",
+    content: `If you're buying a plot within a larger plotted development — whether a formal gated township or an informally subdivided parcel — the single most revealing document you can request is the sanctioned layout plan, yet it's one of the most commonly skipped checks among buyers focused mainly on their individual plot.
+
+A layout plan is the formally approved subdivision map for the entire parcel of land being developed into individual plots. It shows the boundaries and dimensions of every plot in the development, the road network connecting them, designated areas for common amenities or open space (if any), and critically, confirms that the subdivision itself has been approved by the relevant planning authority — whether that's a municipal corporation, CIDCO for NAINA-area developments, or another applicable body depending on location.
+
+Why does this matter so much? Without a sanctioned layout plan, you're effectively buying land based on informal boundary descriptions from the seller or developer, with no independent confirmation that the roads, plot divisions, and any promised amenities are legally recognized rather than just marketing representations. This is closely related to the risks covered in our [gunthewari land guide](/blog/gunthewari-land-maharashtra-explained) — unsanctioned subdivisions carry real regularization risk, even when individual plots within them are being actively marketed and sold.
+
+When you request a layout plan, check a few specific things: that your specific plot's dimensions and boundaries match what's shown in the sanctioned plan (not just what the seller verbally describes), that the road providing access to your plot is actually part of the approved layout (not an informal path that might not survive future development), and that the plan bears the actual approval stamp/reference from the relevant authority, not just an unofficial site plan prepared by the developer without formal sanction.
+
+For organized, larger plotted townships, a sanctioned layout plan is also often a prerequisite for [MahaRERA registration](/blog/rera-plotted-development-protection) where applicable — if a project claims RERA registration, the layout plan should be part of the registered project documentation, verifiable independently through the MahaRERA portal.
+
+Practically: never finalize a purchase within any plotted development — gated township or informal subdivision — without seeing and verifying the sanctioned layout plan against your specific plot. It's one of the fastest, most decisive checks available for distinguishing a properly approved development from one carrying meaningful regulatory risk.`,
+  },
+  {
+    title: "Buying Land Jointly With Family: Ownership Structures Explained",
+    slug: "buying-land-jointly-with-family",
+    excerpt:
+      "Joint family purchases are common in India, but the ownership structure you choose has real legal and practical consequences.",
+    category: "Legal & Documentation",
+    tags: ["joint ownership", "family purchase", "co-ownership"],
+    seoTitle: "Buying Land Jointly With Family: Ownership Structures",
+    seoDescription:
+      "Joint ownership structures for buying land with family in India — co-ownership, HUF, and what to clarify before you buy together.",
+    content: `Pooling resources with family members to buy land is common practice, particularly for larger parcels that would be difficult to afford individually. But the specific ownership structure you choose has real consequences — for decision-making while you hold the land, and for what happens at resale or in the event of a dispute — and it's worth understanding the options before registration, not after.
+
+The simplest and most common structure is co-ownership as tenants-in-common, where each buyer's name appears on the sale deed with a specified (or implicitly equal) ownership share. Each co-owner can, in principle, deal with their own share independently — including potentially selling or transferring it — though in practice, selling a partial undivided share in land is difficult to find buyers for, which creates a practical (if not always legal) requirement for consensus among co-owners for most major decisions.
+
+An alternative structure, relevant for Hindu families specifically, is purchasing through a Hindu Undivided Family (HUF), a distinct legal entity recognized under Indian tax and property law with its own PAN and the ability to hold property collectively. HUF ownership has specific tax implications (income and capital gains attributed to the HUF entity rather than individuals) and specific rules governing how property can be dealt with, including the rights of coparceners — this is a more specialized structure worth discussing with a tax advisor and lawyer familiar with HUF law specifically, rather than defaulting into it without understanding the implications.
+
+Regardless of structure, a few practical steps meaningfully reduce future friction. Document ownership shares explicitly and in writing at the time of purchase, even among family members who trust each other completely — verbal understandings about "who really owns what percentage" are a common source of dispute years later, particularly if family relationships or financial circumstances change. Clarify decision-making rules in advance: what happens if one co-owner wants to sell and others don't, how disagreements will be resolved, and who's responsible for ongoing costs like property tax.
+
+For the [7/12 extract](/blog/7-12-extract-explained-verify-land-ownership) itself, confirm all co-owners' names are correctly and completely recorded — an incomplete or informally-understood ownership record is exactly the kind of gap that surfaces as a costly problem at resale or inheritance, when all original co-owners need to be located and their consent obtained for any transaction involving the land.`,
+  },
+  {
+    title: "Digital Land Records in Maharashtra: Bhulekh, Mahabhumi & e-Records Explained",
+    slug: "digital-land-records-maharashtra-bhulekh-mahabhumi",
+    excerpt:
+      "Maharashtra's digital land record systems make independent verification easier than ever. Here's how to actually use them.",
+    category: "Legal & Documentation",
+    tags: ["Bhulekh", "Mahabhumi", "digital land records", "Maharashtra"],
+    seoTitle: "Digital Land Records in Maharashtra: Full Guide",
+    seoDescription:
+      "How to use Maharashtra's digital land record systems — Bhulekh, Mahabhumi, and related e-record portals — to verify land before buying.",
+    content: `One of the genuinely positive developments in Maharashtra land buying over the past decade is the digitization of land records, which now makes independent verification far more accessible than it used to be — buyers no longer need to rely entirely on physical visits to revenue offices or take a seller's documentation at face value.
+
+Maharashtra's primary digital land records portal, commonly referred to through the Mahabhumi/Bhulekh system, allows anyone to look up a property's [7/12 extract](/blog/7-12-extract-explained-verify-land-ownership) online using the village name, survey/gat number, or owner name. This is the single most useful independent check available to a buyer — rather than trusting a photocopy provided by a seller or broker, you can pull the current record directly and compare.
+
+Beyond the basic 7/12 lookup, related digital systems provide property card access for non-agricultural land in urban and semi-urban areas (distinct from the agricultural-focused 7/12 system), and in some areas, digitized encumbrance search facilities that reduce (though don't fully eliminate) the need for an in-person visit to the Sub-Registrar's office to check for registered mortgages or charges.
+
+A few practical notes on using these systems effectively. Digital records are generally reliable for current ownership and classification status, but historical depth and completeness can vary by area — some regions have more thoroughly digitized older records than others, so a digital search alone shouldn't fully replace a title chain review through physical documents for a comprehensive check, particularly for higher-value transactions. Spelling variations in village or owner names (common given transliteration from Marathi/Devanagari script) can also complicate searches — try multiple reasonable spelling variants if an initial search doesn't return expected results, rather than assuming the record doesn't exist.
+
+For buyers evaluating land in specific growth corridors like Panvel, Khalapur, or Khopoli, these digital tools are worth using proactively even before you've identified a specific plot — searching by village name can help you get a general sense of local land classification patterns and ownership structures in an area you're considering, informing your search before you're deep into negotiation on a specific parcel.
+
+Digital records are a powerful independent verification tool, but they work best combined with — not instead of — the fuller [title clearance process](/blog/title-clearance-checklist-disputed-land), including encumbrance certificates and, for significant purchases, a lawyer's formal review.`,
+  },
+  {
+    title: "Common Land Fraud Tactics in Maharashtra and How to Avoid Them",
+    slug: "common-land-fraud-tactics-maharashtra",
+    excerpt:
+      "Land fraud follows recognizable patterns. Knowing them is one of the best defenses a buyer has, alongside proper documentation checks.",
+    category: "Buyer Guide",
+    tags: ["land fraud", "buyer protection", "due diligence"],
+    seoTitle: "Common Land Fraud Tactics in Maharashtra & How to Avoid Them",
+    seoDescription:
+      "Recognizable land fraud patterns in Maharashtra real estate, and the specific diligence steps that protect buyers against each one.",
+    content: `Most land fraud isn't especially sophisticated — it tends to follow a handful of recognizable patterns that proper diligence, already covered across our other guides, is specifically designed to catch. Understanding these patterns explicitly, though, helps buyers recognize warning signs faster and take diligence more seriously rather than treating it as bureaucratic box-checking.
+
+Fake or forged ownership documents are among the most direct forms of fraud — a seller presenting a forged 7/12 extract, sale deed, or power of attorney claiming ownership or authority they don't actually have. This is precisely why independently pulling your own [7/12 extract](/blog/7-12-extract-explained-verify-land-ownership) from the official digital portal, rather than accepting a seller's photocopy, is such an important safeguard — a genuinely forged document rarely survives independent verification against the official record.
+
+Selling the same plot to multiple buyers is another recognized pattern, particularly with land that hasn't yet been formally partitioned among family co-owners, or where a fraudulent seller counts on the slow pace of registration to complete multiple parallel "sales" before any single buyer completes formal registration. A thorough [encumbrance certificate](/blog/encumbrance-certificate-non-negotiable) check and prompt registration after your sale agreement reduce this risk meaningfully.
+
+Misrepresenting land classification — describing agricultural land as NA, or exaggerating how advanced a conversion or layout approval process actually is — is common enough that our [NA vs agricultural land guide](/blog/na-land-vs-agricultural-land-maharashtra) exists specifically to help buyers verify this independently rather than relying on a seller's characterization.
+
+Selling land without full co-owner consent — one family member selling jointly-owned land without the knowledge or agreement of other legal co-owners — is a particularly common source of later disputes, since the sale can be challenged by the non-consenting co-owners even after registration. Always confirm all names on the 7/12 extract and require documented consent from every listed owner.
+
+Misrepresenting road access — showing a buyer an informal path as if it were a permanent legal right of way — is covered in depth in our [road access verification guide](/blog/road-access-boundary-verification-matters), and remains one of the more common ways buyers end up with land that's technically theirs but practically difficult to use.
+
+The consistent theme across all these patterns: independent verification, rather than trust in a seller's or broker's representations, is what actually protects buyers. None of these fraud types typically survive a buyer who insists on pulling their own documents, checking co-owner consent directly, and physically verifying access — which is exactly why the diligence process, however tedious it feels, is worth taking seriously on every transaction, not just ones that feel suspicious.`,
+  },
+  {
+    title: "Plot Size Guide: How Much Land Do You Actually Need?",
+    slug: "plot-size-guide-how-much-land-you-need",
+    excerpt:
+      "From a small weekend-home plot to a multi-acre investment parcel, here's how to think about sizing your land purchase to your actual goal.",
+    category: "Investment Strategy",
+    tags: ["plot size", "land size guide", "buyer guide"],
+    seoTitle: "Plot Size Guide: How Much Land Do You Actually Need?",
+    seoDescription:
+      "How much land should you actually buy? A practical sizing guide for weekend homes, primary residences, and pure investment plots.",
+    content: `Plot size decisions often come down to budget alone, but sizing your purchase to your actual intended use — rather than simply buying as much as you can afford — usually leads to a better outcome, whether your goal is a future home, a weekend retreat, or a pure investment holding.
+
+For a future primary residence, sizing depends heavily on your construction plans and the applicable [FSI](/blog/fsi-zoning-rules-before-buying-plot) in your specific location. A useful starting point: work backward from your desired built-up area and typical local FSI to estimate minimum plot size, then add margin for setbacks, open space, and future flexibility (a garden, parking, potential future extension) rather than sizing to the absolute construction minimum.
+
+For a weekend or second home, buyers often oversize relative to actual need, drawn by the appeal of "more land" without a clear plan for using it. A more useful question is how much outdoor/garden space you'll genuinely use and maintain — a smaller, well-chosen plot with good access and surroundings frequently makes for a more satisfying weekend property than a much larger plot that ends up mostly unused and requires more effort to maintain.
+
+For pure investment purposes — [land banking](/blog/land-banking-101-long-term-wealth-strategy) with no near-term construction plan — sizing becomes more about capital allocation and risk management than personal use. Larger single parcels concentrate risk in one location and one set of title/access fundamentals; splitting the same budget across two or three smaller plots in different micro-markets (for instance, one in Panvel and one in Khopoli) diversifies that risk, though it also means running full diligence on multiple parcels rather than one, which adds time and legal cost proportionally.
+
+For agricultural or larger investment parcels, be aware that minimum plot size restrictions sometimes apply for certain land classifications or transaction types under Maharashtra land law — a parcel that seems attractively priced per acre may face restrictions on further subdivision, relevant if your eventual plan involves splitting or partially reselling the land.
+
+A practical framework: define your actual intended use first (residence, weekend home, pure investment, or some mix), estimate the realistic size that use requires with reasonable margin, and resist the pull of "bigger is always better" — a well-located, properly-sized, fully-verified plot generally serves an investor better than a larger but harder-to-diligence, harder-to-eventually-resell parcel bought mainly because the per-acre price looked attractive.`,
+  },
+  {
+    title: "FAQs: Answers to the 20 Questions We Get Asked Most About Buying Land",
+    slug: "faqs-buying-land-maharashtra",
+    excerpt:
+      "A consolidated answer sheet to the questions we hear most often from first-time land buyers in Panvel and Khalapur-Khopoli.",
+    category: "Buyer Guide",
+    tags: ["FAQ", "buyer guide", "land buying questions"],
+    seoTitle: "Land Buying FAQs: 20 Most Common Questions Answered",
+    seoDescription:
+      "The 20 questions we get asked most often about buying land in Maharashtra, answered in one place for quick reference.",
+    content: `1. Is NMIA actually operational now? Yes — Navi Mumbai International Airport began commercial flights in December 2025 and reached full daily operations by early-to-mid 2026, with a growing roster of domestic and international carriers. See our [NMIA impact guide](/blog/nmia-2026-land-prices-panvel-khopoli) for details.
+
+2. Should I buy in Panvel or Khopoli? It depends on your priorities — Panvel offers more established infrastructure and liquidity at a higher price point; Khopoli offers earlier-stage pricing with a longer expected appreciation horizon. Our [Panvel vs Khopoli vs Khalapur comparison](/blog/panvel-vs-khopoli-vs-khalapur-2026) breaks this down fully.
+
+3. What's the difference between NA and agricultural land? NA land is approved for construction; agricultural land requires a conversion process first. See our [full explainer](/blog/na-land-vs-agricultural-land-maharashtra).
+
+4. Do I need a lawyer to buy land? It's strongly recommended, particularly for title verification and sale deed review, even though it's not strictly mandatory for every transaction.
+
+5. What documents should I always ask for? At minimum: 7/12 extract, encumbrance certificate, and prior sale deeds establishing the ownership chain. Full list in our [documents checklist](/blog/documents-required-buy-land-maharashtra).
+
+6. How much should I budget beyond the plot price? Plan for roughly 6-8% additional for stamp duty, registration, and legal fees — details in our [stamp duty guide](/blog/stamp-duty-registration-charges-maharashtra-2026).
+
+7. Can I get a loan for land? Yes, for NA land intended for near-term construction, though typically at lower loan-to-value ratios and higher rates than home loans — see our [financing guide](/blog/loan-to-buy-plot-financing-guide).
+
+8. What is gunthewari land? Unauthorized, unapproved land subdivision — generally best avoided due to regularization risk. Full explanation in our [gunthewari guide](/blog/gunthewari-land-maharashtra-explained).
+
+9. Is land or an apartment a better investment? Land has historically shown stronger appreciation in growth corridors like Panvel, but offers no rental income and less liquidity — see our [full comparison](/blog/land-vs-apartment-roi-navi-mumbai).
+
+10. Can NRIs buy land in Maharashtra? Yes for NA/residential land, generally not for agricultural land without special approval — details in our [NRI guide](/blog/nri-guide-buying-land-maharashtra).
+
+11. What is RERA's role in plotted developments? Larger organized plotted townships typically require MahaRERA registration; standalone resale plots usually don't. See our [RERA explainer](/blog/rera-plotted-development-protection).
+
+12. How do I verify road access is legal? Confirm a documented right of way, not just a visible path — full guidance in our [road access guide](/blog/road-access-boundary-verification-matters).
+
+13. What's a fair price for land in this area? Compare recent actual transaction prices, not just other listings' asking prices — our [pricing framework](/blog/how-to-spot-overpriced-plot) covers this in depth.
+
+14. Do I need to visit the plot in person? Yes, always — our [site visit checklist](/blog/site-visit-checklist-15-things) covers exactly what to check.
+
+15. What happens after I register the sale deed? Confirm the 7/12 mutation reflects your ownership, update property tax records, and secure your documents — see our [post-purchase checklist](/blog/post-purchase-checklist-after-buying-land).
+
+16. Should I worry about monsoon flooding? Yes, it's worth checking specifically — see our [monsoon diligence guide](/blog/monsoon-diligence-flood-waterlogging-risk).
+
+17. Is a corner plot worth the premium? Often yes for resale liquidity, but compare against genuine mid-plot comparables first — see our [corner plot comparison](/blog/corner-plot-vs-mid-plot-investment).
+
+18. Can multiple family members buy land together? Yes, through co-ownership or HUF structures, each with different implications — see our [joint ownership guide](/blog/buying-land-jointly-with-family).
+
+19. How do I check land records myself online? Maharashtra's digital land record portals allow independent 7/12 lookups — see our [digital records guide](/blog/digital-land-records-maharashtra-bhulekh-mahabhumi).
+
+20. What are the most common ways buyers get defrauded? Forged documents, multiple sales of the same plot, and misrepresented access or classification — all covered, with specific defenses, in our [land fraud guide](/blog/common-land-fraud-tactics-maharashtra).
+
+Have a question not covered here? Reach out to our team directly — we're happy to walk through your specific situation.`,
+  },
 ];
 
 async function main() {
@@ -821,22 +1213,25 @@ async function main() {
   let updated = 0;
 
   for (const post of posts) {
+    const content = withRelatedReading(post, posts);
+    const shared = {
+      title: post.title,
+      excerpt: post.excerpt,
+      content,
+      author: AUTHOR,
+      category: post.category,
+      tags: JSON.stringify(post.tags),
+      published: true,
+      seoTitle: post.seoTitle,
+      seoDescription: post.seoDescription,
+    };
+
+    // `update` intentionally omits featuredImage so any image an admin has
+    // already set for a post via /admin/content/blogs survives a re-run.
     const result = await prisma.blog.upsert({
       where: { slug: post.slug },
-      create: {
-        title: post.title,
-        slug: post.slug,
-        excerpt: post.excerpt,
-        content: post.content,
-        author: AUTHOR,
-        category: post.category,
-        tags: JSON.stringify(post.tags),
-        featuredImage: null,
-        published: false,
-        seoTitle: post.seoTitle,
-        seoDescription: post.seoDescription,
-      },
-      update: {},
+      create: { ...shared, slug: post.slug, featuredImage: null },
+      update: shared,
     });
     if (result.createdAt.getTime() === result.updatedAt.getTime()) {
       created++;
@@ -845,7 +1240,7 @@ async function main() {
     }
   }
 
-  console.log(`Done. ${created} new drafts created, ${updated} already existed (skipped).`);
+  console.log(`Done. ${created} new posts created, ${updated} existing posts updated — all published.`);
 }
 
 main()
