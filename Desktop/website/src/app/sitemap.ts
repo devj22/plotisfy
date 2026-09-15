@@ -1,6 +1,11 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
+// Without this, Next.js treats sitemap.ts as fully static and freezes it at
+// build time — deleted/unpublished properties and blogs then keep 404ing
+// from the sitemap indefinitely until the next deploy. Regenerate hourly.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.plotzify.com";
 
