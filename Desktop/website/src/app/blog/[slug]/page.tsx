@@ -63,12 +63,12 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="relative max-w-4xl mx-auto">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1 text-sm text-white/60 hover:text-white font-medium mb-5 transition-colors"
+              className="flex w-fit items-center gap-1 text-sm text-white/60 hover:text-white font-medium mb-5 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" /> All posts
             </Link>
             <span className="text-[#B86A3C] text-xs font-bold uppercase tracking-widest">{post.category}</span>
-            <h1 className="text-3xl md:text-[2.75rem] font-bold mt-3 mb-4 leading-tight">{post.title}</h1>
+            <h1 className="text-white text-3xl md:text-[2.75rem] font-bold mt-3 mb-4 leading-tight">{post.title}</h1>
             <p className="text-white/75 text-lg leading-relaxed max-w-2xl">{post.excerpt}</p>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mt-7 pt-6 border-t border-white/10">
               <div className="flex items-center gap-2.5">
@@ -157,7 +157,7 @@ export default async function BlogPostPage({ params }: Props) {
           {/* Sidebar */}
           <aside className="lg:sticky lg:top-24 space-y-5">
             <div className="bg-[#0D2F5B] rounded-2xl p-6 text-white">
-              <h3 className="font-bold text-lg leading-snug mb-1.5">Have questions about this?</h3>
+              <h3 className="text-white font-bold text-lg leading-snug mb-1.5">Have questions about this?</h3>
               <p className="text-white/60 text-sm mb-5">
                 Talk to our land investment team — no pressure, just facts.
               </p>
