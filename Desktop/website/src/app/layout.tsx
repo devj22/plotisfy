@@ -57,10 +57,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakarta.variable} h-full antialiased`}>
       <head>
-        {/* Google tag (gtag.js) - Google Ads AW-18224971112 */}
+        {/* Google tag (gtag.js) - Google Analytics G-9G2ZJGJEKR + Google Ads AW-18224971112 */}
         <script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=AW-18224971112"
+          src="https://www.googletagmanager.com/gtag/js?id=G-9G2ZJGJEKR"
         />
         <script
           dangerouslySetInnerHTML={{
@@ -68,6 +68,7 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
+              gtag('config', 'G-9G2ZJGJEKR');
               gtag('config', 'AW-18224971112');
             `,
           }}
