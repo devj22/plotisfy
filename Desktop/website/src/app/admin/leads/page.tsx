@@ -14,6 +14,7 @@ import {
   Wallet,
   MessageSquare,
   Trash2,
+  Download,
 } from "lucide-react";
 
 interface DbLead {
@@ -55,6 +56,7 @@ export default function LeadsPage() {
   const [selectedLead, setSelectedLead] = useState<DbLead | null>(null);
   const [feedbackDraft, setFeedbackDraft] = useState("");
   const [savingFeedback, setSavingFeedback] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     fetch("/api/leads")
@@ -108,6 +110,51 @@ export default function LeadsPage() {
       .finally(() => setSavingFeedback(false));
   }
 
+  async function downloadExcel(rows: DbLead[]) {
+    setExporting(true);
+    try {
+      // Loaded on demand so the spreadsheet library stays out of the page bundle.
+      const { default: ExcelJS } = await import("exceljs");
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet("Leads");
+      ws.columns = [
+        { header: "Date", key: "createdAt", width: 18, style: { numFmt: "dd-mmm-yyyy hh:mm" } },
+        { header: "Name", key: "name", width: 24 },
+        { header: "Phone", key: "phone", width: 16 },
+        { header: "Email", key: "email", width: 28 },
+        { header: "Location Preference", key: "locationPreference", width: 22 },
+        { header: "Budget", key: "budgetRange", width: 16 },
+        { header: "Status", key: "status", width: 16 },
+        { header: "Message", key: "message", width: 50 },
+        { header: "Call Notes / Feedback", key: "feedback", width: 50 },
+      ];
+      for (const l of rows) {
+        ws.addRow({
+          ...l,
+          createdAt: new Date(l.createdAt),
+          status: STATUS_CONFIG[l.leadStatus]?.label ?? l.leadStatus,
+        });
+      }
+      ws.getRow(1).font = { bold: true };
+      ws.views = [{ state: "frozen", ySplit: 1 }];
+      ws.autoFilter = { from: "A1", to: "I1" };
+      ws.getColumn("message").alignment = { wrapText: true, vertical: "top" };
+      ws.getColumn("feedback").alignment = { wrapText: true, vertical: "top" };
+
+      const buf = await wb.xlsx.writeBuffer();
+      const url = URL.createObjectURL(
+        new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+      );
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `plotzify-leads-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   const filtered = leads.filter((l) => {
     const matchSearch =
       !search ||
@@ -133,6 +180,14 @@ export default function LeadsPage() {
                   {filtered.length} leads · {leads.filter((l) => l.leadStatus === "new").length} new
                 </p>
               </div>
+              <button
+                onClick={() => downloadExcel(filtered)}
+                disabled={exporting || filtered.length === 0}
+                className="flex items-center gap-2 bg-[#0D2F5B] text-white text-sm font-semibold px-4 py-2.5 rounded-xl hover:bg-[#0D2F5B]/90 transition-colors disabled:opacity-50"
+              >
+                <Download className="w-4 h-4" />
+                {exporting ? "Preparing…" : `Download Excel (${filtered.length})`}
+              </button>
             </div>
 
             {/* Filters */}
