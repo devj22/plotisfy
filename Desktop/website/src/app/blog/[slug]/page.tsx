@@ -7,7 +7,7 @@ import ReadingProgress from "@/components/blog/ReadingProgress";
 import BlogShareBar from "@/components/blog/BlogShareBar";
 import RichText from "@/components/blog/RichText";
 import { getBlogBySlug, getPublishedBlogs } from "@/lib/cms";
-import { estimateReadingMinutes, splitParagraphs, parseNumberedParagraph, initials } from "@/lib/blog";
+import { estimateReadingMinutes, splitParagraphs, parseBlock, initials } from "@/lib/blog";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ChevronLeft, ChevronRight, Calendar, Clock, Phone, MessageCircle } from "lucide-react";
@@ -98,7 +98,7 @@ export default async function BlogPostPage({ params }: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.featuredImage}
-              alt=""
+              alt={post.title}
               className="w-full rounded-2xl shadow-lg object-cover max-h-96"
             />
           </div>
@@ -111,14 +111,70 @@ export default async function BlogPostPage({ params }: Props) {
             {paragraphs.length > 0 ? (
               <div>
                 {paragraphs.map((para, i) => {
-                  const numbered = parseNumberedParagraph(para);
-                  if (numbered) {
+                  const block = parseBlock(para);
+                  if (block.type === "h2") {
+                    return (
+                      <h2 key={i} className="text-[#0D2F5B] text-2xl font-bold leading-snug mt-10 mb-4">
+                        <RichText text={block.text} />
+                      </h2>
+                    );
+                  }
+                  if (block.type === "h3") {
+                    return (
+                      <h3 key={i} className="text-[#162338] text-lg font-bold leading-snug mt-7 mb-3">
+                        <RichText text={block.text} />
+                      </h3>
+                    );
+                  }
+                  if (block.type === "img") {
+                    return (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={i} src={block.src} alt={block.alt} loading="lazy" className="w-full rounded-xl my-7" />
+                    );
+                  }
+                  if (block.type === "ul") {
+                    return (
+                      <ul key={i} className="mb-6 space-y-2.5">
+                        {block.items.map((item, j) => (
+                          <li key={j} className="flex gap-3 text-[#2c3a4d] text-[16px] leading-[1.75]">
+                            <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#B86A3C] mt-[0.7em]" />
+                            <span><RichText text={item} /></span>
+                          </li>
+                        ))}
+                      </ul>
+                    );
+                  }
+                  if (block.type === "table") {
+                    return (
+                      <div key={i} className="overflow-x-auto mb-6 rounded-xl border border-[#E2DDD6]">
+                        <table className="w-full text-sm text-left">
+                          <thead className="bg-[#F7F3ED] text-[#0D2F5B]">
+                            <tr>
+                              {block.head.map((h, j) => (
+                                <th key={j} className="px-4 py-3 font-semibold"><RichText text={h} /></th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {block.rows.map((row, r) => (
+                              <tr key={r} className="border-t border-[#E2DDD6] align-top">
+                                {row.map((cell, j) => (
+                                  <td key={j} className="px-4 py-3 text-[#2c3a4d] leading-relaxed"><RichText text={cell} /></td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    );
+                  }
+                  if (block.type === "numbered") {
                     return (
                       <div key={i} className="flex gap-3.5 mb-5">
                         <span className="flex-shrink-0 w-7 h-7 rounded-full bg-[#0D2F5B]/8 text-[#0D2F5B] text-xs font-bold flex items-center justify-center mt-0.5">
-                          {numbered.number}
+                          {block.number}
                         </span>
-                        <p className="text-[#2c3a4d] text-[16px] leading-[1.8]"><RichText text={numbered.text} /></p>
+                        <p className="text-[#2c3a4d] text-[16px] leading-[1.8]"><RichText text={block.text} /></p>
                       </div>
                     );
                   }
