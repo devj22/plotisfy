@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Phone, MessageCircle, Calendar, FileText, X, ArrowRight, CheckCircle } from "lucide-react";
 import { reportConversion } from "@/lib/gtag";
+import { useLeadSubmission } from "@/lib/use-lead-submission";
 
 export default function MobileCTA() {
   const [showEnquiry, setShowEnquiry] = useState(false);
@@ -58,25 +59,15 @@ function EnquiryPopup({ onClose }: { onClose: () => void }) {
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { submit, loading, error } = useLeadSubmission("mobile_enquiry");
   const [submitted, setSubmitted] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, locationPreference: location, budgetRange: budget, message }),
-      });
-    } catch {
-      // show success anyway
-    } finally {
-      setLoading(false);
-      setSubmitted(true);
-      window.open("/thank-you", "_blank", "noopener,noreferrer");
-    }
+    const saved = await submit({ name, phone, locationPreference: location, budgetRange: budget, message });
+    if (!saved) return;
+    setSubmitted(true);
+    window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -169,6 +160,7 @@ function EnquiryPopup({ onClose }: { onClose: () => void }) {
                 className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
               />
             </div>
+            {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
             <button
               type="submit"
               disabled={loading}

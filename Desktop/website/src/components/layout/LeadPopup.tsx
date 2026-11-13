@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { X, ArrowRight, CheckCircle, MessageCircle, MapPin, FileText, Calendar } from "lucide-react";
 import { reportConversion } from "@/lib/gtag";
+import { useLeadSubmission } from "@/lib/use-lead-submission";
 
 const STORAGE_KEY = "plotzify_lead_popup_dismissed";
 
@@ -13,7 +14,7 @@ export default function LeadPopup() {
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [budget, setBudget] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { submit, loading, error } = useLeadSubmission("site_popup");
   const [submitted, setSubmitted] = useState(false);
 
   // Track whether popup has already been triggered this session
@@ -70,27 +71,17 @@ export default function LeadPopup() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          locationPreference: location,
-          budgetRange: budget,
-          message: `Website popup lead (trigger: ${triggerType})`,
-        }),
-      });
-    } catch {
-      // show success anyway
-    } finally {
-      setLoading(false);
-      setSubmitted(true);
-      sessionStorage.setItem(STORAGE_KEY, "1");
-      window.open("/thank-you", "_blank", "noopener,noreferrer");
-    }
+    const saved = await submit({
+      name,
+      phone,
+      locationPreference: location,
+      budgetRange: budget,
+      message: `Website popup lead (trigger: ${triggerType})`,
+    });
+    if (!saved) return;
+    setSubmitted(true);
+    sessionStorage.setItem(STORAGE_KEY, "1");
+    window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   if (!visible) return null;
@@ -251,6 +242,7 @@ export default function LeadPopup() {
                   </div>
                 </div>
 
+                {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
                 <button
                   id="popup-submit-btn"
                   type="submit"

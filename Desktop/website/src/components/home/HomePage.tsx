@@ -26,6 +26,7 @@ import PropertyCard from "@/components/properties/PropertyCard";
 import { TESTIMONIALS, INFRASTRUCTURE_HIGHLIGHTS, FAQS } from "@/lib/data";
 import { Property } from "@/types";
 import { reportConversion } from "@/lib/gtag";
+import { useLeadSubmission } from "@/lib/use-lead-submission";
 
 const TRUST_BADGES = [
   { icon: Shield, label: "Verified Docs", color: "text-[#2D7A4F]" },
@@ -505,24 +506,17 @@ function HeroEnquiryForm() {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [requirement, setRequirement] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { submit, loading, error } = useLeadSubmission("home_hero_form");
   const [submitted, setSubmitted] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone: contact,
-          message: `Custom Requirement (Hero Form): ${requirement}`,
-        }),
-      });
-    } catch {}
-    setLoading(false);
+    const saved = await submit({
+      name,
+      phone: contact,
+      message: `Custom Requirement (Hero Form): ${requirement}`,
+    });
+    if (!saved) return;
     setSubmitted(true);
     window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
@@ -590,6 +584,7 @@ function HeroEnquiryForm() {
 
             {/* Buttons */}
             <div className="pt-1">
+              {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
               <button
                 type="submit"
                 disabled={loading}
@@ -642,7 +637,7 @@ function SmartSearch() {
 
 function EnquiryForm() {
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { submit, loading, error } = useLeadSubmission("home_enquiry_form");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [locationPreference, setLocationPreference] = useState("");
@@ -674,20 +669,10 @@ function EnquiryForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, locationPreference, budgetRange, message }),
-      });
-    } catch {
-      // still show success to user even if save fails
-    } finally {
-      setLoading(false);
-      setSubmitted(true);
-      window.open("/thank-you", "_blank", "noopener,noreferrer");
-    }
+    const saved = await submit({ name, phone, locationPreference, budgetRange, message });
+    if (!saved) return;
+    setSubmitted(true);
+    window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -760,6 +745,7 @@ function EnquiryForm() {
         />
       </div>
 
+      {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
       <button
         type="submit"
         disabled={loading}

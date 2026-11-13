@@ -212,7 +212,7 @@ function ShortlistForm({ locationPreset }: { locationPreset: string }) {
         setStatus("saved");
         // Only now, after the server confirmed the save, is the lead reported.
         if (!data.duplicate) {
-          reportLeadSubmitted(data.leadId, { budget: form.budget, location: form.location });
+          reportLeadSubmitted(data.leadId, { lead_source: "land_near_mumbai", budget_band: form.budget, preferred_location: form.location });
         }
         return;
       }

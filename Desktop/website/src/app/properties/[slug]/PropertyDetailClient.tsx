@@ -9,6 +9,7 @@ import {
 import { Property } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { reportConversion } from "@/lib/gtag";
+import { useLeadSubmission } from "@/lib/use-lead-submission";
 
 const PRICE_KEY = "plotzify_price_unlocked";
 
@@ -94,19 +95,12 @@ export function PriceSidebar({ property }: { property: Property }) {
   const { priceUnlocked, unlock } = useLocalPriceUnlock();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { submit, loading, error } = useLeadSubmission("price_unlock_sidebar");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, message: `Price unlock — property detail: ${property.title}` }),
-      });
-    } catch {}
-    setLoading(false);
+    const saved = await submit({ name, phone, message: `Price unlock — property detail: ${property.title}` });
+    if (!saved) return;
     unlock();
     window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
@@ -156,6 +150,7 @@ export function PriceSidebar({ property }: { property: Property }) {
       <form onSubmit={handleSubmit} className="p-5 space-y-3">
         <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name *" className={inputCls} />
         <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone Number *" className={inputCls} />
+        {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
         <button type="submit" disabled={loading} className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70">
           {loading ? "Unlocking..." : <><span>Unlock Price & Details</span><ArrowRight className="w-4 h-4" /></>}
         </button>
@@ -253,17 +248,14 @@ export function PropertyGallery({ gallery, title }: { gallery: string[]; title: 
 function PriceModal({ property, onClose, onUnlocked }: { property: Property; onClose: () => void; onUnlocked: () => void }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { submit, loading, error } = useLeadSubmission("price_unlock_modal");
   const [done, setDone] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await fetch("/api/leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, phone, message: `Price unlock — property detail page: ${property.title}` }) });
-    } catch {}
+    const saved = await submit({ name, phone, message: `Price unlock — property detail page: ${property.title}` });
+    if (!saved) return;
     localStorage.setItem(PRICE_KEY, "1");
-    setLoading(false);
     setDone(true);
     window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
@@ -299,6 +291,7 @@ function PriceModal({ property, onClose, onUnlocked }: { property: Property; onC
               <form onSubmit={handleSubmit} className="space-y-3">
                 <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name *" className={inputCls} />
                 <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone Number *" className={inputCls} />
+                {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
                 <button type="submit" disabled={loading} className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70">
                   {loading ? "Unlocking..." : <><span>Unlock Price</span><ArrowRight className="w-4 h-4" /></>}
                 </button>

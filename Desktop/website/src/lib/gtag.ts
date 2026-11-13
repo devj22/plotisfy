@@ -32,7 +32,7 @@ const LEAD_FORM_CONVERSION_LABEL = "hBfuCKG0ic8cEOj6q_JD";
  * de-duplicates conversions that share a transaction_id. Never pass names,
  * phone numbers or messages here.
  */
-export function reportLeadSubmitted(leadId: string, details: { budget: string; location: string }) {
+export function reportLeadSubmitted(leadId: string, details: Record<string, string>) {
   if (typeof window === "undefined" || typeof window.gtag !== "function") return;
   if (LEAD_FORM_CONVERSION_LABEL) {
     window.gtag("event", "conversion", {
@@ -40,10 +40,5 @@ export function reportLeadSubmitted(leadId: string, details: { budget: string; l
       transaction_id: leadId,
     });
   }
-  window.gtag("event", "generate_lead", {
-    send_to: "G-9G2ZJGJEKR",
-    lead_source: "land_near_mumbai",
-    budget_band: details.budget,
-    preferred_location: details.location,
-  });
+  window.gtag("event", "generate_lead", { send_to: "G-9G2ZJGJEKR", ...details });
 }

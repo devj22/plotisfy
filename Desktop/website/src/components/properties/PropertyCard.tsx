@@ -7,6 +7,7 @@ import { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { reportConversion } from "@/lib/gtag";
+import { useLeadSubmission } from "@/lib/use-lead-submission";
 
 const PRICE_KEY = "plotzify_price_unlocked";
 
@@ -210,25 +211,18 @@ function PriceUnlockModal({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { submit, loading, error } = useLeadSubmission("price_unlock_card");
   const [done, setDone] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          message: `Price unlock request for: ${propertyTitle}`,
-        }),
-      });
-    } catch {}
+    const saved = await submit({
+      name,
+      phone,
+      message: `Price unlock request for: ${propertyTitle}`,
+    });
+    if (!saved) return;
     localStorage.setItem(PRICE_KEY, "1");
-    setLoading(false);
     setDone(true);
     onUnlocked();
     window.open("/thank-you", "_blank", "noopener,noreferrer");
@@ -293,6 +287,7 @@ function PriceUnlockModal({
                   placeholder="Phone Number *"
                   className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
                 />
+                {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
                 <button
                   type="submit"
                   disabled={loading}
