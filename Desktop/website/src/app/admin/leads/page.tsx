@@ -27,6 +27,17 @@ interface DbLead {
   message: string;
   leadStatus: string;
   feedback: string;
+  intendedUse?: string;
+  timeline?: string;
+  landArea?: string;
+  source?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  gclid?: string;
+  gbraid?: string;
+  wbraid?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -127,6 +138,15 @@ export default function LeadsPage() {
         { header: "Status", key: "status", width: 16 },
         { header: "Message", key: "message", width: 50 },
         { header: "Call Notes / Feedback", key: "feedback", width: 50 },
+        { header: "Intended Use", key: "intendedUse", width: 24 },
+        { header: "Timeline", key: "timeline", width: 16 },
+        { header: "Land Area", key: "landArea", width: 16 },
+        { header: "Source", key: "source", width: 18 },
+        { header: "UTM Source", key: "utmSource", width: 14 },
+        { header: "UTM Medium", key: "utmMedium", width: 14 },
+        { header: "UTM Campaign", key: "utmCampaign", width: 22 },
+        { header: "UTM Term", key: "utmTerm", width: 22 },
+        { header: "GCLID", key: "gclid", width: 30 },
       ];
       for (const l of rows) {
         ws.addRow({
@@ -137,7 +157,7 @@ export default function LeadsPage() {
       }
       ws.getRow(1).font = { bold: true };
       ws.views = [{ state: "frozen", ySplit: 1 }];
-      ws.autoFilter = { from: "A1", to: "I1" };
+      ws.autoFilter = { from: "A1", to: "R1" };
       ws.getColumn("message").alignment = { wrapText: true, vertical: "top" };
       ws.getColumn("feedback").alignment = { wrapText: true, vertical: "top" };
 
@@ -368,6 +388,22 @@ export default function LeadsPage() {
                     <div className="flex items-center gap-1 text-[#6B7B94] text-xs mb-0.5"><Wallet className="w-3 h-3" /> Budget</div>
                     <div className="text-[#162338] text-sm font-medium">{selectedLead.budgetRange}</div>
                   </div>
+                )}
+                {(
+                  [
+                    ["Intended use", selectedLead.intendedUse],
+                    ["Timeline", selectedLead.timeline],
+                    ["Land area", selectedLead.landArea],
+                    ["Source", [selectedLead.source, selectedLead.utmSource, selectedLead.utmMedium, selectedLead.utmCampaign].filter(Boolean).join(" / ")],
+                    ["Google click ID", selectedLead.gclid || selectedLead.gbraid || selectedLead.wbraid],
+                  ] as const
+                ).map(([label, value]) =>
+                  value ? (
+                    <div key={label} className="bg-[#F7F3ED] rounded-lg p-3 min-w-0">
+                      <div className="text-[#6B7B94] text-xs mb-0.5">{label}</div>
+                      <div className="text-[#162338] text-sm font-medium break-all">{value}</div>
+                    </div>
+                  ) : null
                 )}
               </div>
 

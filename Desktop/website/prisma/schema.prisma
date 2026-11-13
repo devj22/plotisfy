@@ -104,6 +104,24 @@ model Lead {
   message            String   @default("")
   leadStatus         String   @default("new")
   feedback           String   @default("")
+  // Landing-page enquiry details
+  intendedUse        String   @default("")
+  timeline           String   @default("")
+  landArea           String   @default("")
+  source             String   @default("")
+  landingPage        String   @default("")
+  // Client-generated id, reused across retries so a resubmission never creates
+  // a second lead; also sent to Google Ads as transaction_id.
+  submissionId       String   @default("")
+  // Campaign attribution
+  utmSource          String   @default("")
+  utmMedium          String   @default("")
+  utmCampaign        String   @default("")
+  utmTerm            String   @default("")
+  utmContent         String   @default("")
+  gclid              String   @default("")
+  gbraid             String   @default("")
+  wbraid             String   @default("")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
