@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatPrice(amount: number): string {
+  if (!(amount > 0)) return "Price on request";
   if (amount >= 10000000) {
     return `₹${(amount / 10000000).toFixed(2)} Cr`;
   }
@@ -16,6 +17,7 @@ export function formatPrice(amount: number): string {
 }
 
 export function formatArea(sqft: number): string {
+  if (!(sqft > 0)) return "Area on request";
   return `${sqft.toLocaleString("en-IN")} sq ft`;
 }
 
