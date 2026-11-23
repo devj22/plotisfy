@@ -70,6 +70,7 @@ export default function LeadsPage() {
   const [feedbackDraft, setFeedbackDraft] = useState("");
   const [savingFeedback, setSavingFeedback] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     fetch("/api/leads")
@@ -78,6 +79,9 @@ export default function LeadsPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  // Back to page 1 whenever the filters change.
+  useEffect(() => { setPage(1); }, [search, statusFilter, locationFilter]);
 
   useEffect(() => {
     setFeedbackDraft(selectedLead?.feedback ?? "");
@@ -191,6 +195,17 @@ export default function LeadsPage() {
     return matchSearch && matchStatus && matchLocation;
   });
 
+  const PAGE_SIZE = 30;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pageLeads = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const firstShown = filtered.length ? (currentPage - 1) * PAGE_SIZE + 1 : 0;
+  const lastShown = Math.min(currentPage * PAGE_SIZE, filtered.length);
+  const goToPage = (n: number) => {
+    setPage(Math.min(Math.max(1, n), pageCount));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <AdminLayout currentPath="/admin/leads">
       <div className="flex h-full">
@@ -301,7 +316,7 @@ export default function LeadsPage() {
                     <div>Actions</div>
                   </div>
                   <div className="divide-y divide-[#F7F3ED]">
-                    {filtered.map((lead) => {
+                    {pageLeads.map((lead) => {
                       const cfg = STATUS_CONFIG[lead.leadStatus] ?? STATUS_CONFIG.new;
                       return (
                         <div key={lead.id} className="px-4 md:px-5 py-4 hover:bg-[#F7F3ED]/50 transition-colors">
@@ -347,6 +362,46 @@ export default function LeadsPage() {
                       );
                     })}
                   </div>
+                  {pageCount > 1 && (
+                    <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-t border-[#E2DDD6] bg-[#F7F3ED]/50">
+                      <span className="text-xs text-[#6B7B94]">
+                        Showing {firstShown}–{lastShown} of {filtered.length}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => goToPage(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E2DDD6] bg-white text-[#0D2F5B] disabled:opacity-40"
+                        >
+                          ← Prev
+                        </button>
+                        {Array.from({ length: pageCount }, (_, i) => i + 1)
+                          .filter((n) => n === 1 || n === pageCount || Math.abs(n - currentPage) <= 1)
+                          .map((n, i, arr) => (
+                            <span key={n} className="flex items-center gap-1">
+                              {i > 0 && n - arr[i - 1] > 1 && <span className="text-xs text-[#6B7B94] px-1">…</span>}
+                              <button
+                                onClick={() => goToPage(n)}
+                                className={`min-w-8 px-2.5 py-1.5 text-xs font-semibold rounded-lg border ${
+                                  n === currentPage
+                                    ? "bg-[#0D2F5B] border-[#0D2F5B] text-white"
+                                    : "bg-white border-[#E2DDD6] text-[#0D2F5B] hover:bg-[#F7F3ED]"
+                                }`}
+                              >
+                                {n}
+                              </button>
+                            </span>
+                          ))}
+                        <button
+                          onClick={() => goToPage(currentPage + 1)}
+                          disabled={currentPage === pageCount}
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E2DDD6] bg-white text-[#0D2F5B] disabled:opacity-40"
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
