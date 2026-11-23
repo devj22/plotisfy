@@ -3,18 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { X, ArrowRight, CheckCircle, MessageCircle, MapPin, FileText, Calendar } from "lucide-react";
 import { reportConversion } from "@/lib/gtag";
-import { useLeadSubmission } from "@/lib/use-lead-submission";
+import QualifiedLeadForm from "@/components/forms/QualifiedLeadForm";
 
 const STORAGE_KEY = "plotzify_lead_popup_dismissed";
 
 export default function LeadPopup() {
   const [visible, setVisible] = useState(false);
   const [triggerType, setTriggerType] = useState<"scroll" | "timer" | "exit" | null>(null);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState("");
-  const [budget, setBudget] = useState("");
-  const { submit, loading, error } = useLeadSubmission("site_popup");
   const [submitted, setSubmitted] = useState(false);
 
   // Track whether popup has already been triggered this session
@@ -69,16 +64,7 @@ export default function LeadPopup() {
     setVisible(false);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const saved = await submit({
-      name,
-      phone,
-      locationPreference: location,
-      budgetRange: budget,
-      message: `Website popup lead (trigger: ${triggerType})`,
-    });
-    if (!saved) return;
+  function onSaved() {
     setSubmitted(true);
     sessionStorage.setItem(STORAGE_KEY, "1");
     window.open("/thank-you", "_blank", "noopener,noreferrer");
@@ -98,7 +84,7 @@ export default function LeadPopup() {
 
       {/* Popup */}
       <div className="fixed inset-0 z-[80] flex items-center justify-center px-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-fade-scale">
+        <div className="w-full max-w-md max-h-[92vh] overflow-y-auto bg-white rounded-2xl shadow-2xl animate-fade-scale">
 
           {/* Header */}
           <div className="relative bg-[#0D2F5B] px-5 pt-5 pb-6 overflow-hidden">
@@ -176,92 +162,13 @@ export default function LeadPopup() {
                 </a>
               </div>
             ) : (
-              <form id="popup-lead-form" onSubmit={handleSubmit} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-[#162338] mb-1">
-                      Full Name *
-                    </label>
-                    <input
-                      id="popup-name"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name"
-                      className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-[#162338] mb-1">
-                      Phone *
-                    </label>
-                    <input
-                      id="popup-phone"
-                      required
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+91 ..."
-                      className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-[#162338] mb-1">
-                      Location
-                    </label>
-                    <select
-                      id="popup-location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
-                    >
-                      <option value="">Any</option>
-                      <option value="Panvel">Panvel</option>
-                      <option value="Khalapur - Khopoli">Khalapur - Khopoli</option>
-                      <option value="Both / Open">Both / Open</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-[#162338] mb-1">
-                      Budget
-                    </label>
-                    <select
-                      id="popup-budget"
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                      className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
-                    >
-                      <option value="">Select</option>
-                      <option value="₹3Cr – ₹5Cr">₹3Cr – ₹5Cr</option>
-                      <option value="₹5Cr – ₹10Cr">₹5Cr – ₹10Cr</option>
-                      <option value="Above ₹10Cr">Above ₹10Cr</option>
-                    </select>
-                  </div>
-                </div>
-
-                {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
-                <button
-                  id="popup-submit-btn"
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70 mt-1"
-                >
-                  {loading
-                    ? "Sending..."
-                    : (
-                      <>
-                        <span>Send Me the Price Sheet</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                </button>
-                <p className="text-center text-xs text-[#6B7B94]">
-                  No spam &middot; Free &middot; Response within 2 hours
-                </p>
-              </form>
+              <QualifiedLeadForm
+                source="site_popup"
+                context={`Website popup lead (trigger: ${triggerType})`}
+                submitLabel="Send Me the Details"
+                footnote="No spam · Free · Response within 2 hours"
+                onSaved={onSaved}
+              />
             )}
           </div>
         </div>

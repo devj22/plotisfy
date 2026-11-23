@@ -30,6 +30,7 @@ interface DbLead {
   intendedUse?: string;
   timeline?: string;
   landArea?: string;
+  propertyName?: string;
   source?: string;
   utmSource?: string;
   utmMedium?: string;
@@ -141,6 +142,7 @@ export default function LeadsPage() {
         { header: "Intended Use", key: "intendedUse", width: 24 },
         { header: "Timeline", key: "timeline", width: 16 },
         { header: "Land Area", key: "landArea", width: 16 },
+        { header: "Property", key: "propertyName", width: 36 },
         { header: "Source", key: "source", width: 18 },
         { header: "UTM Source", key: "utmSource", width: 14 },
         { header: "UTM Medium", key: "utmMedium", width: 14 },
@@ -157,7 +159,7 @@ export default function LeadsPage() {
       }
       ws.getRow(1).font = { bold: true };
       ws.views = [{ state: "frozen", ySplit: 1 }];
-      ws.autoFilter = { from: "A1", to: "R1" };
+      ws.autoFilter = { from: "A1", to: "S1" };
       ws.getColumn("message").alignment = { wrapText: true, vertical: "top" };
       ws.getColumn("feedback").alignment = { wrapText: true, vertical: "top" };
 
@@ -394,6 +396,7 @@ export default function LeadsPage() {
                     ["Intended use", selectedLead.intendedUse],
                     ["Timeline", selectedLead.timeline],
                     ["Land area", selectedLead.landArea],
+                    ["Property", selectedLead.propertyName],
                     ["Source", [selectedLead.source, selectedLead.utmSource, selectedLead.utmMedium, selectedLead.utmCampaign].filter(Boolean).join(" / ")],
                     ["Google click ID", selectedLead.gclid || selectedLead.gbraid || selectedLead.wbraid],
                   ] as const

@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { MapPin, Maximize2, CheckCircle, MessageCircle, X, ArrowRight, Lock } from "lucide-react";
+import { MapPin, Maximize2, CheckCircle, MessageCircle, X, Lock } from "lucide-react";
 import { Property } from "@/types";
 import { formatPrice, formatArea } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { reportConversion } from "@/lib/gtag";
-import { useLeadSubmission } from "@/lib/use-lead-submission";
+import QualifiedLeadForm from "@/components/forms/QualifiedLeadForm";
 
 const PRICE_KEY = "plotzify_price_unlocked";
 
@@ -182,6 +182,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
       {/* Price Unlock Modal */}
       {showModal && (
         <PriceUnlockModal
+          propertyId={property.id}
           propertyTitle={property.title}
           price={formatPrice(property.priceTotal)}
           pricePerSqft={`₹${property.pricePerSqft.toLocaleString()} / sqft`}
@@ -195,6 +196,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
 }
 
 function PriceUnlockModal({
+  propertyId,
   propertyTitle,
   price,
   pricePerSqft,
@@ -202,6 +204,7 @@ function PriceUnlockModal({
   onClose,
   onUnlocked,
 }: {
+  propertyId: string;
   propertyTitle: string;
   price: string;
   pricePerSqft: string;
@@ -209,19 +212,9 @@ function PriceUnlockModal({
   onClose: () => void;
   onUnlocked: () => void;
 }) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const { submit, loading, error } = useLeadSubmission("price_unlock_card");
   const [done, setDone] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const saved = await submit({
-      name,
-      phone,
-      message: `Price unlock request for: ${propertyTitle}`,
-    });
-    if (!saved) return;
+  function onSaved() {
     localStorage.setItem(PRICE_KEY, "1");
     setDone(true);
     onUnlocked();
@@ -232,7 +225,7 @@ function PriceUnlockModal({
     <>
       <div className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-        <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="w-full max-w-sm max-h-[92vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
           {/* Header */}
           <div className="bg-[#0D2F5B] px-5 py-4 flex items-start justify-between">
             <div>
@@ -271,32 +264,15 @@ function PriceUnlockModal({
                 </a>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <input
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your Name *"
-                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
-                />
-                <input
-                  required
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Phone Number *"
-                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]"
-                />
-                {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
-                >
-                  {loading ? "Unlocking..." : <><span>Unlock Price</span><ArrowRight className="w-4 h-4" /></>}
-                </button>
-                <p className="text-center text-xs text-[#6B7B94]">No spam · Free · Response within 2 hours</p>
-              </form>
+              <QualifiedLeadForm
+                source="price_unlock_card"
+                propertyId={propertyId}
+                context={`Price unlock request for: ${propertyTitle}`}
+                submitLabel="Unlock Price"
+                loadingLabel="Unlocking..."
+                footnote="No spam · Free · Response within 2 hours"
+                onSaved={onSaved}
+              />
             )}
           </div>
         </div>

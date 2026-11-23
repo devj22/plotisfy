@@ -9,7 +9,7 @@ import {
 import { Property } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { reportConversion } from "@/lib/gtag";
-import { useLeadSubmission } from "@/lib/use-lead-submission";
+import QualifiedLeadForm from "@/components/forms/QualifiedLeadForm";
 
 const PRICE_KEY = "plotzify_price_unlocked";
 
@@ -93,14 +93,8 @@ export function PriceUnlockBanner({ property }: { property: Property }) {
 // ── Sidebar: locked form or revealed price + actions ───────────────────────
 export function PriceSidebar({ property }: { property: Property }) {
   const { priceUnlocked, unlock } = useLocalPriceUnlock();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const { submit, loading, error } = useLeadSubmission("price_unlock_sidebar");
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const saved = await submit({ name, phone, message: `Price unlock — property detail: ${property.title}` });
-    if (!saved) return;
+  function onSaved() {
     unlock();
     window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
@@ -147,20 +141,23 @@ export function PriceSidebar({ property }: { property: Property }) {
         <h3 className="text-white font-bold text-base leading-snug">Submit details to unlock the price</h3>
         <p className="text-white/60 text-xs mt-1">Free · No spam · Response within 2 hours</p>
       </div>
-      <form onSubmit={handleSubmit} className="p-5 space-y-3">
-        <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name *" className={inputCls} />
-        <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone Number *" className={inputCls} />
-        {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
-        <button type="submit" disabled={loading} className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70">
-          {loading ? "Unlocking..." : <><span>Unlock Price & Details</span><ArrowRight className="w-4 h-4" /></>}
-        </button>
+      <div className="p-5 space-y-3">
+        <QualifiedLeadForm
+          source="price_unlock_sidebar"
+          propertyId={property.id}
+          context={`Price unlock — property detail: ${property.title}`}
+          submitLabel="Unlock Price & Details"
+          loadingLabel="Unlocking..."
+          footnote=""
+          onSaved={onSaved}
+        />
         <div className="relative flex items-center gap-2 py-1">
           <div className="flex-1 border-t border-[#E2DDD6]" /><span className="text-xs text-[#6B7B94]">or</span><div className="flex-1 border-t border-[#E2DDD6]" />
         </div>
         <a href={`https://wa.me/918169693894?text=Hi%2C%20I%20want%20to%20know%20the%20price%20of%20${encodeURIComponent(property.title)}`} target="_blank" rel="noopener noreferrer" onClick={() => reportConversion()} className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white font-bold text-sm py-3 rounded-xl hover:bg-[#1eb558] transition-colors">
           <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
         </a>
-      </form>
+      </div>
     </div>
   );
 }
@@ -246,15 +243,9 @@ export function PropertyGallery({ gallery, title }: { gallery: string[]; title: 
 
 // ── Price modal (for banner click) ────────────────────────────────────────
 function PriceModal({ property, onClose, onUnlocked }: { property: Property; onClose: () => void; onUnlocked: () => void }) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const { submit, loading, error } = useLeadSubmission("price_unlock_modal");
   const [done, setDone] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const saved = await submit({ name, phone, message: `Price unlock — property detail page: ${property.title}` });
-    if (!saved) return;
+  function onSaved() {
     localStorage.setItem(PRICE_KEY, "1");
     setDone(true);
     window.open("/thank-you", "_blank", "noopener,noreferrer");
@@ -264,7 +255,7 @@ function PriceModal({ property, onClose, onUnlocked }: { property: Property; onC
     <>
       <div className="fixed inset-0 z-[90] bg-black/60 backdrop-blur-sm" onClick={!done ? onClose : undefined} />
       <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-        <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="w-full max-w-sm max-h-[92vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
           <div className="bg-[#0D2F5B] px-5 py-4 flex items-start justify-between">
             <div>
               <p className="text-[#B86A3C] text-xs font-bold uppercase tracking-widest mb-1">🔒 Price Locked</p>
@@ -288,13 +279,16 @@ function PriceModal({ property, onClose, onUnlocked }: { property: Property; onC
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name *" className={inputCls} />
-                <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone Number *" className={inputCls} />
-                {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
-                <button type="submit" disabled={loading} className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70">
-                  {loading ? "Unlocking..." : <><span>Unlock Price</span><ArrowRight className="w-4 h-4" /></>}
-                </button>
+              <div className="space-y-3">
+                <QualifiedLeadForm
+                  source="price_unlock_modal"
+                  propertyId={property.id}
+                  context={`Price unlock — property detail page: ${property.title}`}
+                  submitLabel="Unlock Price"
+                  loadingLabel="Unlocking..."
+                  footnote=""
+                  onSaved={onSaved}
+                />
                 <div className="relative flex items-center gap-2 py-1">
                   <div className="flex-1 border-t border-[#E2DDD6]" /><span className="text-xs text-[#6B7B94]">or</span><div className="flex-1 border-t border-[#E2DDD6]" />
                 </div>
@@ -302,7 +296,7 @@ function PriceModal({ property, onClose, onUnlocked }: { property: Property; onC
                   <MessageCircle className="w-4 h-4" /> Ask on WhatsApp
                 </a>
                 <p className="text-center text-xs text-[#6B7B94]">No spam · Free · Response within 2 hours</p>
-              </form>
+              </div>
             )}
           </div>
         </div>
@@ -329,4 +323,3 @@ function LockedFact({ label }: { label: string }) {
   );
 }
 
-const inputCls = "w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] text-[#162338]";

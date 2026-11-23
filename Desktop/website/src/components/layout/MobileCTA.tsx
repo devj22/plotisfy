@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Phone, MessageCircle, Calendar, FileText, X, ArrowRight, CheckCircle } from "lucide-react";
+import { Phone, MessageCircle, Calendar, FileText, X, CheckCircle } from "lucide-react";
 import { reportConversion } from "@/lib/gtag";
-import { useLeadSubmission } from "@/lib/use-lead-submission";
+import QualifiedLeadForm from "@/components/forms/QualifiedLeadForm";
 
 export default function MobileCTA() {
   const [showEnquiry, setShowEnquiry] = useState(false);
@@ -54,18 +54,9 @@ export default function MobileCTA() {
 }
 
 function EnquiryPopup({ onClose }: { onClose: () => void }) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [location, setLocation] = useState("");
-  const [budget, setBudget] = useState("");
-  const [message, setMessage] = useState("");
-  const { submit, loading, error } = useLeadSubmission("mobile_enquiry");
   const [submitted, setSubmitted] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const saved = await submit({ name, phone, locationPreference: location, budgetRange: budget, message });
-    if (!saved) return;
+  function onSaved() {
     setSubmitted(true);
     window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
@@ -99,77 +90,12 @@ function EnquiryPopup({ onClose }: { onClose: () => void }) {
             </a>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-[#162338] mb-1">Full Name *</label>
-                <input
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[#162338] mb-1">Phone *</label>
-                <input
-                  required
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+91 ..."
-                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-[#162338] mb-1">Location</label>
-                <select
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] text-[#162338]"
-                >
-                  <option value="">Any</option>
-                  <option value="Panvel">Panvel</option>
-                  <option value="Khalapur - Khopoli">Khalapur - Khopoli</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-[#162338] mb-1">Budget</label>
-                <select
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] text-[#162338]"
-                >
-                  <option value="">Select</option>
-                  <option value="₹3Cr – ₹5Cr">₹3Cr – ₹5Cr</option>
-                  <option value="₹5Cr – ₹10Cr">₹5Cr – ₹10Cr</option>
-                  <option value="Above ₹10Cr">Above ₹10Cr</option>
-                </select>
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-[#162338] mb-1">Message (optional)</label>
-              <textarea
-                rows={2}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Tell us what you're looking for..."
-                className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
-              />
-            </div>
-            {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#0D2F5B] text-white font-bold py-3 rounded-xl hover:bg-[#0a2347] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
-            >
-              {loading ? "Sending..." : <><span>Send Enquiry</span><ArrowRight className="w-4 h-4" /></>}
-            </button>
-            <p className="text-center text-xs text-[#6B7B94]">We respond within 2 hours · No spam</p>
-          </form>
+          <QualifiedLeadForm
+            source="mobile_enquiry"
+            submitLabel="Send Enquiry"
+            footnote="We respond within 2 hours · No spam"
+            onSaved={onSaved}
+          />
         )}
       </div>
     </div>

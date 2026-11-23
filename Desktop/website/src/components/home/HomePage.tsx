@@ -26,7 +26,7 @@ import PropertyCard from "@/components/properties/PropertyCard";
 import { TESTIMONIALS, INFRASTRUCTURE_HIGHLIGHTS, FAQS } from "@/lib/data";
 import { Property } from "@/types";
 import { reportConversion } from "@/lib/gtag";
-import { useLeadSubmission } from "@/lib/use-lead-submission";
+import QualifiedLeadForm from "@/components/forms/QualifiedLeadForm";
 
 const TRUST_BADGES = [
   { icon: Shield, label: "Verified Docs", color: "text-[#2D7A4F]" },
@@ -503,20 +503,9 @@ export default function HomePage() {
 }
 
 function HeroEnquiryForm() {
-  const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
-  const [requirement, setRequirement] = useState("");
-  const { submit, loading, error } = useLeadSubmission("home_hero_form");
   const [submitted, setSubmitted] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const saved = await submit({
-      name,
-      phone: contact,
-      message: `Custom Requirement (Hero Form): ${requirement}`,
-    });
-    if (!saved) return;
+  function onSaved() {
     setSubmitted(true);
     window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
@@ -549,52 +538,13 @@ function HeroEnquiryForm() {
             </a>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
-              <label className="block text-white/80 text-xs font-semibold mb-1">Name</label>
-              <input
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your full name"
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/15"
-              />
-            </div>
-            <div>
-              <label className="block text-white/80 text-xs font-semibold mb-1">Contact</label>
-              <input
-                required
-                type="tel"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                placeholder="Phone or WhatsApp number"
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/15"
-              />
-            </div>
-            <div>
-              <label className="block text-white/80 text-xs font-semibold mb-1">Requirement</label>
-              <textarea
-                rows={3}
-                value={requirement}
-                onChange={(e) => setRequirement(e.target.value)}
-                placeholder="e.g. 2 acres near highway, budget ₹5Cr, Panvel..."
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/15 resize-none"
-              />
-            </div>
-
-            {/* Buttons */}
-            <div className="pt-1">
-              {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors text-sm disabled:opacity-70"
-              >
-                {loading ? "Sending..." : <><Phone className="w-4 h-4" /> Contact Now</>}
-              </button>
-            </div>
-            <p className="text-center text-white/50 text-xs">Free · No spam · Response within 2 hours</p>
-          </form>
+          <QualifiedLeadForm
+            source="home_hero_form"
+            context="Custom Requirement (Hero Form)"
+            theme="dark"
+            submitLabel="Contact Now"
+            onSaved={onSaved}
+          />
         )}
       </div>
     </div>
@@ -637,12 +587,6 @@ function SmartSearch() {
 
 function EnquiryForm() {
   const [submitted, setSubmitted] = useState(false);
-  const { submit, loading, error } = useLeadSubmission("home_enquiry_form");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [locationPreference, setLocationPreference] = useState("");
-  const [budgetRange, setBudgetRange] = useState("");
-  const [message, setMessage] = useState("");
 
   if (submitted) {
     return (
@@ -667,95 +611,19 @@ function EnquiryForm() {
     );
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const saved = await submit({ name, phone, locationPreference, budgetRange, message });
-    if (!saved) return;
+  function onSaved() {
     setSubmitted(true);
     window.open("/thank-you", "_blank", "noopener,noreferrer");
   }
 
   return (
-    <form
-      className="bg-white rounded-2xl p-6 md:p-8 border border-[#E2DDD6] space-y-4"
-      onSubmit={handleSubmit}
-    >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Full Name *</label>
-          <input
-            required
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
-            className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Phone Number *</label>
-          <input
-            required
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+91 ..."
-            className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Location Preference</label>
-          <select
-            value={locationPreference}
-            onChange={(e) => setLocationPreference(e.target.value)}
-            className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
-          >
-            <option value="">Any Location</option>
-            <option value="Panvel">Panvel</option>
-            <option value="Khalapur - Khopoli">Khalapur - Khopoli</option>
-            <option value="Both / Open">Both / Open</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-[#162338] mb-1.5">Budget Range</label>
-          <select
-            value={budgetRange}
-            onChange={(e) => setBudgetRange(e.target.value)}
-            className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]"
-          >
-            <option value="">Select Budget</option>
-            <option value="₹3Cr – ₹5Cr">₹3Cr – ₹5Cr</option>
-            <option value="₹5Cr – ₹10Cr">₹5Cr – ₹10Cr</option>
-            <option value="Above ₹10Cr">Above ₹10Cr</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-[#162338] mb-1.5">Message (optional)</label>
-        <textarea
-          rows={3}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Tell us about your investment goals..."
-          className="w-full border border-[#E2DDD6] rounded-lg px-3.5 py-2.5 text-sm text-[#162338] focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B] resize-none"
-        />
-      </div>
-
-      {error && <p className="text-red-600 text-xs leading-snug">{error}</p>}
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full bg-[#0D2F5B] text-white font-bold text-base py-3.5 rounded-xl hover:bg-[#0a2347] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
-      >
-        {loading ? "Sending..." : <><span>Send Enquiry</span> <ArrowRight className="w-4 h-4" /></>}
-      </button>
-      <p className="text-center text-xs text-[#6B7B94]">
-        We respond within 2 hours · No spam
-      </p>
-    </form>
+    <div className="bg-white rounded-2xl p-6 md:p-8 border border-[#E2DDD6]">
+      <QualifiedLeadForm
+        source="home_enquiry_form"
+        submitLabel="Send Enquiry"
+        footnote="We respond within 2 hours · No spam"
+        onSaved={onSaved}
+      />
+    </div>
   );
 }

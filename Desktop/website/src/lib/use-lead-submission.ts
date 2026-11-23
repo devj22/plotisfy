@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { captureAttribution } from "@/lib/attribution";
 import { reportLeadSubmitted } from "@/lib/gtag";
+import { BELOW_BUDGET_MESSAGE } from "@/lib/lead-qualifier";
 
 export const LEAD_SAVE_ERROR =
   "We couldn't send your enquiry. Your details are still here. Please try again, or call +91 81696 93894.";
@@ -31,10 +32,14 @@ export function useLeadSubmission(source: string) {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.ok) {
-        setError(res.status === 400 ? "Please check your name and phone number." : LEAD_SAVE_ERROR);
+        setError(
+          res.status === 422 ? BELOW_BUDGET_MESSAGE
+          : res.status === 400 ? (data.field === "phone" ? "Please check your name and phone number." : "Please complete all the required fields.")
+          : LEAD_SAVE_ERROR,
+        );
         return false;
       }
-      if (!data.duplicate) reportLeadSubmitted(data.leadId, { lead_source: source });
+      if (!data.duplicate) reportLeadSubmitted(data.leadId, { lead_source: source, budget_band: payload.budget ?? "" });
       return true;
     } catch {
       setError(LEAD_SAVE_ERROR);

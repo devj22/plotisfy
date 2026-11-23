@@ -8,10 +8,10 @@ export const MIN_BUDGET_LABEL = "₹2.5 crore";
 
 export const BUDGET_OPTIONS = [
   { value: "below-2.5cr", label: "Below ₹2.5 crore", eligible: false },
-  { value: "2.5-3cr", label: "₹2.5 – 3 crore", eligible: true },
-  { value: "3-5cr", label: "₹3 – 5 crore", eligible: true },
-  { value: "5-10cr", label: "₹5 – 10 crore", eligible: true },
-  { value: "10cr-plus", label: "₹10 crore+", eligible: true },
+  { value: "2.5-3cr", label: "₹2.5–3 crore", eligible: true },
+  { value: "3-5cr", label: "₹3–5 crore", eligible: true },
+  { value: "5-10cr", label: "₹5–10 crore", eligible: true },
+  { value: "10cr-plus", label: "Above ₹10 crore", eligible: true },
 ] as const;
 
 export const LOCATION_OPTIONS = ["Panvel", "Karjat", "Khalapur", "Khopoli", "Open to suggestions"] as const;

@@ -108,6 +108,9 @@ model Lead {
   intendedUse        String   @default("")
   timeline           String   @default("")
   landArea           String   @default("")
+  // Property a price-unlock enquiry was about
+  propertyId         String   @default("")
+  propertyName       String   @default("")
   source             String   @default("")
   landingPage        String   @default("")
   // Client-generated id, reused across retries so a resubmission never creates
