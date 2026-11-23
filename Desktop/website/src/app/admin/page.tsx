@@ -71,7 +71,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-[#0D2F5B] text-2xl font-bold">Dashboard</h1>
-            <p className="text-[#6B7B94] text-sm">Good morning! Here's what's happening today.</p>
+            <p className="text-[#6B7B94] text-sm">Here's what's happening with your leads and listings.</p>
           </div>
         </div>
 
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-3 bg-[#2D7A4F]/8 border border-[#2D7A4F]/20 rounded-xl px-4 py-3">
                 <Star className="w-4 h-4 text-[#2D7A4F] flex-shrink-0" />
                 <p className="text-[#2D7A4F] text-sm font-medium">
-                  {newLeads} new unassigned leads.{" "}
+                  {newLeads} leads still marked New (not yet contacted).{" "}
                   <Link href="/admin/leads?filter=new" className="underline">
                     Assign now
                   </Link>
@@ -112,13 +112,12 @@ export default function AdminDashboard() {
             icon={Building2}
             iconBg="bg-[#0D2F5B]/10"
             iconColor="text-[#0D2F5B]"
-            trend="+2 this week"
             href="/admin/properties"
           />
           <KPICard
             title="Total Leads"
             value={String(totalLeads)}
-            subtitle={`${newLeads} new today`}
+            subtitle={`${newLeads} not yet contacted`}
             icon={Users}
             iconBg="bg-[#B86A3C]/10"
             iconColor="text-[#B86A3C]"
@@ -141,7 +140,6 @@ export default function AdminDashboard() {
             icon={TrendingUp}
             iconBg="bg-[#2D7A4F]/10"
             iconColor="text-[#2D7A4F]"
-            trend="2 closing this month"
             href="/admin/leads?filter=negotiation"
           />
         </div>
