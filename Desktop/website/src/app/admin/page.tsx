@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { LEADS } from "@/lib/data";
+import { useAdminLeads } from "@/lib/admin-leads";
 import { Property } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import {
@@ -32,11 +32,12 @@ export default function AdminDashboard() {
 
   const totalProperties = properties.filter((p) => p.published).length;
   const availableProperties = properties.filter((p) => p.status === "available").length;
+  const { leads: LEADS } = useAdminLeads();
   const totalLeads = LEADS.length;
   const newLeads = LEADS.filter((l) => l.leadStatus === "new").length;
-  const hotLeads = LEADS.filter((l) => l.leadScore >= 80).length;
-  const missedFollowUps = 2;
-  const siteVisitsPlanned = LEADS.filter((l) => l.leadStatus === "site_visit_planned").length;
+  const hotLeads = LEADS.filter((l) => Date.now() - new Date(l.createdAt).getTime() < 7 * 86400000).length;
+  const missedFollowUps: number = 0;
+  const siteVisitsPlanned = LEADS.filter((l) => (l.source === "site_visit" && l.leadStatus === "new") || l.leadStatus === "site_visit_planned").length;
   const inNegotiation = LEADS.filter((l) => l.leadStatus === "negotiation").length;
 
   const recentLeads = LEADS.slice(0, 5);
@@ -121,13 +122,13 @@ export default function AdminDashboard() {
             icon={Users}
             iconBg="bg-[#B86A3C]/10"
             iconColor="text-[#B86A3C]"
-            trend={`${hotLeads} hot leads`}
+            trend={`${hotLeads} this week`}
             href="/admin/leads"
           />
           <KPICard
             title="Site Visits"
             value={String(siteVisitsPlanned)}
-            subtitle="Planned this week"
+            subtitle="Requested / planned"
             icon={Calendar}
             iconBg="bg-purple-100"
             iconColor="text-purple-600"
@@ -178,23 +179,11 @@ export default function AdminDashboard() {
                           </span>
                         </div>
                         <div className="text-[#6B7B94] text-xs mt-0.5">
-                          {lead.locationPreference} · {lead.budgetRange} · {lead.purpose}
+                          {[lead.locationPreference, lead.budgetRange, lead.intendedUse].filter(Boolean).join(" · ") || "—"}
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
-                      {/* Lead Score */}
-                      <div
-                        className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                          lead.leadScore >= 80
-                            ? "bg-[#2D7A4F]/10 text-[#2D7A4F]"
-                            : lead.leadScore >= 60
-                            ? "bg-[#B86A3C]/10 text-[#B86A3C]"
-                            : "bg-[#6B7B94]/10 text-[#6B7B94]"
-                        }`}
-                      >
-                        {lead.leadScore}
-                      </div>
                       <a
                         href={`tel:${lead.phone}`}
                         className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-[#0D2F5B] hover:border-[#0D2F5B] transition-colors"
@@ -208,7 +197,7 @@ export default function AdminDashboard() {
                         <MessageCircle className="w-3.5 h-3.5" />
                       </a>
                       <Link
-                        href={`/admin/leads/${lead.id}`}
+                        href="/admin/leads"
                         className="p-1.5 rounded-lg border border-[#E2DDD6] text-[#6B7B94] hover:text-[#0D2F5B] hover:border-[#0D2F5B] transition-colors"
                       >
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -239,7 +228,7 @@ export default function AdminDashboard() {
                     <div className="flex-1 bg-[#F7F3ED] rounded-full h-2">
                       <div
                         className={`${stage.color} h-2 rounded-full transition-all`}
-                        style={{ width: `${Math.max((stage.count / LEADS.length) * 100, 5)}%` }}
+                        style={{ width: `${Math.max((stage.count / Math.max(LEADS.length, 1)) * 100, 5)}%` }}
                       />
                     </div>
                     <div className="w-6 text-xs font-bold text-[#162338] flex-shrink-0">{stage.count}</div>
@@ -288,9 +277,9 @@ export default function AdminDashboard() {
               <h2 className="text-[#0D2F5B] font-bold mb-4">Quick Actions</h2>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: "Add Property", href: "/admin/properties/new", icon: "🏗️" },
-                  { label: "Schedule Visit", href: "/admin/site-visits/new", icon: "📅" },
-                  { label: "Write Blog", href: "/admin/content/blogs/new", icon: "✍️" },
+                  { label: "Add Property", href: "/admin/properties", icon: "🏗️" },
+                  { label: "Site Visits", href: "/admin/site-visits", icon: "📅" },
+                  { label: "Write Blog", href: "/admin/content/blogs", icon: "✍️" },
                 ].map((action) => (
                   <Link
                     key={action.label}

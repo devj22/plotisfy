@@ -4,11 +4,17 @@ import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MobileCTA from "@/components/layout/MobileCTA";
-import { CheckCircle, Phone, MessageCircle, Calendar, MapPin, ArrowRight } from "lucide-react";
+import { CheckCircle, Phone, MessageCircle, Calendar, MapPin } from "lucide-react";
 import { reportConversion } from "@/lib/gtag";
+import QualifiedLeadForm from "@/components/forms/QualifiedLeadForm";
 
 export default function BookSiteVisitPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [location, setLocation] = useState("");
+  const [visitDate, setVisitDate] = useState("");
+  const [notes, setNotes] = useState("");
+  const today = new Date().toISOString().slice(0, 10);
+  const fieldCls = "w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm text-[#162338] bg-white focus:outline-none focus:ring-2 focus:ring-[#0D2F5B]/30 focus:border-[#0D2F5B]";
 
   return (
     <>
@@ -110,76 +116,48 @@ export default function BookSiteVisitPage() {
                   </a>
                 </div>
               ) : (
-                <form
-                  className="bg-white rounded-2xl p-6 border border-[#E2DDD6] space-y-4"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setSubmitted(true);
-                    window.open("/thank-you", "_blank", "noopener,noreferrer");
-                  }}
-                >
+                <div className="bg-white rounded-2xl p-6 border border-[#E2DDD6] space-y-4">
                   <h2 className="text-[#0D2F5B] font-bold text-lg">Request a Site Visit</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-[#162338] mb-1.5">Name *</label>
-                      <input
-                        required
-                        type="text"
-                        className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-[#162338] mb-1.5">Phone *</label>
-                      <input
-                        required
-                        type="tel"
-                        className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#162338] mb-1.5">Location Preference</label>
-                    <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
-                      <option value="">Select Location</option>
-                      <option>Panvel</option>
-                      <option>Khalapur - Khopoli</option>
-                      <option>Both / Open to either</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#162338] mb-1.5">Preferred Visit Date</label>
-                    <input
-                      type="date"
-                      className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#162338] mb-1.5">Budget Range</label>
-                    <select className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B]">
-                      <option>₹3Cr – ₹5Cr</option>
-                      <option>₹5Cr – ₹10Cr</option>
-                      <option>Above ₹10Cr</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-[#162338] mb-1.5">Additional Notes</label>
-                    <textarea
-                      rows={2}
-                      placeholder="Any specific property or requirements..."
-                      className="w-full border border-[#E2DDD6] rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#0D2F5B] resize-none"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-[#B86A3C] text-white font-bold py-3.5 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    Request Site Visit
-                  </button>
-                  <p className="text-center text-xs text-[#6B7B94]">
-                    Free · No obligation · Weekends available
-                  </p>
-                </form>
+                  <QualifiedLeadForm
+                    source="site_visit"
+                    submitLabel="Request Site Visit"
+                    submitIcon={<Calendar className="w-4 h-4" />}
+                    footnote="Free · No obligation · Weekends available"
+                    extraPayload={{
+                      locationPreference: location,
+                      visitDate,
+                      message: ["Site visit request", visitDate && `Preferred date: ${visitDate}`, notes && `Notes: ${notes}`].filter(Boolean).join(" · "),
+                    }}
+                    extraFields={
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label htmlFor="sv-location" className="block text-xs font-semibold text-[#162338] mb-1">Location Preference</label>
+                            <select id="sv-location" value={location} onChange={(e) => setLocation(e.target.value)} className={fieldCls}>
+                              <option value="">Select Location</option>
+                              <option>Panvel</option>
+                              <option>Khalapur - Khopoli</option>
+                              <option>Karjat</option>
+                              <option>Both / Open to either</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label htmlFor="sv-date" className="block text-xs font-semibold text-[#162338] mb-1">Preferred Visit Date</label>
+                            <input id="sv-date" type="date" min={today} value={visitDate} onChange={(e) => setVisitDate(e.target.value)} className={fieldCls} />
+                          </div>
+                        </div>
+                        <div>
+                          <label htmlFor="sv-notes" className="block text-xs font-semibold text-[#162338] mb-1">Additional Notes</label>
+                          <textarea id="sv-notes" rows={2} maxLength={500} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Any specific property or requirements..." className={`${fieldCls} resize-none`} />
+                        </div>
+                      </>
+                    }
+                    onSaved={() => {
+                      setSubmitted(true);
+                      window.open("/thank-you", "_blank", "noopener,noreferrer");
+                    }}
+                  />
+                </div>
               )}
             </div>
           </div>

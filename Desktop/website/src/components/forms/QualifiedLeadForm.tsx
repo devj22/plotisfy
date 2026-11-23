@@ -26,6 +26,11 @@ interface Props {
   /** Called once the server has confirmed the lead was saved. */
   onSaved: () => void;
   footnote?: string;
+  /** Extra fields shown to eligible buyers after the standard ones. */
+  extraFields?: React.ReactNode;
+  /** Extra values sent with the lead (e.g. visit date, location). */
+  extraPayload?: Record<string, string>;
+  submitIcon?: React.ReactNode;
 }
 
 /**
@@ -44,6 +49,9 @@ export default function QualifiedLeadForm({
   loadingLabel = "Sending...",
   onSaved,
   footnote = "Free · No spam · Response within 2 hours",
+  extraFields,
+  extraPayload,
+  submitIcon,
 }: Props) {
   const id = useId();
   const { submit, loading, error } = useLeadSubmission(source);
@@ -85,6 +93,7 @@ export default function QualifiedLeadForm({
       areaGuidance: areaGuidance ? "1" : "",
       propertyId: propertyId ?? "",
       message: context ?? "",
+      ...extraPayload,
     });
     if (saved) onSaved();
   }
@@ -178,13 +187,15 @@ export default function QualifiedLeadForm({
             </label>
           </div>
 
+          {extraFields}
+
           {shownError && <p className={`text-xs leading-snug ${dark ? "text-red-300" : "text-red-600"}`}>{shownError}</p>}
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-[#B86A3C] text-white font-bold py-3 rounded-xl hover:bg-[#9a5630] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
           >
-            {loading ? loadingLabel : <><span>{submitLabel}</span><ArrowRight className="w-4 h-4" /></>}
+            {loading ? loadingLabel : <>{submitIcon}<span>{submitLabel}</span>{!submitIcon && <ArrowRight className="w-4 h-4" />}</>}
           </button>
           {footnote && <p className={`text-center text-xs ${mutedCls}`}>{footnote}</p>}
         </>

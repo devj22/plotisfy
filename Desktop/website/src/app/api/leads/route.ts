@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
         landArea: q.landArea,
         propertyId: property?.id ?? "",
         propertyName: property ? [property.title, property.propertyCode].filter(Boolean).join(" · ") : "",
+        visitDate: /^\d{4}-\d{2}-\d{2}$/.test(str(body.visitDate, 10)) ? str(body.visitDate, 10) : "",
         message: str(body.message, 2000),
         leadStatus: "new",
         source,

@@ -111,6 +111,8 @@ model Lead {
   // Property a price-unlock enquiry was about
   propertyId         String   @default("")
   propertyName       String   @default("")
+  // Preferred date (YYYY-MM-DD) from the Book Site Visit form
+  visitDate          String   @default("")
   source             String   @default("")
   landingPage        String   @default("")
   // Client-generated id, reused across retries so a resubmission never creates
